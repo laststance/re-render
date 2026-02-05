@@ -1,12 +1,15 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
 import { SplitPaneLayout } from '@/components/layout'
 import { ComponentBoxView, LivePreview } from '@/components/visualization'
 import { TriggerPanel, ExplanationPanel } from '@/components/ui'
-import { useSuppressToasts } from '@/hooks'
+import { useComponentTreeWithCounts, useSuppressToasts } from '@/hooks'
+import { useAppDispatch } from '@/store/hooks'
+import { clearRenderHistory } from '@/store'
 import { getExample, getDefaultExample } from '@/data/examples'
 import { livePreviewMap } from '@/data/livePreviewMap'
 import { getTriggers } from '@/data/triggerConfig'
+import { cn } from '@/lib/utils'
 import type { ViewMode } from '@/components/layout/VisualizationPane'
 import type { LivePreviewHandle } from '@/data/livePreviewExamples'
 
@@ -26,6 +29,12 @@ export function ExamplePage() {
   const [viewMode, setViewMode] = useState<ViewMode>('box')
   const livePreviewRef = useRef<LivePreviewHandle>(null)
   const withSuppressToasts = useSuppressToasts()
+  const dispatch = useAppDispatch()
+
+  // Clear stale render counts when navigating between examples
+  useEffect(() => {
+    dispatch(clearRenderHistory())
+  }, [exampleId, dispatch])
 
   // Suppress toasts when switching view mode (UI chrome, not a meaningful re-render)
   const handleViewModeChange = useCallback(
@@ -34,6 +43,10 @@ export function ExamplePage() {
   )
 
   const example = categoryId && exampleId ? getExample(categoryId, exampleId) : null
+
+  // Merge static tree structure with live Redux render counts
+  // Called before early return to satisfy React rules of hooks
+  const liveTree = useComponentTreeWithCounts(example?.componentTree ?? null)
 
   // Check if this example has a live preview component
   const LivePreviewComponent = exampleId ? livePreviewMap[exampleId] : undefined
@@ -79,19 +92,28 @@ export function ExamplePage() {
           onViewModeChange={handleViewModeChange}
           hasLivePreview={hasLivePreview}
         >
-          {viewMode === 'live' && LivePreviewComponent ? (
-            <div className="flex h-full flex-col gap-4">
-              {/* Trigger Panel - visible when in live preview mode */}
-              {hasTriggers && (
-                <TriggerPanel triggers={triggers} onTrigger={handleTrigger} />
+          {/* Trigger Panel - always accessible when triggers exist */}
+          {hasTriggers && LivePreviewComponent && (
+            <TriggerPanel triggers={triggers} onTrigger={handleTrigger} />
+          )}
+
+          {/* Tree view - visible in box mode */}
+          <div className={cn(viewMode !== 'box' && 'hidden')}>
+            <ComponentBoxView tree={liveTree!} />
+          </div>
+
+          {/* Live preview - always mounted to keep useRenderTracker active */}
+          {LivePreviewComponent && (
+            <div
+              className={cn(
+                viewMode !== 'live' && 'h-0 overflow-hidden pointer-events-none'
               )}
-              {/* Live Preview Component */}
+              aria-hidden={viewMode !== 'live'}
+            >
               <LivePreview>
                 <LivePreviewComponent ref={livePreviewRef} />
               </LivePreview>
             </div>
-          ) : (
-            <ComponentBoxView tree={example.componentTree} />
           )}
         </SplitPaneLayout>
       </div>

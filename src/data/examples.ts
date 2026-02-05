@@ -40,15 +40,15 @@ export default App`,
         componentTree: {
           id: 'app',
           name: 'App',
-          renderCount: 2,
+          renderCount: 0,
           children: [
             {
               id: 'div-app',
               name: 'div',
-              renderCount: 2,
+              renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 2 },
-                { id: 'button', name: 'button', renderCount: 2 },
+                { id: 'h1', name: 'h1', renderCount: 0 },
+                { id: 'button', name: 'button', renderCount: 0 },
               ],
             },
           ],
@@ -138,26 +138,26 @@ export function Counter({ count, setCount }: CounterProps) {
         componentTree: {
           id: 'app',
           name: 'App',
-          renderCount: 2,
+          renderCount: 0,
           children: [
             {
               id: 'div-app',
               name: 'div',
-              renderCount: 2,
+              renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 2 },
+                { id: 'h1', name: 'h1', renderCount: 0 },
                 {
                   id: 'counter',
                   name: 'Counter',
-                  renderCount: 2,
+                  renderCount: 0,
                   children: [
                     {
                       id: 'div-counter',
                       name: 'div',
-                      renderCount: 2,
+                      renderCount: 0,
                       children: [
-                        { id: 'p-count', name: 'p', renderCount: 2 },
-                        { id: 'button', name: 'button', renderCount: 2 },
+                        { id: 'p-count', name: 'p', renderCount: 0 },
+                        { id: 'button', name: 'button', renderCount: 0 },
                       ],
                     },
                   ],
@@ -250,25 +250,25 @@ export function Child({ name }: ChildProps) {
         componentTree: {
           id: 'app',
           name: 'App',
-          renderCount: 3,
+          renderCount: 0,
           children: [
             {
               id: 'div-app',
               name: 'div',
-              renderCount: 3,
+              renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 3 },
-                { id: 'button', name: 'button', renderCount: 3 },
+                { id: 'h1', name: 'h1', renderCount: 0 },
+                { id: 'button', name: 'button', renderCount: 0 },
                 {
                   id: 'child',
                   name: 'Child',
-                  renderCount: 3,
+                  renderCount: 0,
                   children: [
                     {
                       id: 'div-child',
                       name: 'div',
-                      renderCount: 3,
-                      children: [{ id: 'p-hello', name: 'p', renderCount: 3 }],
+                      renderCount: 0,
+                      children: [{ id: 'p-hello', name: 'p', renderCount: 0 }],
                     },
                   ],
                 },
@@ -421,37 +421,37 @@ export function CountButton() {
         componentTree: {
           id: 'app',
           name: 'App',
-          renderCount: 3,
+          renderCount: 0,
           children: [
             {
               id: 'count-provider',
               name: 'CountProvider',
-              renderCount: 3,
+              renderCount: 0,
               children: [
                 {
                   id: 'div-app',
                   name: 'div',
-                  renderCount: 3,
+                  renderCount: 0,
                   children: [
-                    { id: 'h1', name: 'h1', renderCount: 3 },
+                    { id: 'h1', name: 'h1', renderCount: 0 },
                     {
                       id: 'count-display',
                       name: 'CountDisplay',
-                      renderCount: 3,
+                      renderCount: 0,
                       children: [
                         {
                           id: 'div-display',
                           name: 'div',
-                          renderCount: 3,
-                          children: [{ id: 'p-count', name: 'p', renderCount: 3 }],
+                          renderCount: 0,
+                          children: [{ id: 'p-count', name: 'p', renderCount: 0 }],
                         },
                       ],
                     },
                     {
                       id: 'count-button',
                       name: 'CountButton',
-                      renderCount: 3,
-                      children: [{ id: 'button', name: 'button', renderCount: 3 }],
+                      renderCount: 0,
+                      children: [{ id: 'button', name: 'button', renderCount: 0 }],
                     },
                   ],
                 },
@@ -570,32 +570,32 @@ export function Timer({ id }: TimerProps) {
         componentTree: {
           id: 'app',
           name: 'App',
-          renderCount: 4,
+          renderCount: 0,
           children: [
             {
               id: 'div-app',
               name: 'div',
-              renderCount: 4,
+              renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 4 },
+                { id: 'h1', name: 'h1', renderCount: 0 },
                 {
                   id: 'timer',
                   name: 'Timer',
-                  renderCount: 1,
+                  renderCount: 0,
                   children: [
                     {
                       id: 'div-timer',
                       name: 'div',
-                      renderCount: 1,
+                      renderCount: 0,
                       children: [
-                        { id: 'p-seconds', name: 'p', renderCount: 1 },
-                        { id: 'p-hint', name: 'p', renderCount: 1 },
+                        { id: 'p-seconds', name: 'p', renderCount: 0 },
+                        { id: 'p-hint', name: 'p', renderCount: 0 },
                       ],
                     },
                   ],
                 },
-                { id: 'btn-reset', name: 'button', renderCount: 4 },
-                { id: 'btn-force', name: 'button', renderCount: 4 },
+                { id: 'btn-reset', name: 'button', renderCount: 0 },
+                { id: 'btn-force', name: 'button', renderCount: 0 },
               ],
             },
           ],
@@ -693,25 +693,25 @@ export const MemoChild = memo(function MemoChild({ name }: MemoChildProps) {
         componentTree: {
           id: 'app',
           name: 'App',
-          renderCount: 3,
+          renderCount: 0,
           children: [
             {
               id: 'div-app',
               name: 'div',
-              renderCount: 3,
+              renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 3 },
-                { id: 'button', name: 'button', renderCount: 3 },
+                { id: 'h1', name: 'h1', renderCount: 0 },
+                { id: 'button', name: 'button', renderCount: 0 },
                 {
                   id: 'memo-child',
                   name: 'MemoChild',
-                  renderCount: 1,
+                  renderCount: 0,
                   children: [
                     {
                       id: 'div-child',
                       name: 'div',
-                      renderCount: 1,
-                      children: [{ id: 'p-hello', name: 'p', renderCount: 1 }],
+                      renderCount: 0,
+                      children: [{ id: 'p-hello', name: 'p', renderCount: 0 }],
                     },
                   ],
                 },
@@ -816,21 +816,21 @@ export const MemoButton = memo(function MemoButton({
         componentTree: {
           id: 'app',
           name: 'App',
-          renderCount: 5,
+          renderCount: 0,
           children: [
             {
               id: 'div-app',
               name: 'div',
-              renderCount: 5,
+              renderCount: 0,
               children: [
-                { id: 'input', name: 'input', renderCount: 5 },
-                { id: 'p-count', name: 'p', renderCount: 5 },
+                { id: 'input', name: 'input', renderCount: 0 },
+                { id: 'p-count', name: 'p', renderCount: 0 },
                 {
                   id: 'memo-button',
                   name: 'MemoButton',
-                  renderCount: 2,
+                  renderCount: 0,
                   children: [
-                    { id: 'button', name: 'button', renderCount: 2 },
+                    { id: 'button', name: 'button', renderCount: 0 },
                   ],
                 },
               ],
@@ -913,16 +913,16 @@ export default App`,
         componentTree: {
           id: 'app',
           name: 'App',
-          renderCount: 5,
+          renderCount: 0,
           children: [
             {
               id: 'div-app',
               name: 'div',
-              renderCount: 5,
+              renderCount: 0,
               children: [
-                { id: 'input', name: 'input', renderCount: 5 },
-                { id: 'p-value', name: 'p', renderCount: 5 },
-                { id: 'button', name: 'button', renderCount: 5 },
+                { id: 'input', name: 'input', renderCount: 0 },
+                { id: 'p-value', name: 'p', renderCount: 0 },
+                { id: 'button', name: 'button', renderCount: 0 },
               ],
             },
           ],
@@ -1023,33 +1023,33 @@ export default function HeavyChart() {
         componentTree: {
           id: 'app',
           name: 'App',
-          renderCount: 2,
+          renderCount: 0,
           children: [
             {
               id: 'div-app',
               name: 'div',
-              renderCount: 2,
+              renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 2 },
-                { id: 'button', name: 'button', renderCount: 2 },
+                { id: 'h1', name: 'h1', renderCount: 0 },
+                { id: 'button', name: 'button', renderCount: 0 },
                 {
                   id: 'suspense',
                   name: 'Suspense',
-                  renderCount: 1,
+                  renderCount: 0,
                   children: [
                     {
                       id: 'heavy-chart',
                       name: 'HeavyChart',
-                      renderCount: 1,
+                      renderCount: 0,
                       children: [
                         {
                           id: 'div-chart',
                           name: 'div',
-                          renderCount: 1,
+                          renderCount: 0,
                           children: [
-                            { id: 'h2', name: 'h2', renderCount: 1 },
-                            { id: 'p-loaded', name: 'p', renderCount: 1 },
-                            { id: 'div-placeholder', name: 'div', renderCount: 1 },
+                            { id: 'h2', name: 'h2', renderCount: 0 },
+                            { id: 'p-loaded', name: 'p', renderCount: 0 },
+                            { id: 'div-placeholder', name: 'div', renderCount: 0 },
                           ],
                         },
                       ],
@@ -1165,39 +1165,39 @@ export function ExpensiveTree() {
         componentTree: {
           id: 'app',
           name: 'App',
-          renderCount: 1,
+          renderCount: 0,
           children: [
             {
               id: 'color-picker',
               name: 'ColorPicker',
-              renderCount: 5,
+              renderCount: 0,
               children: [
                 {
                   id: 'div-color',
                   name: 'div',
-                  renderCount: 5,
+                  renderCount: 0,
                   children: [
-                    { id: 'input', name: 'input', renderCount: 5 },
+                    { id: 'input', name: 'input', renderCount: 0 },
                     {
                       id: 'expensive-tree',
                       name: 'ExpensiveTree',
-                      renderCount: 1,
+                      renderCount: 0,
                       children: [
                         {
                           id: 'div-expensive',
                           name: 'div',
-                          renderCount: 1,
+                          renderCount: 0,
                           children: [
-                            { id: 'h2', name: 'h2', renderCount: 1 },
-                            { id: 'p-info', name: 'p', renderCount: 1 },
+                            { id: 'h2', name: 'h2', renderCount: 0 },
+                            { id: 'p-info', name: 'p', renderCount: 0 },
                             {
                               id: 'ul',
                               name: 'ul',
-                              renderCount: 1,
+                              renderCount: 0,
                               children: [
-                                { id: 'li-1', name: 'li', renderCount: 1 },
-                                { id: 'li-2', name: 'li', renderCount: 1 },
-                                { id: 'li-3', name: 'li', renderCount: 1 },
+                                { id: 'li-1', name: 'li', renderCount: 0 },
+                                { id: 'li-2', name: 'li', renderCount: 0 },
+                                { id: 'li-3', name: 'li', renderCount: 0 },
                               ],
                             },
                           ],
@@ -1325,19 +1325,19 @@ export default App`,
         componentTree: {
           id: 'app',
           name: 'App',
-          renderCount: 4,
+          renderCount: 0,
           children: [
             {
               id: 'div-app',
               name: 'div',
-              renderCount: 4,
+              renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 4 },
-                { id: 'p-step', name: 'p', renderCount: 4 },
-                { id: 'btn-inc', name: 'button', renderCount: 4 },
-                { id: 'btn-dec', name: 'button', renderCount: 4 },
-                { id: 'input', name: 'input', renderCount: 4 },
-                { id: 'btn-reset', name: 'button', renderCount: 4 },
+                { id: 'h1', name: 'h1', renderCount: 0 },
+                { id: 'p-step', name: 'p', renderCount: 0 },
+                { id: 'btn-inc', name: 'button', renderCount: 0 },
+                { id: 'btn-dec', name: 'button', renderCount: 0 },
+                { id: 'input', name: 'input', renderCount: 0 },
+                { id: 'btn-reset', name: 'button', renderCount: 0 },
               ],
             },
           ],
@@ -1447,17 +1447,17 @@ export const store = {
         componentTree: {
           id: 'app',
           name: 'App',
-          renderCount: 4,
+          renderCount: 0,
           children: [
             {
               id: 'div-app',
               name: 'div',
-              renderCount: 4,
+              renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 4 },
-                { id: 'p-count', name: 'p', renderCount: 4 },
-                { id: 'btn-inc', name: 'button', renderCount: 4 },
-                { id: 'btn-dec', name: 'button', renderCount: 4 },
+                { id: 'h1', name: 'h1', renderCount: 0 },
+                { id: 'p-count', name: 'p', renderCount: 0 },
+                { id: 'btn-inc', name: 'button', renderCount: 0 },
+                { id: 'btn-dec', name: 'button', renderCount: 0 },
               ],
             },
           ],
@@ -1585,40 +1585,40 @@ export function fetchUser(id: number): Promise<User> {
         componentTree: {
           id: 'app',
           name: 'App',
-          renderCount: 2,
+          renderCount: 0,
           children: [
             {
               id: 'div-app',
               name: 'div',
-              renderCount: 2,
+              renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 2 },
+                { id: 'h1', name: 'h1', renderCount: 0 },
                 {
                   id: 'div-tabs',
                   name: 'div',
-                  renderCount: 2,
+                  renderCount: 0,
                   children: [
-                    { id: 'btn-user1', name: 'button', renderCount: 2 },
-                    { id: 'btn-user2', name: 'button', renderCount: 2 },
+                    { id: 'btn-user1', name: 'button', renderCount: 0 },
+                    { id: 'btn-user2', name: 'button', renderCount: 0 },
                   ],
                 },
                 {
                   id: 'suspense',
                   name: 'Suspense',
-                  renderCount: 2,
+                  renderCount: 0,
                   children: [
                     {
                       id: 'user-profile',
                       name: 'UserProfile',
-                      renderCount: 1,
+                      renderCount: 0,
                       children: [
                         {
                           id: 'div-profile',
                           name: 'div',
-                          renderCount: 1,
+                          renderCount: 0,
                           children: [
-                            { id: 'h2', name: 'h2', renderCount: 1 },
-                            { id: 'p-email', name: 'p', renderCount: 1 },
+                            { id: 'h2', name: 'h2', renderCount: 0 },
+                            { id: 'p-email', name: 'p', renderCount: 0 },
                           ],
                         },
                       ],
@@ -1744,26 +1744,26 @@ function SlowItem({ text }: { text: string }) {
         componentTree: {
           id: 'app',
           name: 'App',
-          renderCount: 5,
+          renderCount: 0,
           children: [
             {
               id: 'div-app',
               name: 'div',
-              renderCount: 5,
+              renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 5 },
-                { id: 'input', name: 'input', renderCount: 5 },
-                { id: 'p-pending', name: 'p', renderCount: 2 },
+                { id: 'h1', name: 'h1', renderCount: 0 },
+                { id: 'input', name: 'input', renderCount: 0 },
+                { id: 'p-pending', name: 'p', renderCount: 0 },
                 {
                   id: 'slow-list',
                   name: 'SlowList',
-                  renderCount: 3,
+                  renderCount: 0,
                   children: [
                     {
                       id: 'ul',
                       name: 'ul',
-                      renderCount: 3,
-                      children: [{ id: 'items', name: 'li...', renderCount: 3 }],
+                      renderCount: 0,
+                      children: [{ id: 'items', name: 'li...', renderCount: 0 }],
                     },
                   ],
                 },
@@ -1863,17 +1863,17 @@ export default App`,
         componentTree: {
           id: 'app',
           name: 'App',
-          renderCount: 5,
+          renderCount: 0,
           children: [
             {
               id: 'div-app',
               name: 'div',
-              renderCount: 5,
+              renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 5 },
-                { id: 'p-count', name: 'p', renderCount: 5 },
-                { id: 'button', name: 'button', renderCount: 5 },
-                { id: 'input', name: 'input', renderCount: 5 },
+                { id: 'h1', name: 'h1', renderCount: 0 },
+                { id: 'p-count', name: 'p', renderCount: 0 },
+                { id: 'button', name: 'button', renderCount: 0 },
+                { id: 'input', name: 'input', renderCount: 0 },
               ],
             },
           ],
@@ -1971,31 +1971,31 @@ export default App`,
         componentTree: {
           id: 'app',
           name: 'App',
-          renderCount: 3,
+          renderCount: 0,
           children: [
             {
               id: 'div-app',
               name: 'div',
-              renderCount: 3,
+              renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 3 },
+                { id: 'h1', name: 'h1', renderCount: 0 },
                 {
                   id: 'div-state',
                   name: 'div',
-                  renderCount: 3,
+                  renderCount: 0,
                   children: [
-                    { id: 'p-state', name: 'p', renderCount: 3 },
-                    { id: 'btn-state', name: 'button', renderCount: 3 },
+                    { id: 'p-state', name: 'p', renderCount: 0 },
+                    { id: 'btn-state', name: 'button', renderCount: 0 },
                   ],
                 },
                 {
                   id: 'div-ref',
                   name: 'div',
-                  renderCount: 3,
+                  renderCount: 0,
                   children: [
-                    { id: 'p-ref', name: 'p', renderCount: 3 },
-                    { id: 'btn-ref', name: 'button', renderCount: 3 },
-                    { id: 'p-hint', name: 'p', renderCount: 3 },
+                    { id: 'p-ref', name: 'p', renderCount: 0 },
+                    { id: 'btn-ref', name: 'button', renderCount: 0 },
+                    { id: 'p-hint', name: 'p', renderCount: 0 },
                   ],
                 },
               ],
