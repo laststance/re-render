@@ -5,7 +5,7 @@ import { ComponentBoxView, LivePreview } from '@/components/visualization'
 import { TriggerPanel, ExplanationPanel } from '@/components/ui'
 import { useComponentTreeWithCounts, useSuppressToasts } from '@/hooks'
 import { useAppDispatch } from '@/store/hooks'
-import { clearRenderHistory } from '@/store'
+import { clearRenderHistory, beginSuppressToasts, endSuppressToasts } from '@/store'
 import { getExample, getDefaultExample } from '@/data/examples'
 import { livePreviewMap } from '@/data/livePreviewMap'
 import { getTriggers } from '@/data/triggerConfig'
@@ -30,9 +30,18 @@ export function ExamplePage() {
   const withSuppressToasts = useSuppressToasts()
   const dispatch = useAppDispatch()
 
-  // Clear stale render counts when navigating between examples
+  // Clear stale render counts when navigating between examples.
+  // Suppress toasts during the initial mount phase — useRenderTracker dispatches
+  // recordRender via setTimeout(0) for each component, and each dispatch causes
+  // a Redux update → parent re-render cascade. Without suppression these cascade
+  // renders (reason: 'parent-rerender') would trigger a flood of false toasts.
   useEffect(() => {
+    dispatch(beginSuppressToasts())
     dispatch(clearRenderHistory())
+    const timer = setTimeout(() => {
+      dispatch(endSuppressToasts())
+    }, 100)
+    return () => clearTimeout(timer)
   }, [exampleId, dispatch])
 
   // Suppress toasts when switching view mode (UI chrome, not a meaningful re-render)
