@@ -76,7 +76,7 @@ export function Toast({
   toast,
   onDismiss,
   onToggleExpand,
-  dismissDelay = 5000,
+  dismissDelay = 10000,
 }: ToastProps) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { renderInfo, isExpanded } = toast
