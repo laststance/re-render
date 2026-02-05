@@ -49,7 +49,7 @@ export function ExamplePage() {
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex min-h-full flex-col">
       <header className="border-b border-border px-4 py-3">
         <h2 className="text-lg font-semibold text-foreground">{example.title}</h2>
         <p className="text-sm text-muted-foreground">{example.description}</p>
@@ -62,7 +62,7 @@ export function ExamplePage() {
         </div>
       )}
 
-      <div className="flex-1 overflow-hidden">
+      <div className="min-h-[500px] flex-1 overflow-hidden">
         <SplitPaneLayout
           files={example.files}
           activeFileId={effectiveActiveFileId}

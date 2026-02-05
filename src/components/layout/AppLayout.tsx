@@ -17,7 +17,7 @@ export function AppLayout() {
     <div className="flex h-screen w-screen">
       <Sidebar />
       <main
-        className={`flex-1 overflow-hidden ${isDesktop ? '' : 'pt-14'}`}
+        className={`flex-1 overflow-y-auto ${isDesktop ? '' : 'pt-14'}`}
       >
         <Outlet />
       </main>
