@@ -11,12 +11,15 @@ interface RenderTrackerState {
   renderCounts: Record<string, number>
   /** Most recent render event (for flash animations) */
   lastRender: RenderInfo | null
+  /** When true, render events are recorded but don't update lastRender (suppresses toasts) */
+  suppressToasts: boolean
 }
 
 const initialState: RenderTrackerState = {
   renderHistory: {},
   renderCounts: {},
   lastRender: null,
+  suppressToasts: false,
 }
 
 /**
@@ -27,7 +30,9 @@ export const renderTrackerSlice = createSlice({
   initialState,
   reducers: {
     /**
-     * Record a new render event for a component
+     * Record a new render event for a component.
+     * When suppressToasts is true, the event is recorded in history
+     * but lastRender is not updated (so toasts won't fire).
      */
     recordRender: (state, action: PayloadAction<RenderInfo>) => {
       const { componentName } = action.payload
@@ -46,8 +51,26 @@ export const renderTrackerSlice = createSlice({
       // Update render count
       state.renderCounts[componentName] = action.payload.renderCount
 
-      // Track last render for animations
-      state.lastRender = action.payload
+      // Track last render for animations — skip when suppressed
+      if (!state.suppressToasts) {
+        state.lastRender = action.payload
+      }
+    },
+
+    /**
+     * Temporarily suppress toast notifications.
+     * Re-renders are still recorded in history but don't trigger toasts.
+     * Use before UI chrome actions (view mode switch, overlay toggle).
+     */
+    beginSuppressToasts: (state) => {
+      state.suppressToasts = true
+    },
+
+    /**
+     * Re-enable toast notifications after suppression.
+     */
+    endSuppressToasts: (state) => {
+      state.suppressToasts = false
     },
 
     /**
@@ -70,7 +93,12 @@ export const renderTrackerSlice = createSlice({
   },
 })
 
-export const { recordRender, clearRenderHistory, clearComponentHistory } =
-  renderTrackerSlice.actions
+export const {
+  recordRender,
+  beginSuppressToasts,
+  endSuppressToasts,
+  clearRenderHistory,
+  clearComponentHistory,
+} = renderTrackerSlice.actions
 
 export default renderTrackerSlice.reducer

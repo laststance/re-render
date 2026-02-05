@@ -1,8 +1,9 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
 import { SplitPaneLayout } from '@/components/layout'
 import { ComponentBoxView, LivePreview } from '@/components/visualization'
 import { TriggerPanel, ExplanationPanel } from '@/components/ui'
+import { useSuppressToasts } from '@/hooks'
 import { getExample, getDefaultExample } from '@/data/examples'
 import { livePreviewMap } from '@/data/livePreviewMap'
 import { getTriggers } from '@/data/triggerConfig'
@@ -24,6 +25,13 @@ export function ExamplePage() {
   const [activeFileId, setActiveFileId] = useState<string>('')
   const [viewMode, setViewMode] = useState<ViewMode>('box')
   const livePreviewRef = useRef<LivePreviewHandle>(null)
+  const withSuppressToasts = useSuppressToasts()
+
+  // Suppress toasts when switching view mode (UI chrome, not a meaningful re-render)
+  const handleViewModeChange = useCallback(
+    (mode: ViewMode) => withSuppressToasts(() => setViewMode(mode)),
+    [withSuppressToasts]
+  )
 
   const example = categoryId && exampleId ? getExample(categoryId, exampleId) : null
 
@@ -68,7 +76,7 @@ export function ExamplePage() {
           activeFileId={effectiveActiveFileId}
           onFileSelect={setActiveFileId}
           viewMode={viewMode}
-          onViewModeChange={setViewMode}
+          onViewModeChange={handleViewModeChange}
           hasLivePreview={hasLivePreview}
         >
           {viewMode === 'live' && LivePreviewComponent ? (

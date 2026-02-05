@@ -19,6 +19,8 @@ export type AppDispatch = typeof store.dispatch
 // Re-export slice actions for convenience
 export {
   recordRender,
+  beginSuppressToasts,
+  endSuppressToasts,
   clearRenderHistory,
   clearComponentHistory,
 } from './renderTrackerSlice'

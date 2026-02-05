@@ -1,6 +1,7 @@
-import { useState, type ReactNode } from 'react'
+import { useState, useCallback, type ReactNode } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useSuppressToasts } from '@/hooks'
 import { LivePreviewContext } from './LivePreviewContext'
 
 interface LivePreviewProps {
@@ -20,6 +21,13 @@ interface LivePreviewProps {
  */
 export function LivePreview({ children, className }: LivePreviewProps) {
   const [showOverlays, setShowOverlays] = useState(true)
+  const withSuppressToasts = useSuppressToasts()
+
+  // Suppress toasts when toggling overlays (UI chrome, not a meaningful re-render)
+  const handleToggleOverlays = useCallback(
+    () => withSuppressToasts(() => setShowOverlays((prev) => !prev)),
+    [withSuppressToasts]
+  )
 
   return (
     <div className={cn('relative flex h-full flex-col', className)}>
@@ -32,7 +40,7 @@ export function LivePreview({ children, className }: LivePreviewProps) {
         {/* Overlay toggle button */}
         <button
           type="button"
-          onClick={() => setShowOverlays(!showOverlays)}
+          onClick={handleToggleOverlays}
           className={cn(
             'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors',
             'min-h-[44px] min-w-[44px] touch-manipulation', // Apple HIG tap target

@@ -3,5 +3,6 @@ export { useMediaQuery, useIsDesktop, useIsTablet, useIsMobile, useDeviceType } 
 export type { DeviceType } from './useMediaQuery'
 export { useRenderTracker } from './useRenderTracker'
 export { useReRenderToasts } from './useReRenderToasts'
+export { useSuppressToasts } from './useSuppressToasts'
 export { useTheme } from './useTheme'
 export type { Theme, ResolvedTheme } from './useTheme'
