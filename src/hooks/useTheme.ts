@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useSyncExternalStore } from 'react'
 
 /** Theme options */
 export type Theme = 'light' | 'dark' | 'system'
@@ -47,7 +47,39 @@ function applyTheme(resolvedTheme: ResolvedTheme): void {
 }
 
 /**
+ * Resolves the current theme by reading localStorage + system preference.
+ * @returns The resolved 'light' or 'dark' theme
+ */
+function getResolvedSnapshot(): ResolvedTheme {
+  const stored = getStoredTheme()
+  return stored === 'system' ? getSystemTheme() : stored
+}
+
+/** SSR-safe fallback — always 'light' on server */
+function getServerSnapshot(): ResolvedTheme {
+  return 'light'
+}
+
+/**
+ * Subscribes to theme-relevant external changes:
+ * - localStorage changes (cross-tab sync)
+ * - System color scheme preference changes
+ * @param callback - Re-render trigger from useSyncExternalStore
+ * @returns Cleanup function
+ */
+function subscribeToTheme(callback: () => void): () => void {
+  window.addEventListener('storage', callback)
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  mediaQuery.addEventListener('change', callback)
+  return () => {
+    window.removeEventListener('storage', callback)
+    mediaQuery.removeEventListener('change', callback)
+  }
+}
+
+/**
  * Hook for managing dark mode theme.
+ * Uses useSyncExternalStore for hydration-safe external state reading.
  * - Detects system preference via prefers-color-scheme
  * - Persists manual preference in localStorage
  * - Supports smooth transitions via CSS
@@ -55,11 +87,17 @@ function applyTheme(resolvedTheme: ResolvedTheme): void {
  * @returns Theme state and setter, plus resolved theme
  */
 export function useTheme() {
-  const [theme, setThemeState] = useState<Theme>(getStoredTheme)
-  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() => {
-    const stored = getStoredTheme()
-    return stored === 'system' ? getSystemTheme() : stored
-  })
+  const resolvedTheme = useSyncExternalStore(
+    subscribeToTheme,
+    getResolvedSnapshot,
+    getServerSnapshot
+  )
+  const [theme, setThemeState] = useState<Theme>(() => getStoredTheme())
+
+  // Apply theme to DOM whenever resolvedTheme changes
+  useEffect(() => {
+    applyTheme(resolvedTheme)
+  }, [resolvedTheme])
 
   /**
    * Sets theme preference and persists to localStorage.
@@ -67,10 +105,7 @@ export function useTheme() {
   const setTheme = useCallback((newTheme: Theme) => {
     setThemeState(newTheme)
     localStorage.setItem(STORAGE_KEY, newTheme)
-
-    const resolved = newTheme === 'system' ? getSystemTheme() : newTheme
-    setResolvedTheme(resolved)
-    applyTheme(resolved)
+    applyTheme(newTheme === 'system' ? getSystemTheme() : newTheme)
   }, [])
 
   /**
@@ -81,27 +116,6 @@ export function useTheme() {
     const next = resolvedTheme === 'dark' ? 'light' : 'dark'
     setTheme(next)
   }, [resolvedTheme, setTheme])
-
-  // Apply theme on mount and listen for system preference changes
-  useEffect(() => {
-    // Apply initial theme
-    applyTheme(resolvedTheme)
-
-    // Listen for system preference changes
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-
-    const handleChange = (e: MediaQueryListEvent) => {
-      // Only update if using system theme
-      if (theme === 'system') {
-        const newResolved = e.matches ? 'dark' : 'light'
-        setResolvedTheme(newResolved)
-        applyTheme(newResolved)
-      }
-    }
-
-    mediaQuery.addEventListener('change', handleChange)
-    return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [theme, resolvedTheme])
 
   return {
     /** User's theme preference ('light', 'dark', or 'system') */
