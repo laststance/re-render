@@ -182,6 +182,16 @@ export function useRenderTracker(
   // Track previous props and state for comparison
   const prevDepsRef = useRef<TrackableDeps | undefined>(undefined)
 
+  // Store the latest render info for deferred dispatch
+  const pendingInfoRef = useRef<RenderInfo | null>(null)
+
+  // Timer ref for debounced dispatch
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Tracks whether we have a dispatch in flight. When true, subsequent
+  // 'parent-rerender' renders are cascade artifacts and should be skipped.
+  const dispatchInFlightRef = useRef(false)
+
   // Increment render count on every render
   renderCountRef.current += 1
   const renderCount = renderCountRef.current
@@ -227,11 +237,52 @@ export function useRenderTracker(
       }
     : undefined
 
-  // Dispatch to Redux store after render completes
+  // Dispatch to Redux store using a debounced pattern that prevents infinite loops.
+  //
+  // The problem: dispatching recordRender → Redux update → ExamplePage re-renders
+  // (via useComponentTreeWithCounts subscription) → child LivePreviewWrapper re-renders
+  // → renderCountRef increments → useEffect fires → dispatch again → infinite loop.
+  //
+  // The solution: when we have a dispatch in flight (pending setTimeout), skip
+  // cascade renders (reason='parent-rerender'). These are artifacts of our own
+  // dispatch updating Redux and causing the parent to re-render. Only genuine
+  // renders (initial, state-change, props-change) or the first parent-rerender
+  // after user interaction should trigger a new dispatch.
   useEffect(() => {
-    dispatch(recordRender(renderInfo))
+    // Skip cascade renders caused by our own dispatch still in flight.
+    // When a dispatch is pending or just completed, Redux notifies subscribers
+    // which re-renders the parent (ExamplePage via useComponentTreeWithCounts),
+    // cascading to this component. These are artifacts, not user-triggered renders.
+    if (dispatchInFlightRef.current && reason === 'parent-rerender') {
+      return
+    }
+
+    pendingInfoRef.current = renderInfo
+
+    // Clear any pending dispatch — only the latest render info will be dispatched
+    if (timerRef.current !== null) {
+      clearTimeout(timerRef.current)
+    }
+
+    dispatchInFlightRef.current = true
+
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null
+      if (pendingInfoRef.current) {
+        dispatch(recordRender(pendingInfoRef.current))
+        pendingInfoRef.current = null
+      }
+      // Keep the flag true through the synchronous cascade that follows
+      // dispatch (Redux → subscriber re-render → child re-render). Clear
+      // in the next macrotask so cascade renders (which happen synchronously
+      // after Redux notifies) are all skipped.
+      setTimeout(() => {
+        dispatchInFlightRef.current = false
+      }, 0)
+    }, 0)
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [renderCount]) // Only dispatch when render count changes
+  }, [renderCount])
 
   return {
     renderCount,

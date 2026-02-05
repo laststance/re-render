@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import { removeToast, toggleToastExpanded } from '@/store'
@@ -19,8 +20,15 @@ const REASON_LABELS: Record<string, string> = {
  * Includes a visually-hidden live region for reliable screen reader announcements
  */
 export function ToastContainer() {
+  const [mounted, setMounted] = useState(false)
   const toasts = useAppSelector((state) => state.toast.toasts)
   const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    // Guard for SSR — createPortal requires document.body
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true)
+  }, [])
 
   const handleDismiss = (id: string) => {
     dispatch(removeToast(id))
@@ -32,6 +40,8 @@ export function ToastContainer() {
 
   // Get the most recent toast for screen reader announcement
   const latestToast = toasts[0]
+
+  if (!mounted) return null
 
   return createPortal(
     <>

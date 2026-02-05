@@ -5,18 +5,15 @@ import { useState, useEffect } from 'react'
  * Used for responsive layout switching between split-pane and stacked modes
  */
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.matchMedia(query).matches
-    }
-    return false
-  })
+  const [matches, setMatches] = useState(false)
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(query)
+    // Initial sync from browser — required for SSR hydration (server renders false)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMatches(mediaQuery.matches)
     const handler = (event: MediaQueryListEvent) => setMatches(event.matches)
 
-    // Listen for changes
     mediaQuery.addEventListener('change', handler)
     return () => mediaQuery.removeEventListener('change', handler)
   }, [query])
@@ -42,7 +39,7 @@ export function useIsTablet(): boolean {
 
 /**
  * Convenience hook for mobile breakpoint (<768px)
- * Returns true on mobile, false on tablet/desktop
+ * Returns true on mobile, false on tablet/mobile
  */
 export function useIsMobile(): boolean {
   return useMediaQuery('(max-width: 767px)')

@@ -3,20 +3,27 @@ import { RotateCcw, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAppDispatch } from '@/store/hooks'
 import { clearRenderHistory, clearAllToasts } from '@/store'
+import { useSuppressToasts } from '@/hooks'
 
 /**
  * Button that resets all re-render counters and clears toasts.
  * Provides visual feedback (checkmark) when reset is complete.
+ * Suppresses toasts during reset to prevent cascade re-render toasts.
  */
 export function ResetButton() {
   const dispatch = useAppDispatch()
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const withSuppressToasts = useSuppressToasts()
 
   const handleReset = useCallback(() => {
-    // Clear all render tracking data
-    dispatch(clearRenderHistory())
-    // Clear all toast notifications
-    dispatch(clearAllToasts())
+    // Suppress toasts during reset — cascade re-renders from clearing
+    // render history would otherwise create new toasts immediately
+    withSuppressToasts(() => {
+      // Clear all render tracking data
+      dispatch(clearRenderHistory())
+      // Clear all toast notifications
+      dispatch(clearAllToasts())
+    })
 
     // Show confirmation feedback
     setShowConfirmation(true)
@@ -25,7 +32,7 @@ export function ResetButton() {
     setTimeout(() => {
       setShowConfirmation(false)
     }, 1500)
-  }, [dispatch])
+  }, [dispatch, withSuppressToasts])
 
   return (
     <button

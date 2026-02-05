@@ -25,12 +25,18 @@ export function useSuppressToasts() {
     (action: () => void) => {
       dispatch(beginSuppressToasts())
       action()
-      // End suppression after the React render cycle completes.
-      // requestAnimationFrame fires after React commits the update,
-      // ensuring all useEffect-dispatched recordRender calls are suppressed.
-      requestAnimationFrame(() => {
-        dispatch(endSuppressToasts())
-      })
+      // End suppression after the cascade render cycle fully completes.
+      // useRenderTracker uses double-setTimeout(0) for dispatch + flag clear,
+      // so we need to wait beyond that window. A nested setTimeout(0) × 3
+      // ensures all cascade renders and their dispatches complete before
+      // re-enabling toasts.
+      setTimeout(() => {
+        setTimeout(() => {
+          setTimeout(() => {
+            dispatch(endSuppressToasts())
+          }, 0)
+        }, 0)
+      }, 0)
     },
     [dispatch]
   )
