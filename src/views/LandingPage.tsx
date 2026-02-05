@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import { exampleCategories, getDefaultExample } from '@/data/examples'
 
 /**
@@ -28,7 +28,7 @@ export function LandingPage() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
-              to={quickStartPath}
+              href={quickStartPath}
               className="inline-flex min-h-[44px] items-center rounded-lg bg-[var(--primary)] px-6 py-3 font-medium text-[var(--primary-foreground)] transition-colors hover:opacity-90"
             >
               Start Learning
@@ -130,7 +130,7 @@ export function LandingPage() {
                   {category.examples.slice(0, 3).map((example) => (
                     <li key={example.id}>
                       <Link
-                        to={`/${category.id}/${example.id}`}
+                        href={`/${category.id}/${example.id}`}
                         className="text-sm text-[var(--primary)] underline-offset-2 hover:underline"
                       >
                         {example.title}
@@ -181,7 +181,7 @@ export function LandingPage() {
               Begin with the basics and work your way up to advanced patterns.
             </p>
             <Link
-              to={quickStartPath}
+              href={quickStartPath}
               className="inline-flex min-h-[44px] items-center rounded-lg bg-[var(--primary)] px-6 py-3 font-medium text-[var(--primary-foreground)] transition-colors hover:opacity-90"
             >
               Start with State Changes

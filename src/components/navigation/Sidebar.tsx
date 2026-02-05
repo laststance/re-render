@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { NavLink, useParams, useLocation } from 'react-router-dom'
+import Link from 'next/link'
+import { useParams, usePathname } from 'next/navigation'
 import { ChevronRight, ChevronDown, Menu, X, Home } from 'lucide-react'
 import { exampleCategories } from '@/data/examples'
 import { cn } from '@/lib/utils'
@@ -22,6 +23,7 @@ function CategorySection({
   defaultExpanded: boolean
 }) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded)
+  const pathname = usePathname()
 
   return (
     <div className="mb-2">
@@ -48,23 +50,25 @@ function CategorySection({
         )}
         aria-hidden={!isExpanded}
       >
-        {examples.map((example) => (
-          <li key={example.id}>
-            <NavLink
-              to={`/${categoryId}/${example.id}`}
-              className={({ isActive }) =>
-                cn(
+        {examples.map((example) => {
+          const href = `/${categoryId}/${example.id}`
+          const isActive = pathname === href
+          return (
+            <li key={example.id}>
+              <Link
+                href={href}
+                className={cn(
                   'group flex min-h-[44px] items-center gap-2 rounded-md px-2 py-2 pl-8 text-sm transition-colors',
                   isActive
                     ? 'bg-accent text-accent-foreground font-medium'
                     : 'text-foreground hover:bg-accent/50'
-                )
-              }
-            >
-              <span className="truncate">{example.title}</span>
-            </NavLink>
-          </li>
-        ))}
+                )}
+              >
+                <span className="truncate">{example.title}</span>
+              </Link>
+            </li>
+          )
+        })}
       </ul>
     </div>
   )
@@ -75,8 +79,8 @@ function CategorySection({
  */
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const params = useParams<{ categoryId: string }>()
-  const location = useLocation()
-  const isHome = location.pathname === '/'
+  const pathname = usePathname()
+  const isHome = pathname === '/'
 
   return (
     <>
@@ -96,8 +100,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         onClick={onNavigate}
       >
         {/* Home link */}
-        <NavLink
-          to="/"
+        <Link
+          href="/"
           className={cn(
             'mb-2 flex min-h-[44px] items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors',
             isHome
@@ -107,7 +111,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         >
           <Home className="h-4 w-4 shrink-0" aria-hidden="true" />
           Home
-        </NavLink>
+        </Link>
 
         {/* Category sections */}
         {exampleCategories.map((category) => (

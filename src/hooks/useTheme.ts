@@ -37,6 +37,7 @@ function getStoredTheme(): Theme {
  * Adds/removes 'dark' class for Tailwind CSS.
  */
 function applyTheme(resolvedTheme: ResolvedTheme): void {
+  if (typeof document === 'undefined') return
   const root = document.documentElement
   if (resolvedTheme === 'dark') {
     root.classList.add('dark')

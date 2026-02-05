@@ -10,7 +10,10 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+.next
+out
 *.local
+next-env.d.ts
 
 # Editor directories and files
 .vscode/*
@@ -26,3 +29,9 @@ dist-ssr
 CLAUDE.md
 .ralph-tui/
 tasks/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

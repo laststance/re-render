@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { useParams, Navigate } from 'react-router-dom'
+import { useParams, redirect } from 'next/navigation'
 import { SplitPaneLayout } from '@/components/layout'
 import { ComponentBoxView, LivePreview } from '@/components/visualization'
 import { TriggerPanel, ExplanationPanel } from '@/components/ui'
@@ -20,10 +20,9 @@ import type { LivePreviewHandle } from '@/data/livePreviewExamples'
  * Includes trigger panel for intentionally causing re-renders.
  */
 export function ExamplePage() {
-  const { categoryId, exampleId } = useParams<{
-    categoryId: string
-    exampleId: string
-  }>()
+  const params = useParams<{ categoryId: string; exampleId: string }>()
+  const categoryId = params.categoryId as string | undefined
+  const exampleId = params.exampleId as string | undefined
 
   const [activeFileId, setActiveFileId] = useState<string>('')
   const [viewMode, setViewMode] = useState<ViewMode>('box')
@@ -66,7 +65,7 @@ export function ExamplePage() {
 
   if (!example) {
     const { categoryId: defaultCat, exampleId: defaultEx } = getDefaultExample()
-    return <Navigate to={`/${defaultCat}/${defaultEx}`} replace />
+    redirect(`/${defaultCat}/${defaultEx}`)
   }
 
   return (
