@@ -36,10 +36,10 @@ export const StateChangePreview = forwardRef<LivePreviewHandle>(
     return (
       <LivePreviewWrapper componentName="App" deps={{ state: { count } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <LivePreviewWrapper componentName="h1">
+          <LivePreviewWrapper componentName="Heading">
             <h1 className="text-xl font-semibold">Count: {count}</h1>
           </LivePreviewWrapper>
-          <LivePreviewWrapper componentName="button">
+          <LivePreviewWrapper componentName="Button">
             <button
               onClick={() => setCount(count + 1)}
               className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
@@ -72,15 +72,15 @@ export const PropsChangePreview = forwardRef<LivePreviewHandle>(
     return (
       <LivePreviewWrapper componentName="App" deps={{ state: { count } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <LivePreviewWrapper componentName="h1">
+          <LivePreviewWrapper componentName="Heading">
             <h1 className="text-lg font-medium text-muted-foreground">Parent</h1>
           </LivePreviewWrapper>
           <LivePreviewWrapper componentName="Counter" deps={{ props: { count } }}>
             <div className="space-y-2 rounded border border-border bg-muted/30 p-3">
-              <LivePreviewWrapper componentName="p">
+              <LivePreviewWrapper componentName="Text">
                 <p>Count: {count}</p>
               </LivePreviewWrapper>
-              <LivePreviewWrapper componentName="button">
+              <LivePreviewWrapper componentName="Button">
                 <button
                   onClick={() => setCount(count + 1)}
                   className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
@@ -115,10 +115,10 @@ export const ParentRerenderPreview = forwardRef<LivePreviewHandle>(
     return (
       <LivePreviewWrapper componentName="App" deps={{ state: { count } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <LivePreviewWrapper componentName="h1">
+          <LivePreviewWrapper componentName="Heading">
             <h1 className="text-xl font-semibold">Count: {count}</h1>
           </LivePreviewWrapper>
-          <LivePreviewWrapper componentName="button">
+          <LivePreviewWrapper componentName="Button">
             <button
               onClick={() => setCount((c) => c + 1)}
               className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
@@ -128,7 +128,7 @@ export const ParentRerenderPreview = forwardRef<LivePreviewHandle>(
           </LivePreviewWrapper>
           <LivePreviewWrapper componentName="Child">
             <div className="rounded border border-border bg-muted/30 p-3">
-              <LivePreviewWrapper componentName="p">
+              <LivePreviewWrapper componentName="Text">
                 <p>Hello, Alice!</p>
               </LivePreviewWrapper>
             </div>
@@ -159,12 +159,12 @@ export const ContextChangePreview = forwardRef<LivePreviewHandle>(
       <LivePreviewWrapper componentName="App" deps={{ state: { count } }}>
         <LivePreviewWrapper componentName="CountProvider" deps={{ state: { count } }}>
           <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-            <LivePreviewWrapper componentName="h1">
+            <LivePreviewWrapper componentName="Heading">
               <h1 className="text-lg font-medium">Context Re-renders</h1>
             </LivePreviewWrapper>
             <LivePreviewWrapper componentName="CountDisplay" deps={{ props: { count } }}>
               <div className="rounded border border-border bg-muted/30 p-3">
-                <LivePreviewWrapper componentName="p">
+                <LivePreviewWrapper componentName="Text">
                   <p>Count: {count}</p>
                 </LivePreviewWrapper>
               </div>
@@ -206,15 +206,15 @@ export const ForceUpdatePreview = forwardRef<LivePreviewHandle>(
     return (
       <LivePreviewWrapper componentName="App" deps={{ state: { timerId, forceUpdateCount } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <LivePreviewWrapper componentName="h1">
+          <LivePreviewWrapper componentName="Heading">
             <h1 className="text-lg font-medium">Force Update Patterns</h1>
           </LivePreviewWrapper>
           <LivePreviewWrapper componentName="Timer" key={timerId}>
             <div className="rounded border border-border bg-muted/30 p-3">
-              <LivePreviewWrapper componentName="p">
+              <LivePreviewWrapper componentName="Text">
                 <p>Timer #{timerId}</p>
               </LivePreviewWrapper>
-              <LivePreviewWrapper componentName="p">
+              <LivePreviewWrapper componentName="Text">
                 <p className="text-sm text-muted-foreground">
                   Key change unmounts → remounts → state resets
                 </p>
@@ -222,7 +222,7 @@ export const ForceUpdatePreview = forwardRef<LivePreviewHandle>(
             </div>
           </LivePreviewWrapper>
           <div className="flex gap-2">
-            <LivePreviewWrapper componentName="button">
+            <LivePreviewWrapper componentName="Button">
               <button
                 onClick={() => setTimerId((id) => id + 1)}
                 className="rounded-md bg-secondary px-3 py-2 text-secondary-foreground hover:bg-secondary/80"
@@ -230,7 +230,7 @@ export const ForceUpdatePreview = forwardRef<LivePreviewHandle>(
                 Reset Timer (key change)
               </button>
             </LivePreviewWrapper>
-            <LivePreviewWrapper componentName="button">
+            <LivePreviewWrapper componentName="Button">
               <button
                 onClick={() => forceUpdate((x) => x + 1)}
                 className="rounded-md bg-secondary px-3 py-2 text-secondary-foreground hover:bg-secondary/80"
@@ -264,10 +264,10 @@ export const MemoPreview = forwardRef<LivePreviewHandle>(
     return (
       <LivePreviewWrapper componentName="App" deps={{ state: { count } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <LivePreviewWrapper componentName="h1">
+          <LivePreviewWrapper componentName="Heading">
             <h1 className="text-xl font-semibold">Count: {count}</h1>
           </LivePreviewWrapper>
-          <LivePreviewWrapper componentName="button">
+          <LivePreviewWrapper componentName="Button">
             <button
               onClick={() => setCount((c) => c + 1)}
               className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
@@ -277,7 +277,7 @@ export const MemoPreview = forwardRef<LivePreviewHandle>(
           </LivePreviewWrapper>
           <LivePreviewWrapper componentName="MemoChild">
             <div className="rounded border border-dashed border-green-500/50 bg-green-50/30 p-3 dark:bg-green-950/30">
-              <LivePreviewWrapper componentName="p">
+              <LivePreviewWrapper componentName="Text">
                 <p>Hello, Alice!</p>
               </LivePreviewWrapper>
               <p className="mt-1 text-xs text-green-600 dark:text-green-400">
@@ -313,7 +313,7 @@ export const UseCallbackPreview = forwardRef<LivePreviewHandle>(
     return (
       <LivePreviewWrapper componentName="App" deps={{ state: { count, text } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <LivePreviewWrapper componentName="input">
+          <LivePreviewWrapper componentName="Input">
             <input
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -321,7 +321,7 @@ export const UseCallbackPreview = forwardRef<LivePreviewHandle>(
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             />
           </LivePreviewWrapper>
-          <LivePreviewWrapper componentName="p">
+          <LivePreviewWrapper componentName="Text">
             <p>Count: {count}</p>
           </LivePreviewWrapper>
           <LivePreviewWrapper componentName="MemoButton">
@@ -366,7 +366,7 @@ export const UseMemoPreview = forwardRef<LivePreviewHandle>(
     return (
       <LivePreviewWrapper componentName="App" deps={{ state: { count, text } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <LivePreviewWrapper componentName="input">
+          <LivePreviewWrapper componentName="Input">
             <input
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -374,12 +374,12 @@ export const UseMemoPreview = forwardRef<LivePreviewHandle>(
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             />
           </LivePreviewWrapper>
-          <LivePreviewWrapper componentName="p">
+          <LivePreviewWrapper componentName="Text">
             <p>
               Expensive value: <strong>{expensiveValue}</strong>
             </p>
           </LivePreviewWrapper>
-          <LivePreviewWrapper componentName="button">
+          <LivePreviewWrapper componentName="Button">
             <button
               onClick={() => setCount((c) => c + 1)}
               className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
@@ -434,10 +434,10 @@ export const ReactLazyPreview = forwardRef<LivePreviewHandle>(
     return (
       <LivePreviewWrapper componentName="App" deps={{ state: { showChart, isLoading } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <LivePreviewWrapper componentName="h1">
+          <LivePreviewWrapper componentName="Heading">
             <h1 className="text-lg font-medium">Code Splitting Demo</h1>
           </LivePreviewWrapper>
-          <LivePreviewWrapper componentName="button">
+          <LivePreviewWrapper componentName="Button">
             <button
               onClick={handleToggle}
               className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
@@ -520,7 +520,7 @@ export const ChildrenPatternPreview = forwardRef<LivePreviewHandle>(
                   renders: {pickerRenderCount}
                 </span>
               </div>
-              <LivePreviewWrapper componentName="input">
+              <LivePreviewWrapper componentName="Input">
                 <input
                   type="text"
                   value={color}
@@ -591,14 +591,14 @@ export const UseReducerPreview = forwardRef<LivePreviewHandle>(
     return (
       <LivePreviewWrapper componentName="App">
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <LivePreviewWrapper componentName="h1">
+          <LivePreviewWrapper componentName="Heading">
             <h1 className="text-xl font-semibold">Count: {count}</h1>
           </LivePreviewWrapper>
-          <LivePreviewWrapper componentName="p">
+          <LivePreviewWrapper componentName="Text">
             <p className="text-muted-foreground">Step: {step}</p>
           </LivePreviewWrapper>
           <div className="flex flex-wrap gap-2">
-            <LivePreviewWrapper componentName="button">
+            <LivePreviewWrapper componentName="Button">
               <button
                 onClick={() => setCount((c) => c + step)}
                 className="rounded-md bg-primary px-3 py-2 text-primary-foreground hover:bg-primary/90"
@@ -606,7 +606,7 @@ export const UseReducerPreview = forwardRef<LivePreviewHandle>(
                 +{step}
               </button>
             </LivePreviewWrapper>
-            <LivePreviewWrapper componentName="button">
+            <LivePreviewWrapper componentName="Button">
               <button
                 onClick={() => setCount((c) => c - step)}
                 className="rounded-md bg-primary px-3 py-2 text-primary-foreground hover:bg-primary/90"
@@ -614,7 +614,7 @@ export const UseReducerPreview = forwardRef<LivePreviewHandle>(
                 -{step}
               </button>
             </LivePreviewWrapper>
-            <LivePreviewWrapper componentName="input">
+            <LivePreviewWrapper componentName="Input">
               <input
                 type="number"
                 value={step}
@@ -622,7 +622,7 @@ export const UseReducerPreview = forwardRef<LivePreviewHandle>(
                 className="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm"
               />
             </LivePreviewWrapper>
-            <LivePreviewWrapper componentName="button">
+            <LivePreviewWrapper componentName="Button">
               <button
                 onClick={() => {
                   setCount(0)
@@ -664,7 +664,7 @@ export const UseSyncExternalStorePreview = forwardRef<LivePreviewHandle>(
     return (
       <LivePreviewWrapper componentName="App">
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <LivePreviewWrapper componentName="h1">
+          <LivePreviewWrapper componentName="Heading">
             <h1 className="text-lg font-medium">External Store</h1>
           </LivePreviewWrapper>
           <div className="rounded border border-dashed border-blue-500/50 bg-blue-50/30 p-3 dark:bg-blue-950/30">
@@ -672,11 +672,11 @@ export const UseSyncExternalStorePreview = forwardRef<LivePreviewHandle>(
               📦 store.getSnapshot() → {count}
             </p>
           </div>
-          <LivePreviewWrapper componentName="p">
+          <LivePreviewWrapper componentName="Text">
             <p className="text-xl">Count: {count}</p>
           </LivePreviewWrapper>
           <div className="flex gap-2">
-            <LivePreviewWrapper componentName="button">
+            <LivePreviewWrapper componentName="Button">
               <button
                 onClick={() => setCount((c) => c + 1)}
                 className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
@@ -684,7 +684,7 @@ export const UseSyncExternalStorePreview = forwardRef<LivePreviewHandle>(
                 Increment
               </button>
             </LivePreviewWrapper>
-            <LivePreviewWrapper componentName="button">
+            <LivePreviewWrapper componentName="Button">
               <button
                 onClick={() => setCount((c) => c - 1)}
                 className="rounded-md bg-secondary px-4 py-2 text-secondary-foreground hover:bg-secondary/80"
@@ -747,11 +747,12 @@ export const SuspensePreview = forwardRef<LivePreviewHandle>(
     return (
       <LivePreviewWrapper componentName="App">
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <LivePreviewWrapper componentName="h1">
+          <LivePreviewWrapper componentName="Heading">
             <h1 className="text-lg font-medium">Suspense Data Fetching</h1>
           </LivePreviewWrapper>
+          <LivePreviewWrapper componentName="TabBar">
           <div className="flex gap-2">
-            <LivePreviewWrapper componentName="button">
+            <LivePreviewWrapper componentName="Button">
               <button
                 onClick={() => handleSwitchUser(1)}
                 className={`rounded-md px-4 py-2 ${
@@ -763,7 +764,7 @@ export const SuspensePreview = forwardRef<LivePreviewHandle>(
                 User 1
               </button>
             </LivePreviewWrapper>
-            <LivePreviewWrapper componentName="button">
+            <LivePreviewWrapper componentName="Button">
               <button
                 onClick={() => handleSwitchUser(2)}
                 className={`rounded-md px-4 py-2 ${
@@ -776,6 +777,7 @@ export const SuspensePreview = forwardRef<LivePreviewHandle>(
               </button>
             </LivePreviewWrapper>
           </div>
+          </LivePreviewWrapper>
           <LivePreviewWrapper componentName="Suspense">
             <div className="rounded border border-border bg-muted/30 p-4">
               {isLoading ? (
@@ -848,10 +850,10 @@ export const ConcurrentPreview = forwardRef<LivePreviewHandle>(
     return (
       <LivePreviewWrapper componentName="App">
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <LivePreviewWrapper componentName="h1">
+          <LivePreviewWrapper componentName="Heading">
             <h1 className="text-lg font-medium">Concurrent Rendering</h1>
           </LivePreviewWrapper>
-          <LivePreviewWrapper componentName="input">
+          <LivePreviewWrapper componentName="Input">
             <input
               value={text}
               onChange={handleChange}
@@ -860,7 +862,7 @@ export const ConcurrentPreview = forwardRef<LivePreviewHandle>(
             />
           </LivePreviewWrapper>
           {isPending && (
-            <LivePreviewWrapper componentName="p">
+            <LivePreviewWrapper componentName="Text">
               <p className="text-sm text-muted-foreground">⏳ Updating...</p>
             </LivePreviewWrapper>
           )}
@@ -925,13 +927,13 @@ export const UseEffectDepsPreview = forwardRef<LivePreviewHandle>(
     return (
       <LivePreviewWrapper componentName="App">
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <LivePreviewWrapper componentName="h1">
+          <LivePreviewWrapper componentName="Heading">
             <h1 className="text-lg font-medium">Effect Dependencies</h1>
           </LivePreviewWrapper>
-          <LivePreviewWrapper componentName="p">
+          <LivePreviewWrapper componentName="Text">
             <p>Count: {count}</p>
           </LivePreviewWrapper>
-          <LivePreviewWrapper componentName="button">
+          <LivePreviewWrapper componentName="Button">
             <button
               onClick={handleIncrement}
               className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
@@ -939,7 +941,7 @@ export const UseEffectDepsPreview = forwardRef<LivePreviewHandle>(
               Increment (triggers count effect)
             </button>
           </LivePreviewWrapper>
-          <LivePreviewWrapper componentName="input">
+          <LivePreviewWrapper componentName="Input">
             <input
               value={text}
               onChange={handleTextChange}
@@ -1008,7 +1010,7 @@ export const RefVsStatePreview = forwardRef<LivePreviewHandle>(
       <LivePreviewWrapper componentName="App">
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <div className="flex items-center justify-between">
-            <LivePreviewWrapper componentName="h1">
+            <LivePreviewWrapper componentName="Heading">
               <h1 className="text-lg font-medium">Refs vs State</h1>
             </LivePreviewWrapper>
             <span className="text-xs text-muted-foreground">
@@ -1016,32 +1018,42 @@ export const RefVsStatePreview = forwardRef<LivePreviewHandle>(
             </span>
           </div>
 
-          <LivePreviewWrapper componentName="div">
+          <LivePreviewWrapper componentName="StateSection">
             <div className="rounded border border-blue-500/50 bg-blue-50/30 p-3 dark:bg-blue-950/30">
-              <p className="font-medium">State count: {stateCount}</p>
-              <button
-                onClick={handleStateIncrement}
-                className="mt-2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-              >
-                Increment State (re-renders)
-              </button>
+              <LivePreviewWrapper componentName="Text">
+                <p className="font-medium">State count: {stateCount}</p>
+              </LivePreviewWrapper>
+              <LivePreviewWrapper componentName="Button">
+                <button
+                  onClick={handleStateIncrement}
+                  className="mt-2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                >
+                  Increment State (re-renders)
+                </button>
+              </LivePreviewWrapper>
             </div>
           </LivePreviewWrapper>
 
-          <LivePreviewWrapper componentName="div">
+          <LivePreviewWrapper componentName="RefSection">
             <div className="rounded border border-orange-500/50 bg-orange-50/30 p-3 dark:bg-orange-950/30">
-              <p className="font-medium">
-                Ref count: <span className="text-muted-foreground">{refValue}</span>
-              </p>
-              <button
-                onClick={() => setRefValue((v) => v + 1)}
-                className="mt-2 rounded-md bg-orange-600 px-4 py-2 text-white hover:bg-orange-700"
-              >
-                Increment Ref (no re-render*)
-              </button>
-              <p className="mt-2 text-xs text-orange-600 dark:text-orange-400">
-                *In real code, this won't update UI until next render!
-              </p>
+              <LivePreviewWrapper componentName="Text">
+                <p className="font-medium">
+                  Ref count: <span className="text-muted-foreground">{refValue}</span>
+                </p>
+              </LivePreviewWrapper>
+              <LivePreviewWrapper componentName="Button">
+                <button
+                  onClick={() => setRefValue((v) => v + 1)}
+                  className="mt-2 rounded-md bg-orange-600 px-4 py-2 text-white hover:bg-orange-700"
+                >
+                  Increment Ref (no re-render*)
+                </button>
+              </LivePreviewWrapper>
+              <LivePreviewWrapper componentName="Text">
+                <p className="mt-2 text-xs text-orange-600 dark:text-orange-400">
+                  *In real code, this won't update UI until next render!
+                </p>
+              </LivePreviewWrapper>
             </div>
           </LivePreviewWrapper>
 
@@ -1080,7 +1092,7 @@ export const CompoundComponentPreview = forwardRef<LivePreviewHandle>(
     return (
       <LivePreviewWrapper componentName="App">
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <LivePreviewWrapper componentName="h1">
+          <LivePreviewWrapper componentName="Heading">
             <h1 className="text-lg font-medium">Compound Component</h1>
           </LivePreviewWrapper>
           <LivePreviewWrapper componentName="Select" deps={{ state: { selected, isOpen } }}>
@@ -1147,7 +1159,7 @@ export const RenderPropsPreview = forwardRef<LivePreviewHandle>(
     return (
       <LivePreviewWrapper componentName="App">
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <LivePreviewWrapper componentName="h1">
+          <LivePreviewWrapper componentName="Heading">
             <h1 className="text-lg font-medium">Render Props</h1>
           </LivePreviewWrapper>
           <LivePreviewWrapper componentName="MouseTracker" deps={{ state: { position } }}>

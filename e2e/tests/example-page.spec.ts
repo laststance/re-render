@@ -15,9 +15,8 @@ test.describe('Example Page', () => {
     await app.gotoExample('without-memo', 'state-change')
     await expect(page.locator(sel.fileTabList)).toBeVisible()
     // At least one file tab
-    await expect(
-      page.locator(`${sel.fileTabList} button[role="tab"]`)
-    ).toHaveCount(1)
+    const tabCount = await page.locator(`${sel.fileTabList} button[role="tab"]`).count()
+    expect(tabCount).toBeGreaterThanOrEqual(1)
   })
 
   test('file tabs switch content in multi-file example', async ({ app, page }) => {

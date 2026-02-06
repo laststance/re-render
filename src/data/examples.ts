@@ -19,6 +19,7 @@ export const exampleCategories: ExampleCategory[] = [
             filename: 'App.tsx',
             language: 'typescript',
             code: `import { useState } from 'react'
+import { Heading, Button } from './ui'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -26,15 +27,29 @@ function App() {
   // Every click triggers a re-render
   return (
     <div className="app">
-      <h1>Count: {count}</h1>
-      <button onClick={() => setCount(count + 1)}>
+      <Heading>Count: {count}</Heading>
+      <Button onClick={() => setCount(count + 1)}>
         Increment
-      </button>
+      </Button>
     </div>
   )
 }
 
 export default App`,
+          },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Heading({ children }: { children: ReactNode }) {
+  return <h1>{children}</h1>
+}
+
+export function Button({ onClick, children }: { onClick?: () => void; children: ReactNode }) {
+  return <button onClick={onClick}>{children}</button>
+}`,
           },
         ],
         componentTree: {
@@ -42,15 +57,8 @@ export default App`,
           name: 'App',
           renderCount: 0,
           children: [
-            {
-              id: 'div-app',
-              name: 'div',
-              renderCount: 0,
-              children: [
-                { id: 'h1', name: 'h1', renderCount: 0 },
-                { id: 'button', name: 'button', renderCount: 0 },
-              ],
-            },
+            { id: 'heading', name: 'Heading', renderCount: 0 },
+            { id: 'button', name: 'Button', renderCount: 0 },
           ],
         },
         explanation: {
@@ -97,6 +105,7 @@ setCount(prev => prev + 1)`,
             filename: 'App.tsx',
             language: 'typescript',
             code: `import { useState } from 'react'
+import { Heading } from './ui'
 import { Counter } from './Counter'
 
 function App() {
@@ -104,7 +113,7 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Parent</h1>
+      <Heading>Parent</Heading>
       {/* Counter re-renders when count changes */}
       <Counter count={count} setCount={setCount} />
     </div>
@@ -117,7 +126,9 @@ export default App`,
             id: 'counter',
             filename: 'Counter.tsx',
             language: 'typescript',
-            code: `interface CounterProps {
+            code: `import { Text, Button } from './ui'
+
+interface CounterProps {
   count: number
   setCount: (count: number) => void
 }
@@ -126,12 +137,30 @@ export function Counter({ count, setCount }: CounterProps) {
   // Re-renders when count prop changes
   return (
     <div className="counter">
-      <p>Count: {count}</p>
-      <button onClick={() => setCount(count + 1)}>
+      <Text>Count: {count}</Text>
+      <Button onClick={() => setCount(count + 1)}>
         Increment
-      </button>
+      </Button>
     </div>
   )
+}`,
+          },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Heading({ children }: { children: ReactNode }) {
+  return <h1>{children}</h1>
+}
+
+export function Text({ children }: { children: ReactNode }) {
+  return <p>{children}</p>
+}
+
+export function Button({ onClick, children }: { onClick?: () => void; children: ReactNode }) {
+  return <button onClick={onClick}>{children}</button>
 }`,
           },
         ],
@@ -140,28 +169,14 @@ export function Counter({ count, setCount }: CounterProps) {
           name: 'App',
           renderCount: 0,
           children: [
+            { id: 'heading', name: 'Heading', renderCount: 0 },
             {
-              id: 'div-app',
-              name: 'div',
+              id: 'counter',
+              name: 'Counter',
               renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 0 },
-                {
-                  id: 'counter',
-                  name: 'Counter',
-                  renderCount: 0,
-                  children: [
-                    {
-                      id: 'div-counter',
-                      name: 'div',
-                      renderCount: 0,
-                      children: [
-                        { id: 'p-count', name: 'p', renderCount: 0 },
-                        { id: 'button', name: 'button', renderCount: 0 },
-                      ],
-                    },
-                  ],
-                },
+                { id: 'text-count', name: 'Text', renderCount: 0 },
+                { id: 'button', name: 'Button', renderCount: 0 },
               ],
             },
           ],
@@ -208,6 +223,7 @@ const [count, setCount] = useState(0)
             filename: 'App.tsx',
             language: 'typescript',
             code: `import { useState } from 'react'
+import { Heading, Button } from './ui'
 import { Child } from './Child'
 
 function App() {
@@ -215,10 +231,10 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Count: {count}</h1>
-      <button onClick={() => setCount(c => c + 1)}>
+      <Heading>Count: {count}</Heading>
+      <Button onClick={() => setCount(c => c + 1)}>
         Increment
-      </button>
+      </Button>
       {/* Child re-renders even though props don't change! */}
       <Child name="Alice" />
     </div>
@@ -231,7 +247,9 @@ export default App`,
             id: 'child',
             filename: 'Child.tsx',
             language: 'typescript',
-            code: `interface ChildProps {
+            code: `import { Text } from './ui'
+
+interface ChildProps {
   name: string
 }
 
@@ -241,9 +259,27 @@ export function Child({ name }: ChildProps) {
 
   return (
     <div className="child">
-      <p>Hello, {name}!</p>
+      <Text>Hello, {name}!</Text>
     </div>
   )
+}`,
+          },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Heading({ children }: { children: ReactNode }) {
+  return <h1>{children}</h1>
+}
+
+export function Text({ children }: { children: ReactNode }) {
+  return <p>{children}</p>
+}
+
+export function Button({ onClick, children }: { onClick?: () => void; children: ReactNode }) {
+  return <button onClick={onClick}>{children}</button>
 }`,
           },
         ],
@@ -252,26 +288,14 @@ export function Child({ name }: ChildProps) {
           name: 'App',
           renderCount: 0,
           children: [
+            { id: 'heading', name: 'Heading', renderCount: 0 },
+            { id: 'button', name: 'Button', renderCount: 0 },
             {
-              id: 'div-app',
-              name: 'div',
+              id: 'child',
+              name: 'Child',
               renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 0 },
-                { id: 'button', name: 'button', renderCount: 0 },
-                {
-                  id: 'child',
-                  name: 'Child',
-                  renderCount: 0,
-                  children: [
-                    {
-                      id: 'div-child',
-                      name: 'div',
-                      renderCount: 0,
-                      children: [{ id: 'p-hello', name: 'p', renderCount: 0 }],
-                    },
-                  ],
-                },
+                { id: 'text-hello', name: 'Text', renderCount: 0 },
               ],
             },
           ],
@@ -325,6 +349,7 @@ export function Child({ name }: ChildProps) {
             filename: 'App.tsx',
             language: 'typescript',
             code: `import { useState } from 'react'
+import { Heading } from './ui'
 import { CountProvider } from './CountContext'
 import { CountDisplay } from './CountDisplay'
 import { CountButton } from './CountButton'
@@ -335,7 +360,7 @@ function App() {
   return (
     <CountProvider value={{ count, setCount }}>
       <div className="app">
-        <h1>Context Re-renders</h1>
+        <Heading>Context Re-renders</Heading>
         {/* Both consumers re-render when count changes */}
         <CountDisplay />
         <CountButton />
@@ -383,7 +408,8 @@ export function useCount() {
             id: 'display',
             filename: 'CountDisplay.tsx',
             language: 'typescript',
-            code: `import { useCount } from './CountContext'
+            code: `import { Text } from './ui'
+import { useCount } from './CountContext'
 
 export function CountDisplay() {
   const { count } = useCount()
@@ -393,7 +419,7 @@ export function CountDisplay() {
 
   return (
     <div className="display">
-      <p>Count: {count}</p>
+      <Text>Count: {count}</Text>
     </div>
   )
 }`,
@@ -402,7 +428,8 @@ export function CountDisplay() {
             id: 'button',
             filename: 'CountButton.tsx',
             language: 'typescript',
-            code: `import { useCount } from './CountContext'
+            code: `import { Button } from './ui'
+import { useCount } from './CountContext'
 
 export function CountButton() {
   const { count, setCount } = useCount()
@@ -411,10 +438,28 @@ export function CountButton() {
   console.log('CountButton rendered')
 
   return (
-    <button onClick={() => setCount(count + 1)}>
+    <Button onClick={() => setCount(count + 1)}>
       Increment
-    </button>
+    </Button>
   )
+}`,
+          },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Heading({ children }: { children: ReactNode }) {
+  return <h1>{children}</h1>
+}
+
+export function Text({ children }: { children: ReactNode }) {
+  return <p>{children}</p>
+}
+
+export function Button({ onClick, children }: { onClick?: () => void; children: ReactNode }) {
+  return <button onClick={onClick}>{children}</button>
 }`,
           },
         ],
@@ -428,32 +473,20 @@ export function CountButton() {
               name: 'CountProvider',
               renderCount: 0,
               children: [
+                { id: 'heading', name: 'Heading', renderCount: 0 },
                 {
-                  id: 'div-app',
-                  name: 'div',
+                  id: 'count-display',
+                  name: 'CountDisplay',
                   renderCount: 0,
                   children: [
-                    { id: 'h1', name: 'h1', renderCount: 0 },
-                    {
-                      id: 'count-display',
-                      name: 'CountDisplay',
-                      renderCount: 0,
-                      children: [
-                        {
-                          id: 'div-display',
-                          name: 'div',
-                          renderCount: 0,
-                          children: [{ id: 'p-count', name: 'p', renderCount: 0 }],
-                        },
-                      ],
-                    },
-                    {
-                      id: 'count-button',
-                      name: 'CountButton',
-                      renderCount: 0,
-                      children: [{ id: 'button', name: 'button', renderCount: 0 }],
-                    },
+                    { id: 'text-count', name: 'Text', renderCount: 0 },
                   ],
+                },
+                {
+                  id: 'count-button',
+                  name: 'CountButton',
+                  renderCount: 0,
+                  children: [{ id: 'button', name: 'Button', renderCount: 0 }],
                 },
               ],
             },
@@ -504,6 +537,7 @@ const { count } = useContext(CountContext)`,
             filename: 'App.tsx',
             language: 'typescript',
             code: `import { useState, useReducer } from 'react'
+import { Heading, Button } from './ui'
 import { Timer } from './Timer'
 
 function App() {
@@ -513,18 +547,18 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Force Update Patterns</h1>
+      <Heading>Force Update Patterns</Heading>
 
       {/* Method 1: Key prop change remounts component */}
       <Timer key={timerId} id={timerId} />
-      <button onClick={() => setTimerId(id => id + 1)}>
+      <Button onClick={() => setTimerId(id => id + 1)}>
         Reset Timer (key change)
-      </button>
+      </Button>
 
       {/* Method 2: useReducer force update */}
-      <button onClick={forceUpdate}>
+      <Button onClick={forceUpdate}>
         Force Re-render (useReducer)
-      </button>
+      </Button>
     </div>
   )
 }
@@ -536,6 +570,7 @@ export default App`,
             filename: 'Timer.tsx',
             language: 'typescript',
             code: `import { useState, useEffect } from 'react'
+import { Text } from './ui'
 
 interface TimerProps {
   id: number
@@ -558,12 +593,30 @@ export function Timer({ id }: TimerProps) {
 
   return (
     <div className="timer">
-      <p>Timer #{id}: {seconds}s</p>
-      <p className="hint">
+      <Text>Timer #{id}: {seconds}s</Text>
+      <Text className="hint">
         Key change unmounts → remounts → state resets
-      </p>
+      </Text>
     </div>
   )
+}`,
+          },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Heading({ children }: { children: ReactNode }) {
+  return <h1>{children}</h1>
+}
+
+export function Text({ children, className }: { children: ReactNode; className?: string }) {
+  return <p className={className}>{children}</p>
+}
+
+export function Button({ onClick, children }: { onClick?: () => void; children: ReactNode }) {
+  return <button onClick={onClick}>{children}</button>
 }`,
           },
         ],
@@ -572,32 +625,18 @@ export function Timer({ id }: TimerProps) {
           name: 'App',
           renderCount: 0,
           children: [
+            { id: 'heading', name: 'Heading', renderCount: 0 },
             {
-              id: 'div-app',
-              name: 'div',
+              id: 'timer',
+              name: 'Timer',
               renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 0 },
-                {
-                  id: 'timer',
-                  name: 'Timer',
-                  renderCount: 0,
-                  children: [
-                    {
-                      id: 'div-timer',
-                      name: 'div',
-                      renderCount: 0,
-                      children: [
-                        { id: 'p-seconds', name: 'p', renderCount: 0 },
-                        { id: 'p-hint', name: 'p', renderCount: 0 },
-                      ],
-                    },
-                  ],
-                },
-                { id: 'btn-reset', name: 'button', renderCount: 0 },
-                { id: 'btn-force', name: 'button', renderCount: 0 },
+                { id: 'text-seconds', name: 'Text', renderCount: 0 },
+                { id: 'text-hint', name: 'Text', renderCount: 0 },
               ],
             },
+            { id: 'btn-reset', name: 'Button', renderCount: 0 },
+            { id: 'btn-force', name: 'Button', renderCount: 0 },
           ],
         },
         explanation: {
@@ -643,6 +682,7 @@ const [, forceUpdate] = useReducer(x => x + 1, 0)
             filename: 'App.tsx',
             language: 'typescript',
             code: `import { useReducer } from 'react'
+import { Heading, Text, Button, Input } from './ui'
 
 interface State {
   count: number
@@ -676,15 +716,15 @@ function App() {
   // Every dispatch that changes state triggers re-render
   return (
     <div className="app">
-      <h1>Count: {state.count}</h1>
-      <p>Step: {state.step}</p>
-      <button onClick={() => dispatch({ type: 'increment' })}>
+      <Heading>Count: {state.count}</Heading>
+      <Text>Step: {state.step}</Text>
+      <Button onClick={() => dispatch({ type: 'increment' })}>
         +{state.step}
-      </button>
-      <button onClick={() => dispatch({ type: 'decrement' })}>
+      </Button>
+      <Button onClick={() => dispatch({ type: 'decrement' })}>
         -{state.step}
-      </button>
-      <input
+      </Button>
+      <Input
         type="number"
         value={state.step}
         onChange={e => dispatch({
@@ -692,14 +732,39 @@ function App() {
           payload: Number(e.target.value) || 1
         })}
       />
-      <button onClick={() => dispatch({ type: 'reset' })}>
+      <Button onClick={() => dispatch({ type: 'reset' })}>
         Reset
-      </button>
+      </Button>
     </div>
   )
 }
 
 export default App`,
+          },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Heading({ children }: { children: ReactNode }) {
+  return <h1>{children}</h1>
+}
+
+export function Text({ children }: { children: ReactNode }) {
+  return <p>{children}</p>
+}
+
+export function Button({ onClick, children }: { onClick?: () => void; children: ReactNode }) {
+  return <button onClick={onClick}>{children}</button>
+}
+
+export function Input({ value, onChange, placeholder, type }: {
+  value?: string | number; onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string; type?: string
+}) {
+  return <input value={value} onChange={onChange} placeholder={placeholder} type={type} />
+}`,
           },
         ],
         componentTree: {
@@ -707,19 +772,12 @@ export default App`,
           name: 'App',
           renderCount: 0,
           children: [
-            {
-              id: 'div-app',
-              name: 'div',
-              renderCount: 0,
-              children: [
-                { id: 'h1', name: 'h1', renderCount: 0 },
-                { id: 'p-step', name: 'p', renderCount: 0 },
-                { id: 'btn-inc', name: 'button', renderCount: 0 },
-                { id: 'btn-dec', name: 'button', renderCount: 0 },
-                { id: 'input', name: 'input', renderCount: 0 },
-                { id: 'btn-reset', name: 'button', renderCount: 0 },
-              ],
-            },
+            { id: 'heading', name: 'Heading', renderCount: 0 },
+            { id: 'text-step', name: 'Text', renderCount: 0 },
+            { id: 'btn-inc', name: 'Button', renderCount: 0 },
+            { id: 'btn-dec', name: 'Button', renderCount: 0 },
+            { id: 'input', name: 'Input', renderCount: 0 },
+            { id: 'btn-reset', name: 'Button', renderCount: 0 },
           ],
         },
         explanation: {
@@ -769,6 +827,7 @@ export default App`,
             filename: 'App.tsx',
             language: 'typescript',
             code: `import { useSyncExternalStore } from 'react'
+import { Heading, Text, Button } from './ui'
 import { store } from './store'
 
 function App() {
@@ -780,14 +839,14 @@ function App() {
 
   return (
     <div className="app">
-      <h1>External Store</h1>
-      <p>Count: {count}</p>
-      <button onClick={() => store.increment()}>
+      <Heading>External Store</Heading>
+      <Text>Count: {count}</Text>
+      <Button onClick={() => store.increment()}>
         Increment
-      </button>
-      <button onClick={() => store.decrement()}>
+      </Button>
+      <Button onClick={() => store.decrement()}>
         Decrement
-      </button>
+      </Button>
     </div>
   )
 }
@@ -823,23 +882,34 @@ export const store = {
   },
 }`,
           },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Heading({ children }: { children: ReactNode }) {
+  return <h1>{children}</h1>
+}
+
+export function Text({ children }: { children: ReactNode }) {
+  return <p>{children}</p>
+}
+
+export function Button({ onClick, children }: { onClick?: () => void; children: ReactNode }) {
+  return <button onClick={onClick}>{children}</button>
+}`,
+          },
         ],
         componentTree: {
           id: 'app',
           name: 'App',
           renderCount: 0,
           children: [
-            {
-              id: 'div-app',
-              name: 'div',
-              renderCount: 0,
-              children: [
-                { id: 'h1', name: 'h1', renderCount: 0 },
-                { id: 'p-count', name: 'p', renderCount: 0 },
-                { id: 'btn-inc', name: 'button', renderCount: 0 },
-                { id: 'btn-dec', name: 'button', renderCount: 0 },
-              ],
-            },
+            { id: 'heading', name: 'Heading', renderCount: 0 },
+            { id: 'text-count', name: 'Text', renderCount: 0 },
+            { id: 'btn-inc', name: 'Button', renderCount: 0 },
+            { id: 'btn-dec', name: 'Button', renderCount: 0 },
           ],
         },
         explanation: {
@@ -886,18 +956,25 @@ export const store = {
             filename: 'App.tsx',
             language: 'typescript',
             code: `import { Suspense, useState } from 'react'
+import { Heading, Button } from './ui'
 import { UserProfile } from './UserProfile'
+
+function TabBar({ setUserId }: { setUserId: (id: number) => void }) {
+  return (
+    <div className="tabs">
+      <Button onClick={() => setUserId(1)}>User 1</Button>
+      <Button onClick={() => setUserId(2)}>User 2</Button>
+    </div>
+  )
+}
 
 function App() {
   const [userId, setUserId] = useState(1)
 
   return (
     <div className="app">
-      <h1>Suspense Data Fetching</h1>
-      <div className="tabs">
-        <button onClick={() => setUserId(1)}>User 1</button>
-        <button onClick={() => setUserId(2)}>User 2</button>
-      </div>
+      <Heading>Suspense Data Fetching</Heading>
+      <TabBar setUserId={setUserId} />
 
       {/* Suspense shows fallback while data loads */}
       <Suspense fallback={<div>Loading user...</div>}>
@@ -914,6 +991,7 @@ export default App`,
             filename: 'UserProfile.tsx',
             language: 'typescript',
             code: `import { use } from 'react'
+import { Heading, Text } from './ui'
 import { fetchUser } from './api'
 
 interface UserProfileProps {
@@ -927,8 +1005,8 @@ export function UserProfile({ userId }: UserProfileProps) {
   // This only renders after data is ready
   return (
     <div className="profile">
-      <h2>{user.name}</h2>
-      <p>Email: {user.email}</p>
+      <Heading>{user.name}</Heading>
+      <Text>Email: {user.email}</Text>
     </div>
   )
 }`,
@@ -961,48 +1039,52 @@ export function fetchUser(id: number): Promise<User> {
   return cache.get(id)!
 }`,
           },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Heading({ children }: { children: ReactNode }) {
+  return <h1>{children}</h1>
+}
+
+export function Text({ children }: { children: ReactNode }) {
+  return <p>{children}</p>
+}
+
+export function Button({ onClick, children }: { onClick?: () => void; children: ReactNode }) {
+  return <button onClick={onClick}>{children}</button>
+}`,
+          },
         ],
         componentTree: {
           id: 'app',
           name: 'App',
           renderCount: 0,
           children: [
+            { id: 'heading', name: 'Heading', renderCount: 0 },
             {
-              id: 'div-app',
-              name: 'div',
+              id: 'tab-bar',
+              name: 'TabBar',
               renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 0 },
+                { id: 'btn-user1', name: 'Button', renderCount: 0 },
+                { id: 'btn-user2', name: 'Button', renderCount: 0 },
+              ],
+            },
+            {
+              id: 'suspense',
+              name: 'Suspense',
+              renderCount: 0,
+              children: [
                 {
-                  id: 'div-tabs',
-                  name: 'div',
+                  id: 'user-profile',
+                  name: 'UserProfile',
                   renderCount: 0,
                   children: [
-                    { id: 'btn-user1', name: 'button', renderCount: 0 },
-                    { id: 'btn-user2', name: 'button', renderCount: 0 },
-                  ],
-                },
-                {
-                  id: 'suspense',
-                  name: 'Suspense',
-                  renderCount: 0,
-                  children: [
-                    {
-                      id: 'user-profile',
-                      name: 'UserProfile',
-                      renderCount: 0,
-                      children: [
-                        {
-                          id: 'div-profile',
-                          name: 'div',
-                          renderCount: 0,
-                          children: [
-                            { id: 'h2', name: 'h2', renderCount: 0 },
-                            { id: 'p-email', name: 'p', renderCount: 0 },
-                          ],
-                        },
-                      ],
-                    },
+                    { id: 'heading-name', name: 'Heading', renderCount: 0 },
+                    { id: 'text-email', name: 'Text', renderCount: 0 },
                   ],
                 },
               ],
@@ -1055,6 +1137,7 @@ function UserProfile({ userId }) {
             filename: 'App.tsx',
             language: 'typescript',
             code: `import { useState, useTransition, useDeferredValue } from 'react'
+import { Heading, Input, Text } from './ui'
 import { SlowList } from './SlowList'
 
 function App() {
@@ -1071,13 +1154,13 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Concurrent Rendering</h1>
-      <input
+      <Heading>Concurrent Rendering</Heading>
+      <Input
         value={text}
         onChange={handleChange}
         placeholder="Type to filter..."
       />
-      {isPending && <p>Updating...</p>}
+      {isPending && <Text>Updating...</Text>}
 
       {/* SlowList uses deferred value, won't block typing */}
       <SlowList text={deferredText} />
@@ -1092,6 +1175,7 @@ export default App`,
             filename: 'SlowList.tsx',
             language: 'typescript',
             code: `import { memo } from 'react'
+import { ListItem } from './ui'
 
 interface SlowListProps {
   text: string
@@ -1117,7 +1201,32 @@ function SlowItem({ text }: { text: string }) {
     // Block for 1ms per item
   }
 
-  return <li>{text}</li>
+  return <ListItem>{text}</ListItem>
+}`,
+          },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Heading({ children }: { children: ReactNode }) {
+  return <h1>{children}</h1>
+}
+
+export function Text({ children }: { children: ReactNode }) {
+  return <p>{children}</p>
+}
+
+export function Input({ value, onChange, placeholder, type }: {
+  value?: string | number; onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string; type?: string
+}) {
+  return <input value={value} onChange={onChange} placeholder={placeholder} type={type} />
+}
+
+export function ListItem({ children }: { children: ReactNode }) {
+  return <li>{children}</li>
 }`,
           },
         ],
@@ -1126,27 +1235,15 @@ function SlowItem({ text }: { text: string }) {
           name: 'App',
           renderCount: 0,
           children: [
+            { id: 'heading', name: 'Heading', renderCount: 0 },
+            { id: 'input', name: 'Input', renderCount: 0 },
+            { id: 'text-pending', name: 'Text', renderCount: 0 },
             {
-              id: 'div-app',
-              name: 'div',
+              id: 'slow-list',
+              name: 'SlowList',
               renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 0 },
-                { id: 'input', name: 'input', renderCount: 0 },
-                { id: 'p-pending', name: 'p', renderCount: 0 },
-                {
-                  id: 'slow-list',
-                  name: 'SlowList',
-                  renderCount: 0,
-                  children: [
-                    {
-                      id: 'ul',
-                      name: 'ul',
-                      renderCount: 0,
-                      children: [{ id: 'items', name: 'li...', renderCount: 0 }],
-                    },
-                  ],
-                },
+                { id: 'list-item', name: 'ListItem', renderCount: 0 },
               ],
             },
           ],
@@ -1195,6 +1292,7 @@ const deferredValue = useDeferredValue(value)
             filename: 'App.tsx',
             language: 'typescript',
             code: `import { useState, useEffect } from 'react'
+import { Heading, Text, Button, Input } from './ui'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -1223,12 +1321,12 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Effect Dependencies</h1>
-      <p>Count: {count}</p>
-      <button onClick={() => setCount(c => c + 1)}>
+      <Heading>Effect Dependencies</Heading>
+      <Text>Count: {count}</Text>
+      <Button onClick={() => setCount(c => c + 1)}>
         Increment (triggers count effect)
-      </button>
-      <input
+      </Button>
+      <Input
         value={text}
         onChange={e => setText(e.target.value)}
         placeholder="Type (no effect)"
@@ -1239,23 +1337,41 @@ function App() {
 
 export default App`,
           },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Heading({ children }: { children: ReactNode }) {
+  return <h1>{children}</h1>
+}
+
+export function Text({ children }: { children: ReactNode }) {
+  return <p>{children}</p>
+}
+
+export function Button({ onClick, children }: { onClick?: () => void; children: ReactNode }) {
+  return <button onClick={onClick}>{children}</button>
+}
+
+export function Input({ value, onChange, placeholder, type }: {
+  value?: string | number; onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string; type?: string
+}) {
+  return <input value={value} onChange={onChange} placeholder={placeholder} type={type} />
+}`,
+          },
         ],
         componentTree: {
           id: 'app',
           name: 'App',
           renderCount: 0,
           children: [
-            {
-              id: 'div-app',
-              name: 'div',
-              renderCount: 0,
-              children: [
-                { id: 'h1', name: 'h1', renderCount: 0 },
-                { id: 'p-count', name: 'p', renderCount: 0 },
-                { id: 'button', name: 'button', renderCount: 0 },
-                { id: 'input', name: 'input', renderCount: 0 },
-              ],
-            },
+            { id: 'heading', name: 'Heading', renderCount: 0 },
+            { id: 'text-count', name: 'Text', renderCount: 0 },
+            { id: 'button', name: 'Button', renderCount: 0 },
+            { id: 'input', name: 'Input', renderCount: 0 },
           ],
         },
         explanation: {
@@ -1305,6 +1421,32 @@ useEffect(() => { ... })
             filename: 'App.tsx',
             language: 'typescript',
             code: `import { useState, useRef } from 'react'
+import { Heading, Text, Button } from './ui'
+
+function StateSection({ stateCount, onIncrement }: { stateCount: number; onIncrement: () => void }) {
+  return (
+    <div className="state-box">
+      <Text>State count: {stateCount}</Text>
+      <Button onClick={onIncrement}>
+        Increment State (re-renders)
+      </Button>
+    </div>
+  )
+}
+
+function RefSection({ refCount, onIncrement }: { refCount: number; onIncrement: () => void }) {
+  return (
+    <div className="ref-box">
+      <Text>Ref count: {refCount}</Text>
+      <Button onClick={onIncrement}>
+        Increment Ref (no re-render)
+      </Button>
+      <Text className="hint">
+        Check console - ref changes but UI won't update!
+      </Text>
+    </div>
+  )
+}
 
 function App() {
   const [stateCount, setStateCount] = useState(0)
@@ -1323,29 +1465,32 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Refs vs State</h1>
-
-      <div className="state-box">
-        <p>State count: {stateCount}</p>
-        <button onClick={handleStateIncrement}>
-          Increment State (re-renders)
-        </button>
-      </div>
-
-      <div className="ref-box">
-        <p>Ref count: {refCount.current}</p>
-        <button onClick={handleRefIncrement}>
-          Increment Ref (no re-render)
-        </button>
-        <p className="hint">
-          Check console - ref changes but UI won't update!
-        </p>
-      </div>
+      <Heading>Refs vs State</Heading>
+      <StateSection stateCount={stateCount} onIncrement={handleStateIncrement} />
+      <RefSection refCount={refCount.current} onIncrement={handleRefIncrement} />
     </div>
   )
 }
 
 export default App`,
+          },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Heading({ children }: { children: ReactNode }) {
+  return <h1>{children}</h1>
+}
+
+export function Text({ children, className }: { children: ReactNode; className?: string }) {
+  return <p className={className}>{children}</p>
+}
+
+export function Button({ onClick, children }: { onClick?: () => void; children: ReactNode }) {
+  return <button onClick={onClick}>{children}</button>
+}`,
           },
         ],
         componentTree: {
@@ -1353,31 +1498,24 @@ export default App`,
           name: 'App',
           renderCount: 0,
           children: [
+            { id: 'heading', name: 'Heading', renderCount: 0 },
             {
-              id: 'div-app',
-              name: 'div',
+              id: 'state-section',
+              name: 'StateSection',
               renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 0 },
-                {
-                  id: 'div-state',
-                  name: 'div',
-                  renderCount: 0,
-                  children: [
-                    { id: 'p-state', name: 'p', renderCount: 0 },
-                    { id: 'btn-state', name: 'button', renderCount: 0 },
-                  ],
-                },
-                {
-                  id: 'div-ref',
-                  name: 'div',
-                  renderCount: 0,
-                  children: [
-                    { id: 'p-ref', name: 'p', renderCount: 0 },
-                    { id: 'btn-ref', name: 'button', renderCount: 0 },
-                    { id: 'p-hint', name: 'p', renderCount: 0 },
-                  ],
-                },
+                { id: 'text-state', name: 'Text', renderCount: 0 },
+                { id: 'btn-state', name: 'Button', renderCount: 0 },
+              ],
+            },
+            {
+              id: 'ref-section',
+              name: 'RefSection',
+              renderCount: 0,
+              children: [
+                { id: 'text-ref', name: 'Text', renderCount: 0 },
+                { id: 'btn-ref', name: 'Button', renderCount: 0 },
+                { id: 'text-hint', name: 'Text', renderCount: 0 },
               ],
             },
           ],
@@ -1426,12 +1564,13 @@ countRef.current = 1  // No re-render!
             id: 'app',
             filename: 'App.tsx',
             language: 'typescript',
-            code: `import { Select } from './Select'
+            code: `import { Heading } from './ui'
+import { Select } from './Select'
 
 function App() {
   return (
     <div className="app">
-      <h1>Compound Component Pattern</h1>
+      <Heading>Compound Component Pattern</Heading>
       <Select>
         <Select.Trigger />
         <Select.Options>
@@ -1517,34 +1656,37 @@ Select.Option = Option
 
 export { Select }`,
           },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Heading({ children }: { children: ReactNode }) {
+  return <h1>{children}</h1>
+}`,
+          },
         ],
         componentTree: {
           id: 'app',
           name: 'App',
           renderCount: 0,
           children: [
+            { id: 'heading', name: 'Heading', renderCount: 0 },
             {
-              id: 'div-app',
-              name: 'div',
+              id: 'select',
+              name: 'Select',
               renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 0 },
+                { id: 'trigger', name: 'Select.Trigger', renderCount: 0 },
                 {
-                  id: 'select',
-                  name: 'Select',
+                  id: 'options',
+                  name: 'Select.Options',
                   renderCount: 0,
                   children: [
-                    { id: 'trigger', name: 'Select.Trigger', renderCount: 0 },
-                    {
-                      id: 'options',
-                      name: 'Select.Options',
-                      renderCount: 0,
-                      children: [
-                        { id: 'option-1', name: 'Select.Option', renderCount: 0 },
-                        { id: 'option-2', name: 'Select.Option', renderCount: 0 },
-                        { id: 'option-3', name: 'Select.Option', renderCount: 0 },
-                      ],
-                    },
+                    { id: 'option-1', name: 'Select.Option', renderCount: 0 },
+                    { id: 'option-2', name: 'Select.Option', renderCount: 0 },
+                    { id: 'option-3', name: 'Select.Option', renderCount: 0 },
                   ],
                 },
               ],
@@ -1595,13 +1737,14 @@ setIsOpen(false)
             id: 'app',
             filename: 'App.tsx',
             language: 'typescript',
-            code: `import { MouseTracker } from './MouseTracker'
+            code: `import { Heading } from './ui'
+import { MouseTracker } from './MouseTracker'
 import { DisplayCoords } from './DisplayCoords'
 
 function App() {
   return (
     <div className="app">
-      <h1>Render Props Pattern</h1>
+      <Heading>Render Props Pattern</Heading>
       <MouseTracker
         render={({ x, y }) => <DisplayCoords x={x} y={y} />}
       />
@@ -1655,7 +1798,9 @@ export function MouseTracker({ render }: MouseTrackerProps) {
             id: 'display-coords',
             filename: 'DisplayCoords.tsx',
             language: 'typescript',
-            code: `interface DisplayCoordsProps {
+            code: `import { Text } from './ui'
+
+interface DisplayCoordsProps {
   x: number
   y: number
 }
@@ -1667,9 +1812,23 @@ export function DisplayCoords({ x, y }: DisplayCoordsProps) {
 
   return (
     <div className="coords">
-      <p>Mouse position: ({x}, {y})</p>
+      <Text>Mouse position: ({x}, {y})</Text>
     </div>
   )
+}`,
+          },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Heading({ children }: { children: ReactNode }) {
+  return <h1>{children}</h1>
+}
+
+export function Text({ children }: { children: ReactNode }) {
+  return <p>{children}</p>
 }`,
           },
         ],
@@ -1678,30 +1837,18 @@ export function DisplayCoords({ x, y }: DisplayCoordsProps) {
           name: 'App',
           renderCount: 0,
           children: [
+            { id: 'heading', name: 'Heading', renderCount: 0 },
             {
-              id: 'div-app',
-              name: 'div',
+              id: 'mouse-tracker',
+              name: 'MouseTracker',
               renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 0 },
                 {
-                  id: 'mouse-tracker',
-                  name: 'MouseTracker',
+                  id: 'display-coords',
+                  name: 'DisplayCoords',
                   renderCount: 0,
                   children: [
-                    {
-                      id: 'display-coords',
-                      name: 'DisplayCoords',
-                      renderCount: 0,
-                      children: [
-                        {
-                          id: 'div-coords',
-                          name: 'div',
-                          renderCount: 0,
-                          children: [{ id: 'p-coords', name: 'p', renderCount: 0 }],
-                        },
-                      ],
-                    },
+                    { id: 'text-coords', name: 'Text', renderCount: 0 },
                   ],
                 },
               ],
@@ -1760,6 +1907,7 @@ export function DisplayCoords({ x, y }: DisplayCoordsProps) {
             filename: 'App.tsx',
             language: 'typescript',
             code: `import { useState } from 'react'
+import { Heading, Button } from './ui'
 import { MemoChild } from './MemoChild'
 
 function App() {
@@ -1767,10 +1915,10 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Count: {count}</h1>
-      <button onClick={() => setCount(c => c + 1)}>
+      <Heading>Count: {count}</Heading>
+      <Button onClick={() => setCount(c => c + 1)}>
         Increment
-      </button>
+      </Button>
       {/* MemoChild won't re-render when count changes */}
       <MemoChild name="Alice" />
     </div>
@@ -1784,6 +1932,7 @@ export default App`,
             filename: 'MemoChild.tsx',
             language: 'typescript',
             code: `import { memo } from 'react'
+import { Text } from './ui'
 
 interface MemoChildProps {
   name: string
@@ -1795,10 +1944,28 @@ export const MemoChild = memo(function MemoChild({ name }: MemoChildProps) {
 
   return (
     <div className="child">
-      <p>Hello, {name}!</p>
+      <Text>Hello, {name}!</Text>
     </div>
   )
 })`,
+          },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Heading({ children }: { children: ReactNode }) {
+  return <h1>{children}</h1>
+}
+
+export function Text({ children }: { children: ReactNode }) {
+  return <p>{children}</p>
+}
+
+export function Button({ onClick, children }: { onClick?: () => void; children: ReactNode }) {
+  return <button onClick={onClick}>{children}</button>
+}`,
           },
         ],
         componentTree: {
@@ -1806,26 +1973,14 @@ export const MemoChild = memo(function MemoChild({ name }: MemoChildProps) {
           name: 'App',
           renderCount: 0,
           children: [
+            { id: 'heading', name: 'Heading', renderCount: 0 },
+            { id: 'button', name: 'Button', renderCount: 0 },
             {
-              id: 'div-app',
-              name: 'div',
+              id: 'memo-child',
+              name: 'MemoChild',
               renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 0 },
-                { id: 'button', name: 'button', renderCount: 0 },
-                {
-                  id: 'memo-child',
-                  name: 'MemoChild',
-                  renderCount: 0,
-                  children: [
-                    {
-                      id: 'div-child',
-                      name: 'div',
-                      renderCount: 0,
-                      children: [{ id: 'p-hello', name: 'p', renderCount: 0 }],
-                    },
-                  ],
-                },
+                { id: 'text-hello', name: 'Text', renderCount: 0 },
               ],
             },
           ],
@@ -1876,6 +2031,7 @@ const MemoChild = memo(function MemoChild({ name }) {
             filename: 'App.tsx',
             language: 'typescript',
             code: `import { useState, useCallback } from 'react'
+import { Input, Text } from './ui'
 import { MemoButton } from './MemoButton'
 
 function App() {
@@ -1889,8 +2045,8 @@ function App() {
 
   return (
     <div className="app">
-      <input value={text} onChange={e => setText(e.target.value)} />
-      <p>Count: {count}</p>
+      <Input value={text} onChange={e => setText(e.target.value)} />
+      <Text>Count: {count}</Text>
       {/* Button won't re-render when text changes */}
       <MemoButton onClick={handleIncrement}>Increment</MemoButton>
     </div>
@@ -1904,6 +2060,7 @@ export default App`,
             filename: 'MemoButton.tsx',
             language: 'typescript',
             code: `import { memo, ReactNode } from 'react'
+import { Button } from './ui'
 
 interface MemoButtonProps {
   onClick: () => void
@@ -1917,11 +2074,32 @@ export const MemoButton = memo(function MemoButton({
   console.log('MemoButton rendered')
 
   return (
-    <button onClick={onClick} className="button">
+    <Button onClick={onClick} className="button">
       {children}
-    </button>
+    </Button>
   )
 })`,
+          },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Text({ children }: { children: ReactNode }) {
+  return <p>{children}</p>
+}
+
+export function Button({ onClick, children, className }: { onClick?: () => void; children: ReactNode; className?: string }) {
+  return <button onClick={onClick} className={className}>{children}</button>
+}
+
+export function Input({ value, onChange, placeholder, type }: {
+  value?: string | number; onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string; type?: string
+}) {
+  return <input value={value} onChange={onChange} placeholder={placeholder} type={type} />
+}`,
           },
         ],
         componentTree: {
@@ -1929,21 +2107,14 @@ export const MemoButton = memo(function MemoButton({
           name: 'App',
           renderCount: 0,
           children: [
+            { id: 'input', name: 'Input', renderCount: 0 },
+            { id: 'text-count', name: 'Text', renderCount: 0 },
             {
-              id: 'div-app',
-              name: 'div',
+              id: 'memo-button',
+              name: 'MemoButton',
               renderCount: 0,
               children: [
-                { id: 'input', name: 'input', renderCount: 0 },
-                { id: 'p-count', name: 'p', renderCount: 0 },
-                {
-                  id: 'memo-button',
-                  name: 'MemoButton',
-                  renderCount: 0,
-                  children: [
-                    { id: 'button', name: 'button', renderCount: 0 },
-                  ],
-                },
+                { id: 'button', name: 'Button', renderCount: 0 },
               ],
             },
           ],
@@ -1992,6 +2163,7 @@ const handleClick = useCallback(() => {
             filename: 'App.tsx',
             language: 'typescript',
             code: `import { useState, useMemo } from 'react'
+import { Input, Text, Button } from './ui'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -2005,20 +2177,41 @@ function App() {
 
   return (
     <div className="app">
-      <input
+      <Input
         value={text}
         onChange={e => setText(e.target.value)}
         placeholder="Type here (no recomputation)"
       />
-      <p>Expensive value: {expensiveValue}</p>
-      <button onClick={() => setCount(c => c + 1)}>
+      <Text>Expensive value: {expensiveValue}</Text>
+      <Button onClick={() => setCount(c => c + 1)}>
         Increment (triggers recomputation)
-      </button>
+      </Button>
     </div>
   )
 }
 
 export default App`,
+          },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Text({ children }: { children: ReactNode }) {
+  return <p>{children}</p>
+}
+
+export function Button({ onClick, children }: { onClick?: () => void; children: ReactNode }) {
+  return <button onClick={onClick}>{children}</button>
+}
+
+export function Input({ value, onChange, placeholder, type }: {
+  value?: string | number; onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string; type?: string
+}) {
+  return <input value={value} onChange={onChange} placeholder={placeholder} type={type} />
+}`,
           },
         ],
         componentTree: {
@@ -2026,16 +2219,9 @@ export default App`,
           name: 'App',
           renderCount: 0,
           children: [
-            {
-              id: 'div-app',
-              name: 'div',
-              renderCount: 0,
-              children: [
-                { id: 'input', name: 'input', renderCount: 0 },
-                { id: 'p-value', name: 'p', renderCount: 0 },
-                { id: 'button', name: 'button', renderCount: 0 },
-              ],
-            },
+            { id: 'input', name: 'Input', renderCount: 0 },
+            { id: 'text-value', name: 'Text', renderCount: 0 },
+            { id: 'button', name: 'Button', renderCount: 0 },
           ],
         },
         explanation: {
@@ -2082,6 +2268,7 @@ const expensiveValue = useMemo(() => {
             filename: 'App.tsx',
             language: 'typescript',
             code: `import { lazy, Suspense, useState } from 'react'
+import { Heading, Button } from './ui'
 
 // Lazy load the heavy component
 const HeavyChart = lazy(() => import('./HeavyChart'))
@@ -2091,10 +2278,10 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Code Splitting Demo</h1>
-      <button onClick={() => setShowChart(s => !s)}>
+      <Heading>Code Splitting Demo</Heading>
+      <Button onClick={() => setShowChart(s => !s)}>
         {showChart ? 'Hide' : 'Show'} Chart
-      </button>
+      </Button>
 
       {showChart && (
         <Suspense fallback={<div>Loading chart...</div>}>
@@ -2112,7 +2299,9 @@ export default App`,
             id: 'heavy-chart',
             filename: 'HeavyChart.tsx',
             language: 'typescript',
-            code: `// This component is in a separate chunk
+            code: `import { Heading, Text } from './ui'
+
+// This component is in a separate chunk
 // It only loads when first rendered
 
 export default function HeavyChart() {
@@ -2121,13 +2310,31 @@ export default function HeavyChart() {
 
   return (
     <div className="chart">
-      <h2>Heavy Chart Component</h2>
-      <p>This component was lazy loaded!</p>
-      <div className="chart-placeholder">
+      <Heading>Heavy Chart Component</Heading>
+      <Text>This component was lazy loaded!</Text>
+      <Text className="chart-placeholder">
         📊 Chart visualization here
-      </div>
+      </Text>
     </div>
   )
+}`,
+          },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Heading({ children }: { children: ReactNode }) {
+  return <h1>{children}</h1>
+}
+
+export function Text({ children, className }: { children: ReactNode; className?: string }) {
+  return <p className={className}>{children}</p>
+}
+
+export function Button({ onClick, children }: { onClick?: () => void; children: ReactNode }) {
+  return <button onClick={onClick}>{children}</button>
 }`,
           },
         ],
@@ -2136,35 +2343,21 @@ export default function HeavyChart() {
           name: 'App',
           renderCount: 0,
           children: [
+            { id: 'heading', name: 'Heading', renderCount: 0 },
+            { id: 'button', name: 'Button', renderCount: 0 },
             {
-              id: 'div-app',
-              name: 'div',
+              id: 'suspense',
+              name: 'Suspense',
               renderCount: 0,
               children: [
-                { id: 'h1', name: 'h1', renderCount: 0 },
-                { id: 'button', name: 'button', renderCount: 0 },
                 {
-                  id: 'suspense',
-                  name: 'Suspense',
+                  id: 'heavy-chart',
+                  name: 'HeavyChart',
                   renderCount: 0,
                   children: [
-                    {
-                      id: 'heavy-chart',
-                      name: 'HeavyChart',
-                      renderCount: 0,
-                      children: [
-                        {
-                          id: 'div-chart',
-                          name: 'div',
-                          renderCount: 0,
-                          children: [
-                            { id: 'h2', name: 'h2', renderCount: 0 },
-                            { id: 'p-loaded', name: 'p', renderCount: 0 },
-                            { id: 'div-placeholder', name: 'div', renderCount: 0 },
-                          ],
-                        },
-                      ],
-                    },
+                    { id: 'heading-chart', name: 'Heading', renderCount: 0 },
+                    { id: 'text-loaded', name: 'Text', renderCount: 0 },
+                    { id: 'text-chart', name: 'Text', renderCount: 0 },
                   ],
                 },
               ],
@@ -2255,21 +2448,52 @@ export default App`,
             id: 'expensive-tree',
             filename: 'ExpensiveTree.tsx',
             language: 'typescript',
-            code: `// Imagine this is a complex component tree
+            code: `import { Heading, Text, List, ListItem } from './ui'
+
+// Imagine this is a complex component tree
 export function ExpensiveTree() {
   console.log('ExpensiveTree rendered')
 
   return (
     <div className="expensive">
-      <h2>Expensive Component</h2>
-      <p>This component has many children...</p>
-      <ul>
-        <li>Item 1</li>
-        <li>Item 2</li>
-        <li>Item 3</li>
-      </ul>
+      <Heading>Expensive Component</Heading>
+      <Text>This component has many children...</Text>
+      <List>
+        <ListItem>Item 1</ListItem>
+        <ListItem>Item 2</ListItem>
+        <ListItem>Item 3</ListItem>
+      </List>
     </div>
   )
+}`,
+          },
+          {
+            id: 'ui',
+            filename: 'ui.tsx',
+            language: 'typescript',
+            code: `import { ReactNode } from 'react'
+
+export function Heading({ children }: { children: ReactNode }) {
+  return <h2>{children}</h2>
+}
+
+export function Text({ children }: { children: ReactNode }) {
+  return <p>{children}</p>
+}
+
+export function Input({ value, onChange, placeholder, type }: {
+  value?: string | number; onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string; type?: string
+}) {
+  return <input value={value} onChange={onChange} placeholder={placeholder} type={type} />
+}
+
+export function List({ children }: { children: ReactNode }) {
+  return <ul>{children}</ul>
+}
+
+export function ListItem({ children }: { children: ReactNode }) {
+  return <li>{children}</li>
 }`,
           },
         ],
@@ -2283,36 +2507,22 @@ export function ExpensiveTree() {
               name: 'ColorPicker',
               renderCount: 0,
               children: [
+                { id: 'input', name: 'Input', renderCount: 0 },
                 {
-                  id: 'div-color',
-                  name: 'div',
+                  id: 'expensive-tree',
+                  name: 'ExpensiveTree',
                   renderCount: 0,
                   children: [
-                    { id: 'input', name: 'input', renderCount: 0 },
+                    { id: 'heading', name: 'Heading', renderCount: 0 },
+                    { id: 'text-info', name: 'Text', renderCount: 0 },
                     {
-                      id: 'expensive-tree',
-                      name: 'ExpensiveTree',
+                      id: 'list',
+                      name: 'List',
                       renderCount: 0,
                       children: [
-                        {
-                          id: 'div-expensive',
-                          name: 'div',
-                          renderCount: 0,
-                          children: [
-                            { id: 'h2', name: 'h2', renderCount: 0 },
-                            { id: 'p-info', name: 'p', renderCount: 0 },
-                            {
-                              id: 'ul',
-                              name: 'ul',
-                              renderCount: 0,
-                              children: [
-                                { id: 'li-1', name: 'li', renderCount: 0 },
-                                { id: 'li-2', name: 'li', renderCount: 0 },
-                                { id: 'li-3', name: 'li', renderCount: 0 },
-                              ],
-                            },
-                          ],
-                        },
+                        { id: 'item-1', name: 'ListItem', renderCount: 0 },
+                        { id: 'item-2', name: 'ListItem', renderCount: 0 },
+                        { id: 'item-3', name: 'ListItem', renderCount: 0 },
                       ],
                     },
                   ],
@@ -2367,15 +2577,24 @@ function App() {
             id: 'before',
             filename: 'Before.tsx',
             language: 'typescript',
-            code: `import { useState, useCallback } from 'react'
+            code: `import { useState, useCallback, ReactNode } from 'react'
 
-// ❌ useCallback WITHOUT memo on child
-// Child still re-renders because it's not wrapped in memo()
+// UI components
+function Input({ value, onChange }: { value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
+  return <input value={value} onChange={onChange} />
+}
+
+function Text({ children }: { children: ReactNode }) {
+  return <p>{children}</p>
+}
 
 function Button({ onClick }: { onClick: () => void }) {
   console.log('Button rendered (no memo)')
   return <button onClick={onClick}>Increment</button>
 }
+
+// ❌ useCallback WITHOUT memo on child
+// Child still re-renders because it's not wrapped in memo()
 
 export function BeforeApp() {
   const [count, setCount] = useState(0)
@@ -2388,8 +2607,8 @@ export function BeforeApp() {
 
   return (
     <div>
-      <input value={text} onChange={e => setText(e.target.value)} />
-      <p>Count: {count}</p>
+      <Input value={text} onChange={e => setText(e.target.value)} />
+      <Text>Count: {count}</Text>
       {/* But Button re-renders anyway! No memo() */}
       <Button onClick={handleIncrement} />
     </div>
@@ -2400,7 +2619,16 @@ export function BeforeApp() {
             id: 'after',
             filename: 'After.tsx',
             language: 'typescript',
-            code: `import { useState, useCallback, memo } from 'react'
+            code: `import { useState, useCallback, memo, ReactNode } from 'react'
+
+// UI components
+function Input({ value, onChange }: { value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
+  return <input value={value} onChange={onChange} />
+}
+
+function Text({ children }: { children: ReactNode }) {
+  return <p>{children}</p>
+}
 
 // ✅ useCallback WITH memo on child
 // MemoButton skips re-render when onClick reference is stable
@@ -2425,8 +2653,8 @@ export function AfterApp() {
 
   return (
     <div>
-      <input value={text} onChange={e => setText(e.target.value)} />
-      <p>Count: {count}</p>
+      <Input value={text} onChange={e => setText(e.target.value)} />
+      <Text>Count: {count}</Text>
       {/* MemoButton skips re-render on text change! */}
       <MemoButton onClick={handleIncrement} />
     </div>
@@ -2444,8 +2672,8 @@ export function AfterApp() {
               name: 'BeforeApp',
               renderCount: 0,
               children: [
-                { id: 'before-input', name: 'input', renderCount: 0 },
-                { id: 'before-p', name: 'p', renderCount: 0 },
+                { id: 'before-input', name: 'Input', renderCount: 0 },
+                { id: 'before-text', name: 'Text', renderCount: 0 },
                 { id: 'before-button', name: 'Button', renderCount: 0 },
               ],
             },
@@ -2454,8 +2682,8 @@ export function AfterApp() {
               name: 'AfterApp',
               renderCount: 0,
               children: [
-                { id: 'after-input', name: 'input', renderCount: 0 },
-                { id: 'after-p', name: 'p', renderCount: 0 },
+                { id: 'after-input', name: 'Input', renderCount: 0 },
+                { id: 'after-text', name: 'Text', renderCount: 0 },
                 { id: 'after-button', name: 'MemoButton', renderCount: 0 },
               ],
             },
@@ -2504,14 +2732,23 @@ const handler = useCallback(() => { ... }, [])
             id: 'before',
             filename: 'Before.tsx',
             language: 'typescript',
-            code: `import { useState, useMemo } from 'react'
+            code: `import { useState, useMemo, ReactNode } from 'react'
 
-// ❌ useMemo caches the value, but Child has no memo()
+// UI components
+function Input({ value, onChange }: { value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
+  return <input value={value} onChange={onChange} />
+}
+
+function Button({ onClick, children }: { onClick: () => void; children: ReactNode }) {
+  return <button onClick={onClick}>{children}</button>
+}
 
 function Child({ value }: { value: number }) {
   console.log('Child rendered (no memo)')
   return <p>Computed: {value}</p>
 }
+
+// ❌ useMemo caches the value, but Child has no memo()
 
 export function BeforeApp() {
   const [count, setCount] = useState(0)
@@ -2525,8 +2762,8 @@ export function BeforeApp() {
 
   return (
     <div>
-      <input value={text} onChange={e => setText(e.target.value)} />
-      <button onClick={() => setCount(c => c + 1)}>Increment</button>
+      <Input value={text} onChange={e => setText(e.target.value)} />
+      <Button onClick={() => setCount(c => c + 1)}>Increment</Button>
       {/* Child re-renders even though expensive value didn't change */}
       <Child value={expensive} />
     </div>
@@ -2537,7 +2774,16 @@ export function BeforeApp() {
             id: 'after',
             filename: 'After.tsx',
             language: 'typescript',
-            code: `import { useState, useMemo, memo } from 'react'
+            code: `import { useState, useMemo, memo, ReactNode } from 'react'
+
+// UI components
+function Input({ value, onChange }: { value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
+  return <input value={value} onChange={onChange} />
+}
+
+function Button({ onClick, children }: { onClick: () => void; children: ReactNode }) {
+  return <button onClick={onClick}>{children}</button>
+}
 
 // ✅ useMemo + memo = Child skips re-render
 
@@ -2558,8 +2804,8 @@ export function AfterApp() {
 
   return (
     <div>
-      <input value={text} onChange={e => setText(e.target.value)} />
-      <button onClick={() => setCount(c => c + 1)}>Increment</button>
+      <Input value={text} onChange={e => setText(e.target.value)} />
+      <Button onClick={() => setCount(c => c + 1)}>Increment</Button>
       {/* MemoChild skips re-render when expensive unchanged */}
       <MemoChild value={expensive} />
     </div>
@@ -2577,8 +2823,8 @@ export function AfterApp() {
               name: 'BeforeApp',
               renderCount: 0,
               children: [
-                { id: 'before-input', name: 'input', renderCount: 0 },
-                { id: 'before-button', name: 'button', renderCount: 0 },
+                { id: 'before-input', name: 'Input', renderCount: 0 },
+                { id: 'before-button', name: 'Button', renderCount: 0 },
                 { id: 'before-child', name: 'Child', renderCount: 0 },
               ],
             },
@@ -2587,8 +2833,8 @@ export function AfterApp() {
               name: 'AfterApp',
               renderCount: 0,
               children: [
-                { id: 'after-input', name: 'input', renderCount: 0 },
-                { id: 'after-button', name: 'button', renderCount: 0 },
+                { id: 'after-input', name: 'Input', renderCount: 0 },
+                { id: 'after-button', name: 'Button', renderCount: 0 },
                 { id: 'after-child', name: 'MemoChild', renderCount: 0 },
               ],
             },
