@@ -3,7 +3,7 @@ import { sel } from '../helpers/selectors.js'
 
 test.describe('View Mode', () => {
   test.beforeEach(async ({ app, page }) => {
-    await app.gotoExample('basics', 'state-change')
+    await app.gotoExample('without-memo', 'state-change')
     // Reset to clear layout-switch renders and toasts
     await app.reset()
     await page.waitForTimeout(500)

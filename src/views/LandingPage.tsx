@@ -116,7 +116,7 @@ export function LandingPage() {
           <h2 className="mb-6 text-center text-2xl font-semibold">
             Explore by Topic
           </h2>
-          <div className="grid gap-6 sm:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2">
             {exampleCategories.map((category) => (
               <div
                 key={category.id}
@@ -178,7 +178,7 @@ export function LandingPage() {
           <div className="rounded-xl border border-[var(--border)] bg-[var(--secondary)] p-8">
             <h2 className="mb-2 text-xl font-semibold">Ready to Start?</h2>
             <p className="mb-4 text-[var(--muted-foreground)]">
-              Begin with the basics and work your way up to advanced patterns.
+              Start without memo to understand default behavior, then add memo to see the difference.
             </p>
             <Link
               href={quickStartPath}
@@ -198,12 +198,10 @@ export function LandingPage() {
  */
 function getCategoryDescription(categoryId: string): string {
   switch (categoryId) {
-    case 'basics':
-      return 'Understand the fundamental triggers for re-renders: state, props, and parent updates.'
-    case 'optimization':
-      return 'Learn memo, useCallback, useMemo, and composition patterns to optimize performance.'
-    case 'advanced':
-      return 'Master useReducer, Suspense, concurrent features, and external store subscriptions.'
+    case 'without-memo':
+      return 'How React re-renders by default: state, props, context, compound components, render props, and more.'
+    case 'with-memo':
+      return 'Optimize with memo(), useCallback, useMemo, and composition patterns to skip unnecessary re-renders.'
     default:
       return ''
   }

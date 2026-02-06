@@ -193,6 +193,56 @@ export const triggerConfigMap: Record<string, TriggerAction[]> = {
       variant: 'force',
     },
   ],
+  'compound-component': [
+    {
+      id: 'select-option',
+      label: 'Select Option',
+      description: 'Changes selection — all sub-components re-render',
+      variant: 'context',
+    },
+    {
+      id: 'toggle-open',
+      label: 'Toggle Dropdown',
+      description: 'Opens/closes dropdown — all consumers re-render',
+      variant: 'context',
+    },
+  ],
+  'render-props': [
+    {
+      id: 'move-mouse',
+      label: 'Simulate Mouse Move',
+      description: 'Updates position state — render() creates new JSX',
+      variant: 'state',
+    },
+  ],
+  'usecallback-comparison': [
+    {
+      id: 'type',
+      label: 'Type Text',
+      description: 'Before: Button re-renders. After: MemoButton skips',
+      variant: 'state',
+    },
+    {
+      id: 'increment',
+      label: 'Increment Count',
+      description: 'Both buttons re-render (count prop changed)',
+      variant: 'state',
+    },
+  ],
+  'usememo-comparison': [
+    {
+      id: 'type',
+      label: 'Type Text',
+      description: 'Before: Child re-renders. After: MemoChild skips',
+      variant: 'state',
+    },
+    {
+      id: 'increment',
+      label: 'Increment Count',
+      description: 'Both children re-render (value prop changed)',
+      variant: 'state',
+    },
+  ],
 }
 
 /**

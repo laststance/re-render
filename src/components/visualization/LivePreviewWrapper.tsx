@@ -2,6 +2,7 @@ import { type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { useRenderTracker } from '@/hooks'
 import { useLivePreview } from './LivePreviewContext'
+import type { TrackableDeps } from '@/types'
 
 interface LivePreviewWrapperProps {
   /** The component name to display in the overlay label */
@@ -10,6 +11,8 @@ interface LivePreviewWrapperProps {
   children: ReactNode
   /** Additional class names */
   className?: string
+  /** Optional dependencies to track for render reason detection (props and/or state) */
+  deps?: TrackableDeps
 }
 
 /**
@@ -25,11 +28,14 @@ export function LivePreviewWrapper({
   componentName,
   children,
   className,
+  deps,
 }: LivePreviewWrapperProps) {
   const { showOverlays } = useLivePreview()
 
-  // Track re-renders for this wrapper so Toast notifications fire
-  useRenderTracker(componentName)
+  // Track re-renders for this wrapper so Toast notifications fire.
+  // When deps is provided, render reason detection can identify
+  // state-change/props-change instead of falling through to parent-rerender.
+  useRenderTracker(componentName, deps)
 
   // When overlays are disabled, just render children directly
   if (!showOverlays) {

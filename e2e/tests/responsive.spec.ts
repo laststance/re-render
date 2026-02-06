@@ -27,10 +27,10 @@ test.describe('Responsive Layout', () => {
     await expect(page.locator(sel.mobileSheet)).toBeVisible()
 
     // Click an example link in the sheet
-    const link = page.locator(sel.mobileSheet).locator('a[href="/basics/state-change"]')
+    const link = page.locator(sel.mobileSheet).locator('a[href="/without-memo/state-change"]')
     await link.click()
 
-    await expect(page).toHaveURL(/\/basics\/state-change/)
+    await expect(page).toHaveURL(/\/without-memo\/state-change/)
     // Sheet closes via CSS transform (-translate-x-full) after navigation.
     // Check the transform class rather than visibility since the element stays in DOM.
     await expect(page.locator(sel.mobileSheet)).toHaveClass(/-translate-x-full/)
@@ -38,7 +38,7 @@ test.describe('Responsive Layout', () => {
 
   test('mobile: pane tab bar visible on example page', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 })
-    await page.goto('/basics/state-change')
+    await page.goto('/without-memo/state-change')
     // Wait for the page to load
     await page.locator(sel.exampleTitle).waitFor({ state: 'visible', timeout: 15_000 })
     // Mobile shows Code/Preview pane tabs
@@ -47,7 +47,7 @@ test.describe('Responsive Layout', () => {
 
   test('tablet: stacked layout with pane tabs', async ({ page }) => {
     await page.setViewportSize({ width: 800, height: 1024 })
-    await page.goto('/basics/state-change')
+    await page.goto('/without-memo/state-change')
     await page.locator(sel.exampleTitle).waitFor({ state: 'visible', timeout: 15_000 })
     // Tablet should also show pane tab bar
     await expect(page.locator(sel.paneTabList)).toBeVisible()
@@ -55,7 +55,7 @@ test.describe('Responsive Layout', () => {
 
   test('desktop: split pane layout without pane tab bar', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 })
-    await page.goto('/basics/state-change')
+    await page.goto('/without-memo/state-change')
     await page.locator(sel.exampleTitle).waitFor({ state: 'visible', timeout: 15_000 })
     // Desktop uses split pane, no tab bar needed
     await expect(page.locator(sel.paneTabList)).toBeHidden()

@@ -17,6 +17,10 @@ import {
   ConcurrentPreview,
   UseEffectDepsPreview,
   RefVsStatePreview,
+  CompoundComponentPreview,
+  RenderPropsPreview,
+  UseCallbackComparisonPreview,
+  UseMemoComparisonPreview,
 } from './livePreviewExamples'
 
 /**
@@ -47,4 +51,8 @@ export const livePreviewMap: Record<string, LivePreviewComponent> = {
   concurrent: ConcurrentPreview,
   'use-effect-deps': UseEffectDepsPreview,
   'ref-vs-state': RefVsStatePreview,
+  'compound-component': CompoundComponentPreview,
+  'render-props': RenderPropsPreview,
+  'usecallback-comparison': UseCallbackComparisonPreview,
+  'usememo-comparison': UseMemoComparisonPreview,
 }

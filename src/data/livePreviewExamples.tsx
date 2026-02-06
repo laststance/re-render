@@ -34,7 +34,7 @@ export const StateChangePreview = forwardRef<LivePreviewHandle>(
     }))
 
     return (
-      <LivePreviewWrapper componentName="App">
+      <LivePreviewWrapper componentName="App" deps={{ state: { count } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <LivePreviewWrapper componentName="h1">
             <h1 className="text-xl font-semibold">Count: {count}</h1>
@@ -70,12 +70,12 @@ export const PropsChangePreview = forwardRef<LivePreviewHandle>(
     }))
 
     return (
-      <LivePreviewWrapper componentName="App">
+      <LivePreviewWrapper componentName="App" deps={{ state: { count } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <LivePreviewWrapper componentName="h1">
             <h1 className="text-lg font-medium text-muted-foreground">Parent</h1>
           </LivePreviewWrapper>
-          <LivePreviewWrapper componentName="Counter">
+          <LivePreviewWrapper componentName="Counter" deps={{ props: { count } }}>
             <div className="space-y-2 rounded border border-border bg-muted/30 p-3">
               <LivePreviewWrapper componentName="p">
                 <p>Count: {count}</p>
@@ -113,7 +113,7 @@ export const ParentRerenderPreview = forwardRef<LivePreviewHandle>(
     }))
 
     return (
-      <LivePreviewWrapper componentName="App">
+      <LivePreviewWrapper componentName="App" deps={{ state: { count } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <LivePreviewWrapper componentName="h1">
             <h1 className="text-xl font-semibold">Count: {count}</h1>
@@ -156,13 +156,13 @@ export const ContextChangePreview = forwardRef<LivePreviewHandle>(
     }))
 
     return (
-      <LivePreviewWrapper componentName="App">
-        <LivePreviewWrapper componentName="CountProvider">
+      <LivePreviewWrapper componentName="App" deps={{ state: { count } }}>
+        <LivePreviewWrapper componentName="CountProvider" deps={{ state: { count } }}>
           <div className="space-y-4 rounded-lg border border-border bg-card p-4">
             <LivePreviewWrapper componentName="h1">
               <h1 className="text-lg font-medium">Context Re-renders</h1>
             </LivePreviewWrapper>
-            <LivePreviewWrapper componentName="CountDisplay">
+            <LivePreviewWrapper componentName="CountDisplay" deps={{ props: { count } }}>
               <div className="rounded border border-border bg-muted/30 p-3">
                 <LivePreviewWrapper componentName="p">
                   <p>Count: {count}</p>
@@ -191,7 +191,7 @@ export const ContextChangePreview = forwardRef<LivePreviewHandle>(
 export const ForceUpdatePreview = forwardRef<LivePreviewHandle>(
   function ForceUpdatePreview(_props, ref) {
     const [timerId, setTimerId] = useState(1)
-    const [, forceUpdate] = useState(0)
+    const [forceUpdateCount, forceUpdate] = useState(0)
 
     useImperativeHandle(ref, () => ({
       trigger: (triggerId: string) => {
@@ -204,7 +204,7 @@ export const ForceUpdatePreview = forwardRef<LivePreviewHandle>(
     }))
 
     return (
-      <LivePreviewWrapper componentName="App">
+      <LivePreviewWrapper componentName="App" deps={{ state: { timerId, forceUpdateCount } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <LivePreviewWrapper componentName="h1">
             <h1 className="text-lg font-medium">Force Update Patterns</h1>
@@ -262,7 +262,7 @@ export const MemoPreview = forwardRef<LivePreviewHandle>(
     }))
 
     return (
-      <LivePreviewWrapper componentName="App">
+      <LivePreviewWrapper componentName="App" deps={{ state: { count } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <LivePreviewWrapper componentName="h1">
             <h1 className="text-xl font-semibold">Count: {count}</h1>
@@ -311,7 +311,7 @@ export const UseCallbackPreview = forwardRef<LivePreviewHandle>(
     }))
 
     return (
-      <LivePreviewWrapper componentName="App">
+      <LivePreviewWrapper componentName="App" deps={{ state: { count, text } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <LivePreviewWrapper componentName="input">
             <input
@@ -364,7 +364,7 @@ export const UseMemoPreview = forwardRef<LivePreviewHandle>(
     const expensiveValue = count * 100
 
     return (
-      <LivePreviewWrapper componentName="App">
+      <LivePreviewWrapper componentName="App" deps={{ state: { count, text } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <LivePreviewWrapper componentName="input">
             <input
@@ -432,7 +432,7 @@ export const ReactLazyPreview = forwardRef<LivePreviewHandle>(
     }
 
     return (
-      <LivePreviewWrapper componentName="App">
+      <LivePreviewWrapper componentName="App" deps={{ state: { showChart, isLoading } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <LivePreviewWrapper componentName="h1">
             <h1 className="text-lg font-medium">Code Splitting Demo</h1>
@@ -1047,6 +1047,353 @@ export const RefVsStatePreview = forwardRef<LivePreviewHandle>(
 
           <p className="text-xs text-muted-foreground">
             💡 Real useRef.current changes don't trigger re-renders
+          </p>
+        </div>
+      </LivePreviewWrapper>
+    )
+  }
+)
+
+/**
+ * Compound Component example preview.
+ * Shows Context-based sub-components re-rendering on shared state changes.
+ */
+export const CompoundComponentPreview = forwardRef<LivePreviewHandle>(
+  function CompoundComponentPreview(_props, ref) {
+    const [selected, setSelected] = useState('')
+    const [isOpen, setIsOpen] = useState(false)
+
+    useImperativeHandle(ref, () => ({
+      trigger: (triggerId: string) => {
+        if (triggerId === 'select-option') {
+          const options = ['React', 'Vue', 'Svelte']
+          const currentIndex = options.indexOf(selected)
+          const next = options[(currentIndex + 1) % options.length]
+          setSelected(next)
+          setIsOpen(false)
+        } else if (triggerId === 'toggle-open') {
+          setIsOpen((o) => !o)
+        }
+      },
+    }))
+
+    return (
+      <LivePreviewWrapper componentName="App">
+        <div className="space-y-4 rounded-lg border border-border bg-card p-4">
+          <LivePreviewWrapper componentName="h1">
+            <h1 className="text-lg font-medium">Compound Component</h1>
+          </LivePreviewWrapper>
+          <LivePreviewWrapper componentName="Select" deps={{ state: { selected, isOpen } }}>
+            <div className="space-y-2 rounded border border-border bg-muted/30 p-3">
+              <LivePreviewWrapper componentName="Select.Trigger" deps={{ props: { selected, isOpen } }}>
+                <button
+                  onClick={() => setIsOpen((o) => !o)}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-left text-sm"
+                >
+                  {selected || 'Choose...'} {isOpen ? '▲' : '▼'}
+                </button>
+              </LivePreviewWrapper>
+              {isOpen && (
+                <LivePreviewWrapper componentName="Select.Options" deps={{ props: { isOpen } }}>
+                  <ul className="space-y-1 rounded border border-border bg-background p-1">
+                    {['React', 'Vue', 'Svelte'].map((opt) => (
+                      <LivePreviewWrapper key={opt} componentName="Select.Option" deps={{ props: { selected } }}>
+                        <li
+                          onClick={() => {
+                            setSelected(opt)
+                            setIsOpen(false)
+                          }}
+                          className={`cursor-pointer rounded px-3 py-1.5 text-sm transition-colors hover:bg-accent ${
+                            selected === opt ? 'bg-accent font-medium' : ''
+                          }`}
+                        >
+                          {opt}
+                        </li>
+                      </LivePreviewWrapper>
+                    ))}
+                  </ul>
+                </LivePreviewWrapper>
+              )}
+            </div>
+          </LivePreviewWrapper>
+          <p className="text-xs text-muted-foreground">
+            💡 All sub-components re-render when any shared context value changes
+          </p>
+        </div>
+      </LivePreviewWrapper>
+    )
+  }
+)
+
+/**
+ * Render Props example preview.
+ * Shows render function creates new JSX on each call.
+ */
+export const RenderPropsPreview = forwardRef<LivePreviewHandle>(
+  function RenderPropsPreview(_props, ref) {
+    const [position, setPosition] = useState({ x: 0, y: 0 })
+
+    useImperativeHandle(ref, () => ({
+      trigger: (triggerId: string) => {
+        if (triggerId === 'move-mouse') {
+          setPosition((p) => ({
+            x: Math.min(p.x + 20, 200),
+            y: Math.min(p.y + 10, 150),
+          }))
+        }
+      },
+    }))
+
+    return (
+      <LivePreviewWrapper componentName="App">
+        <div className="space-y-4 rounded-lg border border-border bg-card p-4">
+          <LivePreviewWrapper componentName="h1">
+            <h1 className="text-lg font-medium">Render Props</h1>
+          </LivePreviewWrapper>
+          <LivePreviewWrapper componentName="MouseTracker" deps={{ state: { position } }}>
+            <div
+              className="relative h-40 rounded border border-border bg-muted/30 p-3"
+              onMouseMove={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect()
+                setPosition({
+                  x: Math.round(e.clientX - rect.left),
+                  y: Math.round(e.clientY - rect.top),
+                })
+              }}
+            >
+              <p className="text-xs text-muted-foreground">Move mouse here</p>
+              <LivePreviewWrapper componentName="DisplayCoords" deps={{ props: { x: position.x, y: position.y } }}>
+                <div className="mt-2 rounded bg-background/80 p-2">
+                  <p className="text-sm">
+                    Mouse: ({position.x}, {position.y})
+                  </p>
+                </div>
+              </LivePreviewWrapper>
+              {/* Visual cursor indicator */}
+              <div
+                className="pointer-events-none absolute h-2 w-2 rounded-full bg-primary"
+                style={{ left: position.x - 4, top: position.y - 4 }}
+              />
+            </div>
+          </LivePreviewWrapper>
+          <p className="text-xs text-muted-foreground">
+            💡 render() creates new JSX every call — both components re-render
+          </p>
+        </div>
+      </LivePreviewWrapper>
+    )
+  }
+)
+
+/**
+ * useCallback Comparison example preview.
+ * Before/After: useCallback without memo vs with memo.
+ */
+export const UseCallbackComparisonPreview = forwardRef<LivePreviewHandle>(
+  function UseCallbackComparisonPreview(_props, ref) {
+    const [count, setCount] = useState(0)
+    const [text, setText] = useState('')
+    const [beforeButtonRenders, setBeforeButtonRenders] = useState(1)
+    const [afterButtonRenders, setAfterButtonRenders] = useState(1)
+
+    useImperativeHandle(ref, () => ({
+      trigger: (triggerId: string) => {
+        if (triggerId === 'type') {
+          setText((t) => t + 'a')
+          setBeforeButtonRenders((c) => c + 1)
+          // afterButtonRenders stays the same (memo skips)
+        } else if (triggerId === 'increment') {
+          setCount((c) => c + 1)
+          setBeforeButtonRenders((c) => c + 1)
+          setAfterButtonRenders((c) => c + 1)
+        }
+      },
+    }))
+
+    const handleType = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setText(e.target.value)
+      setBeforeButtonRenders((c) => c + 1)
+    }
+
+    const handleIncrement = () => {
+      setCount((c) => c + 1)
+      setBeforeButtonRenders((c) => c + 1)
+      setAfterButtonRenders((c) => c + 1)
+    }
+
+    return (
+      <LivePreviewWrapper componentName="Root">
+        <div className="space-y-4 rounded-lg border border-border bg-card p-4">
+          <div className="grid grid-cols-2 gap-3">
+            {/* Before: useCallback without memo */}
+            <LivePreviewWrapper componentName="BeforeApp" deps={{ state: { count, text } }}>
+              <div className="space-y-2 rounded border border-red-500/30 bg-red-50/20 p-3 dark:bg-red-950/20">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-red-600 dark:text-red-400">Before</span>
+                  <span className="text-xs text-muted-foreground">no memo</span>
+                </div>
+                <input
+                  value={text}
+                  onChange={handleType}
+                  placeholder="Type..."
+                  className="w-full rounded border border-input bg-background px-2 py-1 text-sm"
+                />
+                <p className="text-sm">Count: {count}</p>
+                <LivePreviewWrapper componentName="Button">
+                  <button
+                    onClick={handleIncrement}
+                    className="rounded bg-primary px-3 py-1.5 text-sm text-primary-foreground"
+                  >
+                    Increment
+                  </button>
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+                    renders: {beforeButtonRenders}
+                  </p>
+                </LivePreviewWrapper>
+              </div>
+            </LivePreviewWrapper>
+
+            {/* After: useCallback + memo */}
+            <LivePreviewWrapper componentName="AfterApp" deps={{ state: { count, text } }}>
+              <div className="space-y-2 rounded border border-green-500/30 bg-green-50/20 p-3 dark:bg-green-950/20">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-green-600 dark:text-green-400">After</span>
+                  <span className="text-xs text-muted-foreground">+ memo</span>
+                </div>
+                <input
+                  value={text}
+                  onChange={handleType}
+                  placeholder="Type..."
+                  className="w-full rounded border border-input bg-background px-2 py-1 text-sm"
+                />
+                <p className="text-sm">Count: {count}</p>
+                <LivePreviewWrapper componentName="MemoButton">
+                  <button
+                    onClick={handleIncrement}
+                    className="rounded bg-primary px-3 py-1.5 text-sm text-primary-foreground"
+                  >
+                    Increment
+                  </button>
+                  <p className="mt-1 text-xs text-green-600 dark:text-green-400">
+                    renders: {afterButtonRenders}
+                  </p>
+                </LivePreviewWrapper>
+              </div>
+            </LivePreviewWrapper>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            💡 Type text — Before Button re-renders, After MemoButton stays stable
+          </p>
+        </div>
+      </LivePreviewWrapper>
+    )
+  }
+)
+
+/**
+ * useMemo Comparison example preview.
+ * Before/After: useMemo caches value but child needs memo too.
+ */
+export const UseMemoComparisonPreview = forwardRef<LivePreviewHandle>(
+  function UseMemoComparisonPreview(_props, ref) {
+    const [count, setCount] = useState(0)
+    const [text, setText] = useState('')
+    const [beforeChildRenders, setBeforeChildRenders] = useState(1)
+    const [afterChildRenders, setAfterChildRenders] = useState(1)
+
+    const expensiveValue = count * 100
+
+    useImperativeHandle(ref, () => ({
+      trigger: (triggerId: string) => {
+        if (triggerId === 'type') {
+          setText((t) => t + 'a')
+          setBeforeChildRenders((c) => c + 1)
+          // afterChildRenders stays the same (memo skips)
+        } else if (triggerId === 'increment') {
+          setCount((c) => c + 1)
+          setBeforeChildRenders((c) => c + 1)
+          setAfterChildRenders((c) => c + 1)
+        }
+      },
+    }))
+
+    const handleType = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setText(e.target.value)
+      setBeforeChildRenders((c) => c + 1)
+    }
+
+    const handleIncrement = () => {
+      setCount((c) => c + 1)
+      setBeforeChildRenders((c) => c + 1)
+      setAfterChildRenders((c) => c + 1)
+    }
+
+    return (
+      <LivePreviewWrapper componentName="Root">
+        <div className="space-y-4 rounded-lg border border-border bg-card p-4">
+          <div className="grid grid-cols-2 gap-3">
+            {/* Before: useMemo without memo */}
+            <LivePreviewWrapper componentName="BeforeApp" deps={{ state: { count, text } }}>
+              <div className="space-y-2 rounded border border-red-500/30 bg-red-50/20 p-3 dark:bg-red-950/20">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-red-600 dark:text-red-400">Before</span>
+                  <span className="text-xs text-muted-foreground">no memo</span>
+                </div>
+                <input
+                  value={text}
+                  onChange={handleType}
+                  placeholder="Type..."
+                  className="w-full rounded border border-input bg-background px-2 py-1 text-sm"
+                />
+                <button
+                  onClick={handleIncrement}
+                  className="rounded bg-primary px-3 py-1.5 text-sm text-primary-foreground"
+                >
+                  Increment
+                </button>
+                <LivePreviewWrapper componentName="Child">
+                  <div className="rounded bg-muted/50 p-2">
+                    <p className="text-sm">Computed: {expensiveValue}</p>
+                    <p className="text-xs text-red-600 dark:text-red-400">
+                      renders: {beforeChildRenders}
+                    </p>
+                  </div>
+                </LivePreviewWrapper>
+              </div>
+            </LivePreviewWrapper>
+
+            {/* After: useMemo + memo */}
+            <LivePreviewWrapper componentName="AfterApp" deps={{ state: { count, text } }}>
+              <div className="space-y-2 rounded border border-green-500/30 bg-green-50/20 p-3 dark:bg-green-950/20">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-green-600 dark:text-green-400">After</span>
+                  <span className="text-xs text-muted-foreground">+ memo</span>
+                </div>
+                <input
+                  value={text}
+                  onChange={handleType}
+                  placeholder="Type..."
+                  className="w-full rounded border border-input bg-background px-2 py-1 text-sm"
+                />
+                <button
+                  onClick={handleIncrement}
+                  className="rounded bg-primary px-3 py-1.5 text-sm text-primary-foreground"
+                >
+                  Increment
+                </button>
+                <LivePreviewWrapper componentName="MemoChild">
+                  <div className="rounded bg-muted/50 p-2">
+                    <p className="text-sm">Computed: {expensiveValue}</p>
+                    <p className="text-xs text-green-600 dark:text-green-400">
+                      renders: {afterChildRenders}
+                    </p>
+                  </div>
+                </LivePreviewWrapper>
+              </div>
+            </LivePreviewWrapper>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            💡 Type text — Before Child re-renders, After MemoChild stays stable
           </p>
         </div>
       </LivePreviewWrapper>

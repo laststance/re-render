@@ -11,7 +11,7 @@ export class AppPage {
   /**
    * Navigate to a path and wait for the sidebar nav to be interactive.
    * Dismisses any Next.js dev overlay that may appear from hydration warnings.
-   * @param path - URL path (e.g. "/" or "/basics/state-change")
+   * @param path - URL path (e.g. "/" or "/without-memo/state-change")
    */
   async goto(path: string) {
     await this.page.goto(path)
@@ -23,7 +23,7 @@ export class AppPage {
    * Navigate to a specific example and wait for its title to appear.
    * Waits for layout to settle (media query useEffect) and dismisses
    * any toasts from the initial layout-switch re-renders.
-   * @param cat - Category ID (e.g. "basics")
+   * @param cat - Category ID (e.g. "without-memo")
    * @param ex - Example ID (e.g. "state-change")
    */
   async gotoExample(cat: string, ex: string) {

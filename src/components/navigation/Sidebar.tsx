@@ -120,7 +120,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             categoryId={category.id}
             categoryName={category.name}
             examples={category.examples}
-            defaultExpanded={category.id === params.categoryId || (isHome && category.id === 'basics')}
+            defaultExpanded={category.id === params.categoryId || (isHome && category.id === 'without-memo')}
           />
         ))}
       </nav>

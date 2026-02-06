@@ -61,7 +61,7 @@ export interface Example {
  * Category grouping related examples together.
  */
 export interface ExampleCategory {
-  /** Category slug used in URL path (e.g., 'basics') */
+  /** Category slug used in URL path (e.g., 'without-memo') */
   id: string
   /** Display name in navigation */
   name: string

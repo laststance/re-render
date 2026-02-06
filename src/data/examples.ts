@@ -2,12 +2,12 @@ import type { ExampleCategory } from '@/types'
 
 /**
  * All re-render examples organized by category.
- * Categories: basics, optimization, advanced
+ * Categories: without-memo (default rendering behavior), with-memo (optimization with memo/useCallback/useMemo)
  */
 export const exampleCategories: ExampleCategory[] = [
   {
-    id: 'basics',
-    name: 'Basics',
+    id: 'without-memo',
+    name: 'Without memo',
     examples: [
       {
         id: 'state-change',
@@ -633,626 +633,6 @@ const [, forceUpdate] = useReducer(x => x + 1, 0)
           ],
         },
       },
-    ],
-  },
-  {
-    id: 'optimization',
-    name: 'Optimization',
-    examples: [
-      {
-        id: 'memo',
-        title: 'React.memo',
-        description: 'Preventing unnecessary re-renders with memo',
-        files: [
-          {
-            id: 'app',
-            filename: 'App.tsx',
-            language: 'typescript',
-            code: `import { useState } from 'react'
-import { MemoChild } from './MemoChild'
-
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <div className="app">
-      <h1>Count: {count}</h1>
-      <button onClick={() => setCount(c => c + 1)}>
-        Increment
-      </button>
-      {/* MemoChild won't re-render when count changes */}
-      <MemoChild name="Alice" />
-    </div>
-  )
-}
-
-export default App`,
-          },
-          {
-            id: 'memo-child',
-            filename: 'MemoChild.tsx',
-            language: 'typescript',
-            code: `import { memo } from 'react'
-
-interface MemoChildProps {
-  name: string
-}
-
-// memo() prevents re-renders when props are unchanged
-export const MemoChild = memo(function MemoChild({ name }: MemoChildProps) {
-  console.log('MemoChild rendered')
-
-  return (
-    <div className="child">
-      <p>Hello, {name}!</p>
-    </div>
-  )
-})`,
-          },
-        ],
-        componentTree: {
-          id: 'app',
-          name: 'App',
-          renderCount: 0,
-          children: [
-            {
-              id: 'div-app',
-              name: 'div',
-              renderCount: 0,
-              children: [
-                { id: 'h1', name: 'h1', renderCount: 0 },
-                { id: 'button', name: 'button', renderCount: 0 },
-                {
-                  id: 'memo-child',
-                  name: 'MemoChild',
-                  renderCount: 0,
-                  children: [
-                    {
-                      id: 'div-child',
-                      name: 'div',
-                      renderCount: 0,
-                      children: [{ id: 'p-hello', name: 'p', renderCount: 0 }],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        explanation: {
-          content:
-            'React.memo is a higher-order component that memoizes your component. It performs a shallow comparison of props and skips re-rendering if props haven\'t changed. This is useful when a parent re-renders but the child\'s props remain the same.',
-          keyPoints: [
-            'memo() wraps a component to skip re-renders when props are unchanged',
-            'Uses shallow comparison by default (Object.is for each prop)',
-            'Custom comparison function can be passed as second argument',
-            'memo() is useless if you pass new object/array/function references each render',
-          ],
-          codeSnippets: [
-            {
-              language: 'typescript',
-              caption: 'Wrapping a component with memo:',
-              code: `import { memo } from 'react'
-
-// Without memo: re-renders on every parent render
-function Child({ name }) { ... }
-
-// With memo: skips re-render if name unchanged
-const MemoChild = memo(function MemoChild({ name }) {
-  return <p>Hello, {name}!</p>
-})`,
-            },
-          ],
-          docLinks: [
-            {
-              label: 'React.memo',
-              url: 'https://react.dev/reference/react/memo',
-            },
-            {
-              label: 'Optimizing Re-renders',
-              url: 'https://react.dev/learn/render-and-commit#optimizing-performance',
-            },
-          ],
-        },
-      },
-      {
-        id: 'usecallback',
-        title: 'useCallback',
-        description: 'Stabilizing function references for memoized children',
-        files: [
-          {
-            id: 'app',
-            filename: 'App.tsx',
-            language: 'typescript',
-            code: `import { useState, useCallback } from 'react'
-import { MemoButton } from './MemoButton'
-
-function App() {
-  const [count, setCount] = useState(0)
-  const [text, setText] = useState('')
-
-  // useCallback stabilizes the function reference
-  const handleIncrement = useCallback(() => {
-    setCount(c => c + 1)
-  }, [])
-
-  return (
-    <div className="app">
-      <input value={text} onChange={e => setText(e.target.value)} />
-      <p>Count: {count}</p>
-      {/* Button won't re-render when text changes */}
-      <MemoButton onClick={handleIncrement}>Increment</MemoButton>
-    </div>
-  )
-}
-
-export default App`,
-          },
-          {
-            id: 'memo-button',
-            filename: 'MemoButton.tsx',
-            language: 'typescript',
-            code: `import { memo, ReactNode } from 'react'
-
-interface MemoButtonProps {
-  onClick: () => void
-  children: ReactNode
-}
-
-export const MemoButton = memo(function MemoButton({
-  onClick,
-  children
-}: MemoButtonProps) {
-  console.log('MemoButton rendered')
-
-  return (
-    <button onClick={onClick} className="button">
-      {children}
-    </button>
-  )
-})`,
-          },
-        ],
-        componentTree: {
-          id: 'app',
-          name: 'App',
-          renderCount: 0,
-          children: [
-            {
-              id: 'div-app',
-              name: 'div',
-              renderCount: 0,
-              children: [
-                { id: 'input', name: 'input', renderCount: 0 },
-                { id: 'p-count', name: 'p', renderCount: 0 },
-                {
-                  id: 'memo-button',
-                  name: 'MemoButton',
-                  renderCount: 0,
-                  children: [
-                    { id: 'button', name: 'button', renderCount: 0 },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        explanation: {
-          content:
-            'useCallback memoizes a function reference between renders. This is essential when passing callbacks to memoized children, because without useCallback, each render creates a new function reference, breaking the memo optimization.',
-          keyPoints: [
-            'Every render creates new function references by default',
-            'New function references break memo() optimization',
-            'useCallback returns the same function reference if dependencies unchanged',
-            'Always pair useCallback with memo() on the receiving component',
-          ],
-          codeSnippets: [
-            {
-              language: 'typescript',
-              caption: 'Stabilizing callback references:',
-              code: `// Without useCallback: new function every render
-const handleClick = () => setCount(c => c + 1)
-
-// With useCallback: same reference if deps unchanged
-const handleClick = useCallback(() => {
-  setCount(c => c + 1)
-}, []) // Empty deps = never changes`,
-            },
-          ],
-          docLinks: [
-            {
-              label: 'useCallback',
-              url: 'https://react.dev/reference/react/useCallback',
-            },
-            {
-              label: 'useCallback vs useMemo',
-              url: 'https://react.dev/reference/react/useCallback#how-is-usecallback-related-to-usememo',
-            },
-          ],
-        },
-      },
-      {
-        id: 'usememo',
-        title: 'useMemo',
-        description: 'Memoizing expensive computations',
-        files: [
-          {
-            id: 'app',
-            filename: 'App.tsx',
-            language: 'typescript',
-            code: `import { useState, useMemo } from 'react'
-
-function App() {
-  const [count, setCount] = useState(0)
-  const [text, setText] = useState('')
-
-  // useMemo caches the result until count changes
-  const expensiveValue = useMemo(() => {
-    console.log('Computing expensive value...')
-    return count * 100
-  }, [count])
-
-  return (
-    <div className="app">
-      <input
-        value={text}
-        onChange={e => setText(e.target.value)}
-        placeholder="Type here (no recomputation)"
-      />
-      <p>Expensive value: {expensiveValue}</p>
-      <button onClick={() => setCount(c => c + 1)}>
-        Increment (triggers recomputation)
-      </button>
-    </div>
-  )
-}
-
-export default App`,
-          },
-        ],
-        componentTree: {
-          id: 'app',
-          name: 'App',
-          renderCount: 0,
-          children: [
-            {
-              id: 'div-app',
-              name: 'div',
-              renderCount: 0,
-              children: [
-                { id: 'input', name: 'input', renderCount: 0 },
-                { id: 'p-value', name: 'p', renderCount: 0 },
-                { id: 'button', name: 'button', renderCount: 0 },
-              ],
-            },
-          ],
-        },
-        explanation: {
-          content:
-            'useMemo caches the result of an expensive calculation between renders. The cached value is only recalculated when one of its dependencies changes. This prevents wasteful recalculation when unrelated state changes cause re-renders.',
-          keyPoints: [
-            'useMemo caches computation results, not components',
-            'Only recalculates when dependencies change',
-            'Useful for expensive calculations or stable object references',
-            'Don\'t overuse - React is fast, measure before optimizing',
-          ],
-          codeSnippets: [
-            {
-              language: 'typescript',
-              caption: 'Caching expensive computations:',
-              code: `// Without useMemo: runs on every render
-const expensiveValue = computeExpensive(count)
-
-// With useMemo: only runs when count changes
-const expensiveValue = useMemo(() => {
-  return computeExpensive(count)
-}, [count])`,
-            },
-          ],
-          docLinks: [
-            {
-              label: 'useMemo',
-              url: 'https://react.dev/reference/react/useMemo',
-            },
-            {
-              label: 'When to use useMemo',
-              url: 'https://react.dev/reference/react/useMemo#should-you-add-usememo-everywhere',
-            },
-          ],
-        },
-      },
-      {
-        id: 'react-lazy',
-        title: 'React.lazy',
-        description: 'Code splitting with lazy loading and Suspense',
-        files: [
-          {
-            id: 'app',
-            filename: 'App.tsx',
-            language: 'typescript',
-            code: `import { lazy, Suspense, useState } from 'react'
-
-// Lazy load the heavy component
-const HeavyChart = lazy(() => import('./HeavyChart'))
-
-function App() {
-  const [showChart, setShowChart] = useState(false)
-
-  return (
-    <div className="app">
-      <h1>Code Splitting Demo</h1>
-      <button onClick={() => setShowChart(s => !s)}>
-        {showChart ? 'Hide' : 'Show'} Chart
-      </button>
-
-      {showChart && (
-        <Suspense fallback={<div>Loading chart...</div>}>
-          {/* HeavyChart chunk loads only when needed */}
-          <HeavyChart />
-        </Suspense>
-      )}
-    </div>
-  )
-}
-
-export default App`,
-          },
-          {
-            id: 'heavy-chart',
-            filename: 'HeavyChart.tsx',
-            language: 'typescript',
-            code: `// This component is in a separate chunk
-// It only loads when first rendered
-
-export default function HeavyChart() {
-  // Imagine this imports a large charting library
-  console.log('HeavyChart loaded and rendered')
-
-  return (
-    <div className="chart">
-      <h2>Heavy Chart Component</h2>
-      <p>This component was lazy loaded!</p>
-      <div className="chart-placeholder">
-        📊 Chart visualization here
-      </div>
-    </div>
-  )
-}`,
-          },
-        ],
-        componentTree: {
-          id: 'app',
-          name: 'App',
-          renderCount: 0,
-          children: [
-            {
-              id: 'div-app',
-              name: 'div',
-              renderCount: 0,
-              children: [
-                { id: 'h1', name: 'h1', renderCount: 0 },
-                { id: 'button', name: 'button', renderCount: 0 },
-                {
-                  id: 'suspense',
-                  name: 'Suspense',
-                  renderCount: 0,
-                  children: [
-                    {
-                      id: 'heavy-chart',
-                      name: 'HeavyChart',
-                      renderCount: 0,
-                      children: [
-                        {
-                          id: 'div-chart',
-                          name: 'div',
-                          renderCount: 0,
-                          children: [
-                            { id: 'h2', name: 'h2', renderCount: 0 },
-                            { id: 'p-loaded', name: 'p', renderCount: 0 },
-                            { id: 'div-placeholder', name: 'div', renderCount: 0 },
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        explanation: {
-          content:
-            'React.lazy enables code splitting by loading components on demand. Combined with Suspense, it lets you show a fallback UI while the component code is being downloaded. This reduces initial bundle size and improves load performance.',
-          keyPoints: [
-            'React.lazy takes a function that returns a dynamic import()',
-            'The component only loads when it\'s first rendered',
-            'Suspense provides the fallback UI during loading',
-            'Error boundaries can catch loading failures',
-          ],
-          codeSnippets: [
-            {
-              language: 'typescript',
-              caption: 'Lazy loading with Suspense:',
-              code: `const HeavyChart = lazy(() => import('./HeavyChart'))
-
-function App() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <HeavyChart />
-    </Suspense>
-  )
-}`,
-            },
-          ],
-          docLinks: [
-            {
-              label: 'React.lazy',
-              url: 'https://react.dev/reference/react/lazy',
-            },
-            {
-              label: 'Suspense',
-              url: 'https://react.dev/reference/react/Suspense',
-            },
-          ],
-        },
-      },
-      {
-        id: 'children-pattern',
-        title: 'Children Pattern',
-        description: 'Using composition to prevent unnecessary re-renders',
-        files: [
-          {
-            id: 'app',
-            filename: 'App.tsx',
-            language: 'typescript',
-            code: `import { useState } from 'react'
-import { ExpensiveTree } from './ExpensiveTree'
-
-// ❌ Bad: ExpensiveTree re-renders on every color change
-function BadApp() {
-  const [color, setColor] = useState('red')
-  return (
-    <div style={{ color }}>
-      <input value={color} onChange={e => setColor(e.target.value)} />
-      <ExpensiveTree />  {/* Re-renders every time! */}
-    </div>
-  )
-}
-
-// ✅ Good: Lift state up and pass children
-function ColorPicker({ children }: { children: React.ReactNode }) {
-  const [color, setColor] = useState('red')
-  return (
-    <div style={{ color }}>
-      <input value={color} onChange={e => setColor(e.target.value)} />
-      {children}  {/* Children don't re-render! */}
-    </div>
-  )
-}
-
-function App() {
-  return (
-    <ColorPicker>
-      <ExpensiveTree />  {/* Stable reference, no re-render */}
-    </ColorPicker>
-  )
-}
-
-export default App`,
-          },
-          {
-            id: 'expensive-tree',
-            filename: 'ExpensiveTree.tsx',
-            language: 'typescript',
-            code: `// Imagine this is a complex component tree
-export function ExpensiveTree() {
-  console.log('ExpensiveTree rendered')
-
-  return (
-    <div className="expensive">
-      <h2>Expensive Component</h2>
-      <p>This component has many children...</p>
-      <ul>
-        <li>Item 1</li>
-        <li>Item 2</li>
-        <li>Item 3</li>
-      </ul>
-    </div>
-  )
-}`,
-          },
-        ],
-        componentTree: {
-          id: 'app',
-          name: 'App',
-          renderCount: 0,
-          children: [
-            {
-              id: 'color-picker',
-              name: 'ColorPicker',
-              renderCount: 0,
-              children: [
-                {
-                  id: 'div-color',
-                  name: 'div',
-                  renderCount: 0,
-                  children: [
-                    { id: 'input', name: 'input', renderCount: 0 },
-                    {
-                      id: 'expensive-tree',
-                      name: 'ExpensiveTree',
-                      renderCount: 0,
-                      children: [
-                        {
-                          id: 'div-expensive',
-                          name: 'div',
-                          renderCount: 0,
-                          children: [
-                            { id: 'h2', name: 'h2', renderCount: 0 },
-                            { id: 'p-info', name: 'p', renderCount: 0 },
-                            {
-                              id: 'ul',
-                              name: 'ul',
-                              renderCount: 0,
-                              children: [
-                                { id: 'li-1', name: 'li', renderCount: 0 },
-                                { id: 'li-2', name: 'li', renderCount: 0 },
-                                { id: 'li-3', name: 'li', renderCount: 0 },
-                              ],
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        explanation: {
-          content:
-            'The children pattern is a powerful composition technique that avoids unnecessary re-renders without needing memo. When you pass components as children, they\'re created in the parent scope and their reference stays stable, even when the wrapper component re-renders.',
-          keyPoints: [
-            'Children are created in parent scope = stable references',
-            'The wrapper can re-render without re-rendering children',
-            'No memo() needed - composition handles optimization naturally',
-            'Also known as "lift content up" or "slots" pattern',
-          ],
-          codeSnippets: [
-            {
-              language: 'typescript',
-              caption: 'Moving state closer with composition:',
-              code: `// ❌ Bad: ExpensiveTree re-renders on color change
-function App() {
-  const [color, setColor] = useState('red')
-  return <div><Input /><ExpensiveTree /></div>
-}
-
-// ✅ Good: Composition isolates the state
-<ColorPicker>
-  <ExpensiveTree />  {/* Stable reference! */}
-</ColorPicker>`,
-            },
-          ],
-          docLinks: [
-            {
-              label: 'Passing JSX as Children',
-              url: 'https://react.dev/learn/passing-props-to-a-component#passing-jsx-as-children',
-            },
-            {
-              label: 'Extracting State Logic',
-              url: 'https://react.dev/learn/extracting-state-logic-into-a-reducer',
-            },
-          ],
-        },
-      },
-    ],
-  },
-  {
-    id: 'advanced',
-    name: 'Advanced',
-    examples: [
       {
         id: 'use-reducer',
         title: 'useReducer',
@@ -2033,6 +1413,1217 @@ countRef.current = 1  // No re-render!
             {
               label: 'Referencing Values with Refs',
               url: 'https://react.dev/learn/referencing-values-with-refs',
+            },
+          ],
+        },
+      },
+      {
+        id: 'compound-component',
+        title: 'Compound Component',
+        description: 'Context-based sub-components all re-render when shared state changes',
+        files: [
+          {
+            id: 'app',
+            filename: 'App.tsx',
+            language: 'typescript',
+            code: `import { Select } from './Select'
+
+function App() {
+  return (
+    <div className="app">
+      <h1>Compound Component Pattern</h1>
+      <Select>
+        <Select.Trigger />
+        <Select.Options>
+          <Select.Option value="react">React</Select.Option>
+          <Select.Option value="vue">Vue</Select.Option>
+          <Select.Option value="svelte">Svelte</Select.Option>
+        </Select.Options>
+      </Select>
+    </div>
+  )
+}
+
+export default App`,
+          },
+          {
+            id: 'select',
+            filename: 'Select.tsx',
+            language: 'typescript',
+            code: `import { createContext, useContext, useState, ReactNode } from 'react'
+
+interface SelectContextValue {
+  selected: string
+  setSelected: (value: string) => void
+  isOpen: boolean
+  setIsOpen: (open: boolean) => void
+}
+
+const SelectContext = createContext<SelectContextValue | null>(null)
+
+function useSelect() {
+  const ctx = useContext(SelectContext)
+  if (!ctx) throw new Error('Must be inside <Select>')
+  return ctx
+}
+
+function Select({ children }: { children: ReactNode }) {
+  const [selected, setSelected] = useState('')
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <SelectContext.Provider value={{ selected, setSelected, isOpen, setIsOpen }}>
+      <div className="select">{children}</div>
+    </SelectContext.Provider>
+  )
+}
+
+function Trigger() {
+  const { selected, isOpen, setIsOpen } = useSelect()
+  // Re-renders on ANY context change (selected OR isOpen)
+  console.log('Trigger rendered')
+  return (
+    <button onClick={() => setIsOpen(!isOpen)}>
+      {selected || 'Choose...'} {isOpen ? '▲' : '▼'}
+    </button>
+  )
+}
+
+function Options({ children }: { children: ReactNode }) {
+  const { isOpen } = useSelect()
+  // Re-renders on ANY context change
+  console.log('Options rendered')
+  if (!isOpen) return null
+  return <ul className="options">{children}</ul>
+}
+
+function Option({ value, children }: { value: string; children: ReactNode }) {
+  const { selected, setSelected, setIsOpen } = useSelect()
+  // Each Option re-renders when ANY context changes
+  console.log('Option rendered:', value)
+  return (
+    <li
+      className={selected === value ? 'active' : ''}
+      onClick={() => { setSelected(value); setIsOpen(false) }}
+    >
+      {children}
+    </li>
+  )
+}
+
+Select.Trigger = Trigger
+Select.Options = Options
+Select.Option = Option
+
+export { Select }`,
+          },
+        ],
+        componentTree: {
+          id: 'app',
+          name: 'App',
+          renderCount: 0,
+          children: [
+            {
+              id: 'div-app',
+              name: 'div',
+              renderCount: 0,
+              children: [
+                { id: 'h1', name: 'h1', renderCount: 0 },
+                {
+                  id: 'select',
+                  name: 'Select',
+                  renderCount: 0,
+                  children: [
+                    { id: 'trigger', name: 'Select.Trigger', renderCount: 0 },
+                    {
+                      id: 'options',
+                      name: 'Select.Options',
+                      renderCount: 0,
+                      children: [
+                        { id: 'option-1', name: 'Select.Option', renderCount: 0 },
+                        { id: 'option-2', name: 'Select.Option', renderCount: 0 },
+                        { id: 'option-3', name: 'Select.Option', renderCount: 0 },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        explanation: {
+          content:
+            'The Compound Component pattern uses Context to share state between related sub-components (like Select.Trigger, Select.Options, Select.Option). The tradeoff: when ANY piece of shared context changes, ALL consumers re-render, even if they only read part of the context.',
+          keyPoints: [
+            'All sub-components share a single Context provider',
+            'Changing any context value re-renders every consumer',
+            'Opening the dropdown re-renders Trigger, Options, AND all Options',
+            'Selecting an option re-renders everything too, not just the selected one',
+          ],
+          codeSnippets: [
+            {
+              language: 'typescript',
+              caption: 'Context change cascades to all consumers:',
+              code: `// Selecting an option changes "selected" in context
+setSelected(value)
+setIsOpen(false)
+
+// ALL of these re-render:
+// - Trigger (reads selected + isOpen)
+// - Options (reads isOpen)
+// - Every Option (reads selected)`,
+            },
+          ],
+          docLinks: [
+            {
+              label: 'useContext',
+              url: 'https://react.dev/reference/react/useContext',
+            },
+            {
+              label: 'Compound Components Pattern',
+              url: 'https://react.dev/learn/passing-data-deeply-with-context',
+            },
+          ],
+        },
+      },
+      {
+        id: 'render-props',
+        title: 'Render Props',
+        description: 'Render function creates new JSX each call, causing re-renders',
+        files: [
+          {
+            id: 'app',
+            filename: 'App.tsx',
+            language: 'typescript',
+            code: `import { MouseTracker } from './MouseTracker'
+import { DisplayCoords } from './DisplayCoords'
+
+function App() {
+  return (
+    <div className="app">
+      <h1>Render Props Pattern</h1>
+      <MouseTracker
+        render={({ x, y }) => <DisplayCoords x={x} y={y} />}
+      />
+    </div>
+  )
+}
+
+export default App`,
+          },
+          {
+            id: 'mouse-tracker',
+            filename: 'MouseTracker.tsx',
+            language: 'typescript',
+            code: `import { useState, ReactNode } from 'react'
+
+interface MousePosition {
+  x: number
+  y: number
+}
+
+interface MouseTrackerProps {
+  render: (position: MousePosition) => ReactNode
+}
+
+export function MouseTracker({ render }: MouseTrackerProps) {
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+
+  // Every mouse move updates state → re-render
+  const handleMouseMove = (e: React.MouseEvent) => {
+    setPosition({
+      x: e.nativeEvent.offsetX,
+      y: e.nativeEvent.offsetY,
+    })
+  }
+
+  console.log('MouseTracker rendered')
+
+  return (
+    <div
+      className="tracker"
+      onMouseMove={handleMouseMove}
+      style={{ height: 200, border: '1px solid gray' }}
+    >
+      {/* render() creates NEW JSX every call */}
+      {render(position)}
+    </div>
+  )
+}`,
+          },
+          {
+            id: 'display-coords',
+            filename: 'DisplayCoords.tsx',
+            language: 'typescript',
+            code: `interface DisplayCoordsProps {
+  x: number
+  y: number
+}
+
+export function DisplayCoords({ x, y }: DisplayCoordsProps) {
+  // Re-renders on every mouse move because
+  // parent calls render() which creates new JSX
+  console.log('DisplayCoords rendered')
+
+  return (
+    <div className="coords">
+      <p>Mouse position: ({x}, {y})</p>
+    </div>
+  )
+}`,
+          },
+        ],
+        componentTree: {
+          id: 'app',
+          name: 'App',
+          renderCount: 0,
+          children: [
+            {
+              id: 'div-app',
+              name: 'div',
+              renderCount: 0,
+              children: [
+                { id: 'h1', name: 'h1', renderCount: 0 },
+                {
+                  id: 'mouse-tracker',
+                  name: 'MouseTracker',
+                  renderCount: 0,
+                  children: [
+                    {
+                      id: 'display-coords',
+                      name: 'DisplayCoords',
+                      renderCount: 0,
+                      children: [
+                        {
+                          id: 'div-coords',
+                          name: 'div',
+                          renderCount: 0,
+                          children: [{ id: 'p-coords', name: 'p', renderCount: 0 }],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        explanation: {
+          content:
+            'The Render Props pattern passes a function that returns JSX. Because the render function is called on every parent render, it creates new React elements each time. Both the wrapper component and the rendered content re-render together on every state change.',
+          keyPoints: [
+            'render() is called on every MouseTracker render, creating new JSX',
+            'DisplayCoords gets new props each time (even if x,y are same object shape)',
+            'Unlike children pattern, render props cannot have stable references',
+            'Custom hooks have largely replaced this pattern in modern React',
+          ],
+          codeSnippets: [
+            {
+              language: 'typescript',
+              caption: 'Render prop creates new JSX every call:',
+              code: `// This arrow function creates NEW JSX each render
+<MouseTracker
+  render={({ x, y }) => <DisplayCoords x={x} y={y} />}
+/>
+
+// Each mouse move:
+// 1. MouseTracker re-renders (state change)
+// 2. Calls render() → new JSX tree
+// 3. DisplayCoords re-renders (new element)`,
+            },
+          ],
+          docLinks: [
+            {
+              label: 'Render Props',
+              url: 'https://react.dev/learn/passing-props-to-a-component',
+            },
+            {
+              label: 'Custom Hooks vs Render Props',
+              url: 'https://react.dev/learn/reusing-logic-with-custom-hooks',
+            },
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: 'with-memo',
+    name: 'With memo',
+    examples: [
+      {
+        id: 'memo',
+        title: 'React.memo',
+        description: 'Preventing unnecessary re-renders with memo',
+        files: [
+          {
+            id: 'app',
+            filename: 'App.tsx',
+            language: 'typescript',
+            code: `import { useState } from 'react'
+import { MemoChild } from './MemoChild'
+
+function App() {
+  const [count, setCount] = useState(0)
+
+  return (
+    <div className="app">
+      <h1>Count: {count}</h1>
+      <button onClick={() => setCount(c => c + 1)}>
+        Increment
+      </button>
+      {/* MemoChild won't re-render when count changes */}
+      <MemoChild name="Alice" />
+    </div>
+  )
+}
+
+export default App`,
+          },
+          {
+            id: 'memo-child',
+            filename: 'MemoChild.tsx',
+            language: 'typescript',
+            code: `import { memo } from 'react'
+
+interface MemoChildProps {
+  name: string
+}
+
+// memo() prevents re-renders when props are unchanged
+export const MemoChild = memo(function MemoChild({ name }: MemoChildProps) {
+  console.log('MemoChild rendered')
+
+  return (
+    <div className="child">
+      <p>Hello, {name}!</p>
+    </div>
+  )
+})`,
+          },
+        ],
+        componentTree: {
+          id: 'app',
+          name: 'App',
+          renderCount: 0,
+          children: [
+            {
+              id: 'div-app',
+              name: 'div',
+              renderCount: 0,
+              children: [
+                { id: 'h1', name: 'h1', renderCount: 0 },
+                { id: 'button', name: 'button', renderCount: 0 },
+                {
+                  id: 'memo-child',
+                  name: 'MemoChild',
+                  renderCount: 0,
+                  children: [
+                    {
+                      id: 'div-child',
+                      name: 'div',
+                      renderCount: 0,
+                      children: [{ id: 'p-hello', name: 'p', renderCount: 0 }],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        explanation: {
+          content:
+            'React.memo is a higher-order component that memoizes your component. It performs a shallow comparison of props and skips re-rendering if props haven\'t changed. This is useful when a parent re-renders but the child\'s props remain the same.',
+          keyPoints: [
+            'memo() wraps a component to skip re-renders when props are unchanged',
+            'Uses shallow comparison by default (Object.is for each prop)',
+            'Custom comparison function can be passed as second argument',
+            'memo() is useless if you pass new object/array/function references each render',
+          ],
+          codeSnippets: [
+            {
+              language: 'typescript',
+              caption: 'Wrapping a component with memo:',
+              code: `import { memo } from 'react'
+
+// Without memo: re-renders on every parent render
+function Child({ name }) { ... }
+
+// With memo: skips re-render if name unchanged
+const MemoChild = memo(function MemoChild({ name }) {
+  return <p>Hello, {name}!</p>
+})`,
+            },
+          ],
+          docLinks: [
+            {
+              label: 'React.memo',
+              url: 'https://react.dev/reference/react/memo',
+            },
+            {
+              label: 'Optimizing Re-renders',
+              url: 'https://react.dev/learn/render-and-commit#optimizing-performance',
+            },
+          ],
+        },
+      },
+      {
+        id: 'usecallback',
+        title: 'useCallback',
+        description: 'Stabilizing function references for memoized children',
+        files: [
+          {
+            id: 'app',
+            filename: 'App.tsx',
+            language: 'typescript',
+            code: `import { useState, useCallback } from 'react'
+import { MemoButton } from './MemoButton'
+
+function App() {
+  const [count, setCount] = useState(0)
+  const [text, setText] = useState('')
+
+  // useCallback stabilizes the function reference
+  const handleIncrement = useCallback(() => {
+    setCount(c => c + 1)
+  }, [])
+
+  return (
+    <div className="app">
+      <input value={text} onChange={e => setText(e.target.value)} />
+      <p>Count: {count}</p>
+      {/* Button won't re-render when text changes */}
+      <MemoButton onClick={handleIncrement}>Increment</MemoButton>
+    </div>
+  )
+}
+
+export default App`,
+          },
+          {
+            id: 'memo-button',
+            filename: 'MemoButton.tsx',
+            language: 'typescript',
+            code: `import { memo, ReactNode } from 'react'
+
+interface MemoButtonProps {
+  onClick: () => void
+  children: ReactNode
+}
+
+export const MemoButton = memo(function MemoButton({
+  onClick,
+  children
+}: MemoButtonProps) {
+  console.log('MemoButton rendered')
+
+  return (
+    <button onClick={onClick} className="button">
+      {children}
+    </button>
+  )
+})`,
+          },
+        ],
+        componentTree: {
+          id: 'app',
+          name: 'App',
+          renderCount: 0,
+          children: [
+            {
+              id: 'div-app',
+              name: 'div',
+              renderCount: 0,
+              children: [
+                { id: 'input', name: 'input', renderCount: 0 },
+                { id: 'p-count', name: 'p', renderCount: 0 },
+                {
+                  id: 'memo-button',
+                  name: 'MemoButton',
+                  renderCount: 0,
+                  children: [
+                    { id: 'button', name: 'button', renderCount: 0 },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        explanation: {
+          content:
+            'useCallback memoizes a function reference between renders. This is essential when passing callbacks to memoized children, because without useCallback, each render creates a new function reference, breaking the memo optimization.',
+          keyPoints: [
+            'Every render creates new function references by default',
+            'New function references break memo() optimization',
+            'useCallback returns the same function reference if dependencies unchanged',
+            'Always pair useCallback with memo() on the receiving component',
+          ],
+          codeSnippets: [
+            {
+              language: 'typescript',
+              caption: 'Stabilizing callback references:',
+              code: `// Without useCallback: new function every render
+const handleClick = () => setCount(c => c + 1)
+
+// With useCallback: same reference if deps unchanged
+const handleClick = useCallback(() => {
+  setCount(c => c + 1)
+}, []) // Empty deps = never changes`,
+            },
+          ],
+          docLinks: [
+            {
+              label: 'useCallback',
+              url: 'https://react.dev/reference/react/useCallback',
+            },
+            {
+              label: 'useCallback vs useMemo',
+              url: 'https://react.dev/reference/react/useCallback#how-is-usecallback-related-to-usememo',
+            },
+          ],
+        },
+      },
+      {
+        id: 'usememo',
+        title: 'useMemo',
+        description: 'Memoizing expensive computations',
+        files: [
+          {
+            id: 'app',
+            filename: 'App.tsx',
+            language: 'typescript',
+            code: `import { useState, useMemo } from 'react'
+
+function App() {
+  const [count, setCount] = useState(0)
+  const [text, setText] = useState('')
+
+  // useMemo caches the result until count changes
+  const expensiveValue = useMemo(() => {
+    console.log('Computing expensive value...')
+    return count * 100
+  }, [count])
+
+  return (
+    <div className="app">
+      <input
+        value={text}
+        onChange={e => setText(e.target.value)}
+        placeholder="Type here (no recomputation)"
+      />
+      <p>Expensive value: {expensiveValue}</p>
+      <button onClick={() => setCount(c => c + 1)}>
+        Increment (triggers recomputation)
+      </button>
+    </div>
+  )
+}
+
+export default App`,
+          },
+        ],
+        componentTree: {
+          id: 'app',
+          name: 'App',
+          renderCount: 0,
+          children: [
+            {
+              id: 'div-app',
+              name: 'div',
+              renderCount: 0,
+              children: [
+                { id: 'input', name: 'input', renderCount: 0 },
+                { id: 'p-value', name: 'p', renderCount: 0 },
+                { id: 'button', name: 'button', renderCount: 0 },
+              ],
+            },
+          ],
+        },
+        explanation: {
+          content:
+            'useMemo caches the result of an expensive calculation between renders. The cached value is only recalculated when one of its dependencies changes. This prevents wasteful recalculation when unrelated state changes cause re-renders.',
+          keyPoints: [
+            'useMemo caches computation results, not components',
+            'Only recalculates when dependencies change',
+            'Useful for expensive calculations or stable object references',
+            'Don\'t overuse - React is fast, measure before optimizing',
+          ],
+          codeSnippets: [
+            {
+              language: 'typescript',
+              caption: 'Caching expensive computations:',
+              code: `// Without useMemo: runs on every render
+const expensiveValue = computeExpensive(count)
+
+// With useMemo: only runs when count changes
+const expensiveValue = useMemo(() => {
+  return computeExpensive(count)
+}, [count])`,
+            },
+          ],
+          docLinks: [
+            {
+              label: 'useMemo',
+              url: 'https://react.dev/reference/react/useMemo',
+            },
+            {
+              label: 'When to use useMemo',
+              url: 'https://react.dev/reference/react/useMemo#should-you-add-usememo-everywhere',
+            },
+          ],
+        },
+      },
+      {
+        id: 'react-lazy',
+        title: 'React.lazy',
+        description: 'Code splitting with lazy loading and Suspense',
+        files: [
+          {
+            id: 'app',
+            filename: 'App.tsx',
+            language: 'typescript',
+            code: `import { lazy, Suspense, useState } from 'react'
+
+// Lazy load the heavy component
+const HeavyChart = lazy(() => import('./HeavyChart'))
+
+function App() {
+  const [showChart, setShowChart] = useState(false)
+
+  return (
+    <div className="app">
+      <h1>Code Splitting Demo</h1>
+      <button onClick={() => setShowChart(s => !s)}>
+        {showChart ? 'Hide' : 'Show'} Chart
+      </button>
+
+      {showChart && (
+        <Suspense fallback={<div>Loading chart...</div>}>
+          {/* HeavyChart chunk loads only when needed */}
+          <HeavyChart />
+        </Suspense>
+      )}
+    </div>
+  )
+}
+
+export default App`,
+          },
+          {
+            id: 'heavy-chart',
+            filename: 'HeavyChart.tsx',
+            language: 'typescript',
+            code: `// This component is in a separate chunk
+// It only loads when first rendered
+
+export default function HeavyChart() {
+  // Imagine this imports a large charting library
+  console.log('HeavyChart loaded and rendered')
+
+  return (
+    <div className="chart">
+      <h2>Heavy Chart Component</h2>
+      <p>This component was lazy loaded!</p>
+      <div className="chart-placeholder">
+        📊 Chart visualization here
+      </div>
+    </div>
+  )
+}`,
+          },
+        ],
+        componentTree: {
+          id: 'app',
+          name: 'App',
+          renderCount: 0,
+          children: [
+            {
+              id: 'div-app',
+              name: 'div',
+              renderCount: 0,
+              children: [
+                { id: 'h1', name: 'h1', renderCount: 0 },
+                { id: 'button', name: 'button', renderCount: 0 },
+                {
+                  id: 'suspense',
+                  name: 'Suspense',
+                  renderCount: 0,
+                  children: [
+                    {
+                      id: 'heavy-chart',
+                      name: 'HeavyChart',
+                      renderCount: 0,
+                      children: [
+                        {
+                          id: 'div-chart',
+                          name: 'div',
+                          renderCount: 0,
+                          children: [
+                            { id: 'h2', name: 'h2', renderCount: 0 },
+                            { id: 'p-loaded', name: 'p', renderCount: 0 },
+                            { id: 'div-placeholder', name: 'div', renderCount: 0 },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        explanation: {
+          content:
+            'React.lazy enables code splitting by loading components on demand. Combined with Suspense, it lets you show a fallback UI while the component code is being downloaded. This reduces initial bundle size and improves load performance.',
+          keyPoints: [
+            'React.lazy takes a function that returns a dynamic import()',
+            'The component only loads when it\'s first rendered',
+            'Suspense provides the fallback UI during loading',
+            'Error boundaries can catch loading failures',
+          ],
+          codeSnippets: [
+            {
+              language: 'typescript',
+              caption: 'Lazy loading with Suspense:',
+              code: `const HeavyChart = lazy(() => import('./HeavyChart'))
+
+function App() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <HeavyChart />
+    </Suspense>
+  )
+}`,
+            },
+          ],
+          docLinks: [
+            {
+              label: 'React.lazy',
+              url: 'https://react.dev/reference/react/lazy',
+            },
+            {
+              label: 'Suspense',
+              url: 'https://react.dev/reference/react/Suspense',
+            },
+          ],
+        },
+      },
+      {
+        id: 'children-pattern',
+        title: 'Children Pattern',
+        description: 'Using composition to prevent unnecessary re-renders',
+        files: [
+          {
+            id: 'app',
+            filename: 'App.tsx',
+            language: 'typescript',
+            code: `import { useState } from 'react'
+import { ExpensiveTree } from './ExpensiveTree'
+
+// ❌ Bad: ExpensiveTree re-renders on every color change
+function BadApp() {
+  const [color, setColor] = useState('red')
+  return (
+    <div style={{ color }}>
+      <input value={color} onChange={e => setColor(e.target.value)} />
+      <ExpensiveTree />  {/* Re-renders every time! */}
+    </div>
+  )
+}
+
+// ✅ Good: Lift state up and pass children
+function ColorPicker({ children }: { children: React.ReactNode }) {
+  const [color, setColor] = useState('red')
+  return (
+    <div style={{ color }}>
+      <input value={color} onChange={e => setColor(e.target.value)} />
+      {children}  {/* Children don't re-render! */}
+    </div>
+  )
+}
+
+function App() {
+  return (
+    <ColorPicker>
+      <ExpensiveTree />  {/* Stable reference, no re-render */}
+    </ColorPicker>
+  )
+}
+
+export default App`,
+          },
+          {
+            id: 'expensive-tree',
+            filename: 'ExpensiveTree.tsx',
+            language: 'typescript',
+            code: `// Imagine this is a complex component tree
+export function ExpensiveTree() {
+  console.log('ExpensiveTree rendered')
+
+  return (
+    <div className="expensive">
+      <h2>Expensive Component</h2>
+      <p>This component has many children...</p>
+      <ul>
+        <li>Item 1</li>
+        <li>Item 2</li>
+        <li>Item 3</li>
+      </ul>
+    </div>
+  )
+}`,
+          },
+        ],
+        componentTree: {
+          id: 'app',
+          name: 'App',
+          renderCount: 0,
+          children: [
+            {
+              id: 'color-picker',
+              name: 'ColorPicker',
+              renderCount: 0,
+              children: [
+                {
+                  id: 'div-color',
+                  name: 'div',
+                  renderCount: 0,
+                  children: [
+                    { id: 'input', name: 'input', renderCount: 0 },
+                    {
+                      id: 'expensive-tree',
+                      name: 'ExpensiveTree',
+                      renderCount: 0,
+                      children: [
+                        {
+                          id: 'div-expensive',
+                          name: 'div',
+                          renderCount: 0,
+                          children: [
+                            { id: 'h2', name: 'h2', renderCount: 0 },
+                            { id: 'p-info', name: 'p', renderCount: 0 },
+                            {
+                              id: 'ul',
+                              name: 'ul',
+                              renderCount: 0,
+                              children: [
+                                { id: 'li-1', name: 'li', renderCount: 0 },
+                                { id: 'li-2', name: 'li', renderCount: 0 },
+                                { id: 'li-3', name: 'li', renderCount: 0 },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        explanation: {
+          content:
+            'The children pattern is a powerful composition technique that avoids unnecessary re-renders without needing memo. When you pass components as children, they\'re created in the parent scope and their reference stays stable, even when the wrapper component re-renders.',
+          keyPoints: [
+            'Children are created in parent scope = stable references',
+            'The wrapper can re-render without re-rendering children',
+            'No memo() needed - composition handles optimization naturally',
+            'Also known as "lift content up" or "slots" pattern',
+          ],
+          codeSnippets: [
+            {
+              language: 'typescript',
+              caption: 'Moving state closer with composition:',
+              code: `// ❌ Bad: ExpensiveTree re-renders on color change
+function App() {
+  const [color, setColor] = useState('red')
+  return <div><Input /><ExpensiveTree /></div>
+}
+
+// ✅ Good: Composition isolates the state
+<ColorPicker>
+  <ExpensiveTree />  {/* Stable reference! */}
+</ColorPicker>`,
+            },
+          ],
+          docLinks: [
+            {
+              label: 'Passing JSX as Children',
+              url: 'https://react.dev/learn/passing-props-to-a-component#passing-jsx-as-children',
+            },
+            {
+              label: 'Extracting State Logic',
+              url: 'https://react.dev/learn/extracting-state-logic-into-a-reducer',
+            },
+          ],
+        },
+      },
+      {
+        id: 'usecallback-comparison',
+        title: 'useCallback Comparison',
+        description: 'Before/After: useCallback alone vs useCallback + memo',
+        files: [
+          {
+            id: 'before',
+            filename: 'Before.tsx',
+            language: 'typescript',
+            code: `import { useState, useCallback } from 'react'
+
+// ❌ useCallback WITHOUT memo on child
+// Child still re-renders because it's not wrapped in memo()
+
+function Button({ onClick }: { onClick: () => void }) {
+  console.log('Button rendered (no memo)')
+  return <button onClick={onClick}>Increment</button>
+}
+
+export function BeforeApp() {
+  const [count, setCount] = useState(0)
+  const [text, setText] = useState('')
+
+  // useCallback stabilizes the reference...
+  const handleIncrement = useCallback(() => {
+    setCount(c => c + 1)
+  }, [])
+
+  return (
+    <div>
+      <input value={text} onChange={e => setText(e.target.value)} />
+      <p>Count: {count}</p>
+      {/* But Button re-renders anyway! No memo() */}
+      <Button onClick={handleIncrement} />
+    </div>
+  )
+}`,
+          },
+          {
+            id: 'after',
+            filename: 'After.tsx',
+            language: 'typescript',
+            code: `import { useState, useCallback, memo } from 'react'
+
+// ✅ useCallback WITH memo on child
+// MemoButton skips re-render when onClick reference is stable
+
+const MemoButton = memo(function MemoButton({
+  onClick
+}: {
+  onClick: () => void
+}) {
+  console.log('MemoButton rendered')
+  return <button onClick={onClick}>Increment</button>
+})
+
+export function AfterApp() {
+  const [count, setCount] = useState(0)
+  const [text, setText] = useState('')
+
+  // useCallback stabilizes the reference
+  const handleIncrement = useCallback(() => {
+    setCount(c => c + 1)
+  }, [])
+
+  return (
+    <div>
+      <input value={text} onChange={e => setText(e.target.value)} />
+      <p>Count: {count}</p>
+      {/* MemoButton skips re-render on text change! */}
+      <MemoButton onClick={handleIncrement} />
+    </div>
+  )
+}`,
+          },
+        ],
+        componentTree: {
+          id: 'root',
+          name: 'Root',
+          renderCount: 0,
+          children: [
+            {
+              id: 'before-app',
+              name: 'BeforeApp',
+              renderCount: 0,
+              children: [
+                { id: 'before-input', name: 'input', renderCount: 0 },
+                { id: 'before-p', name: 'p', renderCount: 0 },
+                { id: 'before-button', name: 'Button', renderCount: 0 },
+              ],
+            },
+            {
+              id: 'after-app',
+              name: 'AfterApp',
+              renderCount: 0,
+              children: [
+                { id: 'after-input', name: 'input', renderCount: 0 },
+                { id: 'after-p', name: 'p', renderCount: 0 },
+                { id: 'after-button', name: 'MemoButton', renderCount: 0 },
+              ],
+            },
+          ],
+        },
+        explanation: {
+          content:
+            'useCallback alone does NOT prevent child re-renders. It only stabilizes the function reference. You must ALSO wrap the child component with memo() for the optimization to take effect. Without memo, React re-renders all children regardless of prop stability.',
+          keyPoints: [
+            'useCallback without memo = no optimization (common mistake)',
+            'useCallback + memo = child skips re-render when callback unchanged',
+            'The Before panel shows Button re-renders on every text change',
+            'The After panel shows MemoButton stays stable when only text changes',
+          ],
+          codeSnippets: [
+            {
+              language: 'typescript',
+              caption: 'useCallback needs memo to work:',
+              code: `// ❌ Stable ref, but child has no memo
+const handler = useCallback(() => { ... }, [])
+<Button onClick={handler} />  // Still re-renders!
+
+// ✅ Stable ref + memo = optimization works
+const handler = useCallback(() => { ... }, [])
+<MemoButton onClick={handler} />  // Skips re-render!`,
+            },
+          ],
+          docLinks: [
+            {
+              label: 'useCallback',
+              url: 'https://react.dev/reference/react/useCallback',
+            },
+            {
+              label: 'React.memo',
+              url: 'https://react.dev/reference/react/memo',
+            },
+          ],
+        },
+      },
+      {
+        id: 'usememo-comparison',
+        title: 'useMemo Comparison',
+        description: 'Before/After: useMemo caches value but child needs memo too',
+        files: [
+          {
+            id: 'before',
+            filename: 'Before.tsx',
+            language: 'typescript',
+            code: `import { useState, useMemo } from 'react'
+
+// ❌ useMemo caches the value, but Child has no memo()
+
+function Child({ value }: { value: number }) {
+  console.log('Child rendered (no memo)')
+  return <p>Computed: {value}</p>
+}
+
+export function BeforeApp() {
+  const [count, setCount] = useState(0)
+  const [text, setText] = useState('')
+
+  // useMemo prevents re-computation...
+  const expensive = useMemo(() => {
+    console.log('Computing...')
+    return count * 100
+  }, [count])
+
+  return (
+    <div>
+      <input value={text} onChange={e => setText(e.target.value)} />
+      <button onClick={() => setCount(c => c + 1)}>Increment</button>
+      {/* Child re-renders even though expensive value didn't change */}
+      <Child value={expensive} />
+    </div>
+  )
+}`,
+          },
+          {
+            id: 'after',
+            filename: 'After.tsx',
+            language: 'typescript',
+            code: `import { useState, useMemo, memo } from 'react'
+
+// ✅ useMemo + memo = Child skips re-render
+
+const MemoChild = memo(function MemoChild({ value }: { value: number }) {
+  console.log('MemoChild rendered')
+  return <p>Computed: {value}</p>
+})
+
+export function AfterApp() {
+  const [count, setCount] = useState(0)
+  const [text, setText] = useState('')
+
+  // useMemo caches the value
+  const expensive = useMemo(() => {
+    console.log('Computing...')
+    return count * 100
+  }, [count])
+
+  return (
+    <div>
+      <input value={text} onChange={e => setText(e.target.value)} />
+      <button onClick={() => setCount(c => c + 1)}>Increment</button>
+      {/* MemoChild skips re-render when expensive unchanged */}
+      <MemoChild value={expensive} />
+    </div>
+  )
+}`,
+          },
+        ],
+        componentTree: {
+          id: 'root',
+          name: 'Root',
+          renderCount: 0,
+          children: [
+            {
+              id: 'before-app',
+              name: 'BeforeApp',
+              renderCount: 0,
+              children: [
+                { id: 'before-input', name: 'input', renderCount: 0 },
+                { id: 'before-button', name: 'button', renderCount: 0 },
+                { id: 'before-child', name: 'Child', renderCount: 0 },
+              ],
+            },
+            {
+              id: 'after-app',
+              name: 'AfterApp',
+              renderCount: 0,
+              children: [
+                { id: 'after-input', name: 'input', renderCount: 0 },
+                { id: 'after-button', name: 'button', renderCount: 0 },
+                { id: 'after-child', name: 'MemoChild', renderCount: 0 },
+              ],
+            },
+          ],
+        },
+        explanation: {
+          content:
+            'useMemo caches the computation result but does NOT prevent child re-renders by itself. If you pass a memoized value to a child without memo(), the child still re-renders on every parent render. You need both useMemo (for the value) and memo() (for the component) to fully optimize.',
+          keyPoints: [
+            'useMemo without memo on child = child still re-renders',
+            'useMemo caches the VALUE, memo() gates the COMPONENT render',
+            'Typing in the input re-renders parent, which re-renders Child (no memo)',
+            'With memo, MemoChild skips because its value prop is referentially stable',
+          ],
+          codeSnippets: [
+            {
+              language: 'typescript',
+              caption: 'useMemo + memo for full optimization:',
+              code: `// ❌ Value is cached but child re-renders anyway
+const value = useMemo(() => compute(count), [count])
+<Child value={value} />  // Re-renders on parent render!
+
+// ✅ Both cached value AND memoized component
+const value = useMemo(() => compute(count), [count])
+<MemoChild value={value} />  // Skips re-render!`,
+            },
+          ],
+          docLinks: [
+            {
+              label: 'useMemo',
+              url: 'https://react.dev/reference/react/useMemo',
+            },
+            {
+              label: 'React.memo',
+              url: 'https://react.dev/reference/react/memo',
             },
           ],
         },
