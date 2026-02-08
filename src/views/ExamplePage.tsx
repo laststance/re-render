@@ -50,6 +50,12 @@ export function ExamplePage() {
     [withSuppressToasts]
   )
 
+  // Suppress toasts when switching code file tabs (UI chrome, not a meaningful re-render)
+  const handleFileSelect = useCallback(
+    (fileId: string) => withSuppressToasts(() => setActiveFileId(fileId)),
+    [withSuppressToasts]
+  )
+
   const example = categoryId && exampleId ? getExample(categoryId, exampleId) : null
 
   // Merge static tree structure with live Redux render counts
@@ -95,7 +101,7 @@ export function ExamplePage() {
         <SplitPaneLayout
           files={example.files}
           activeFileId={effectiveActiveFileId}
-          onFileSelect={setActiveFileId}
+          onFileSelect={handleFileSelect}
           viewMode={viewMode}
           onViewModeChange={handleViewModeChange}
           hasLivePreview={hasLivePreview}

@@ -7,7 +7,7 @@
  * Components expose trigger handlers via forwardRef + useImperativeHandle
  * for the TriggerPanel to invoke re-render conditions.
  */
-import { useState, forwardRef, useImperativeHandle } from 'react'
+import { useState, useRef, forwardRef, useImperativeHandle } from 'react'
 import { LivePreviewWrapper } from '@/components/visualization'
 
 /**
@@ -986,7 +986,8 @@ export const UseEffectDepsPreview = forwardRef<LivePreviewHandle>(
 export const RefVsStatePreview = forwardRef<LivePreviewHandle>(
   function RefVsStatePreview(_props, ref) {
     const [stateCount, setStateCount] = useState(0)
-    const [refValue, setRefValue] = useState(0)
+    const refCountRef = useRef(0)
+    const refDisplayRef = useRef<HTMLSpanElement>(null)
     const [renderCount, setRenderCount] = useState(1)
 
     useImperativeHandle(ref, () => ({
@@ -995,8 +996,12 @@ export const RefVsStatePreview = forwardRef<LivePreviewHandle>(
           setStateCount((c) => c + 1)
           setRenderCount((c) => c + 1)
         } else if (triggerId === 'increment-ref') {
-          // Simulating ref behavior - no re-render, just log
-          setRefValue((v) => v + 1)
+          // Actual ref mutation — does NOT trigger re-render
+          refCountRef.current += 1
+          // Update DOM directly to show what value the ref holds
+          if (refDisplayRef.current) {
+            refDisplayRef.current.textContent = String(refCountRef.current)
+          }
         }
       },
     }))
@@ -1004,6 +1009,13 @@ export const RefVsStatePreview = forwardRef<LivePreviewHandle>(
     const handleStateIncrement = () => {
       setStateCount((c) => c + 1)
       setRenderCount((c) => c + 1)
+    }
+
+    const handleRefIncrement = () => {
+      refCountRef.current += 1
+      if (refDisplayRef.current) {
+        refDisplayRef.current.textContent = String(refCountRef.current)
+      }
     }
 
     return (
@@ -1038,27 +1050,28 @@ export const RefVsStatePreview = forwardRef<LivePreviewHandle>(
             <div className="rounded border border-orange-500/50 bg-orange-50/30 p-3 dark:bg-orange-950/30">
               <LivePreviewWrapper componentName="Text">
                 <p className="font-medium">
-                  Ref count: <span className="text-muted-foreground">{refValue}</span>
+                  Ref count: <span ref={refDisplayRef} className="text-muted-foreground">0</span>
+                  <span className="ml-2 text-xs text-orange-500">(updated via DOM, not React)</span>
                 </p>
               </LivePreviewWrapper>
               <LivePreviewWrapper componentName="Button">
                 <button
-                  onClick={() => setRefValue((v) => v + 1)}
+                  onClick={handleRefIncrement}
                   className="mt-2 rounded-md bg-orange-600 px-4 py-2 text-white hover:bg-orange-700"
                 >
-                  Increment Ref (no re-render*)
+                  Increment Ref (no re-render)
                 </button>
               </LivePreviewWrapper>
               <LivePreviewWrapper componentName="Text">
                 <p className="mt-2 text-xs text-orange-600 dark:text-orange-400">
-                  *In real code, this won't update UI until next render!
+                  Notice: render count in tree stays the same!
                 </p>
               </LivePreviewWrapper>
             </div>
           </LivePreviewWrapper>
 
           <p className="text-xs text-muted-foreground">
-            💡 Real useRef.current changes don't trigger re-renders
+            💡 useRef.current changes never trigger re-renders
           </p>
         </div>
       </LivePreviewWrapper>
