@@ -26,20 +26,20 @@ const BASIC_CONDITIONS_COUNT = 5
 function ConditionsSection({
   categoryId,
   examples,
+  startIndex = 1,
 }: {
   categoryId: string
   examples: { id: string; title: string; tag?: string; subtitle?: string }[]
+  startIndex?: number
 }) {
   const pathname = usePathname()
   const basicExamples = examples.slice(0, BASIC_CONDITIONS_COUNT)
   const advancedExamples = examples.slice(BASIC_CONDITIONS_COUNT)
 
-  const renderLink = (example: {
-    id: string
-    title: string
-    tag?: string
-    subtitle?: string
-  }) => {
+  const renderLink = (
+    example: { id: string; title: string; tag?: string; subtitle?: string },
+    stepNumber: number
+  ) => {
     const href = `/${categoryId}/${example.id}`
     const isActive = pathname === href
     return (
@@ -47,12 +47,15 @@ function ConditionsSection({
         <Link
           href={href}
           className={cn(
-            'group flex min-h-[44px] items-center gap-2 rounded-md px-2 py-2 pl-6 text-sm transition-colors',
+            'group flex min-h-[44px] items-center gap-2 rounded-md px-2 py-2 pl-3 text-sm transition-colors',
             isActive
               ? 'bg-accent text-accent-foreground font-medium'
               : 'text-foreground hover:bg-accent/50'
           )}
         >
+          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-[10px] font-medium text-muted-foreground">
+            {stepNumber}
+          </span>
           <span className="min-w-0 flex-1">
             <span className="block truncate">{example.title}</span>
             {example.subtitle && (
@@ -78,7 +81,7 @@ function ConditionsSection({
       </div>
 
       <ul id={`category-${categoryId}`} role="list" className="space-y-0.5">
-        {basicExamples.map(renderLink)}
+        {basicExamples.map((ex, i) => renderLink(ex, startIndex + i))}
       </ul>
 
       {advancedExamples.length > 0 && (
@@ -90,7 +93,9 @@ function ConditionsSection({
             </span>
           </div>
           <ul id={`category-${categoryId}-advanced`} role="list" className="space-y-0.5">
-            {advancedExamples.map(renderLink)}
+            {advancedExamples.map((ex, i) =>
+              renderLink(ex, startIndex + BASIC_CONDITIONS_COUNT + i)
+            )}
           </ul>
         </>
       )}
@@ -112,10 +117,12 @@ function OptimizationSection({
   categoryId,
   examples,
   defaultExpanded,
+  startIndex = 1,
 }: {
   categoryId: string
   examples: { id: string; title: string }[]
   defaultExpanded: boolean
+  startIndex?: number
 }) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded)
   const pathname = usePathname()
@@ -148,7 +155,7 @@ function OptimizationSection({
         )}
         aria-hidden={!isExpanded}
       >
-        {examples.map((example) => {
+        {examples.map((example, i) => {
           const href = `/${categoryId}/${example.id}`
           const isActive = pathname === href
           return (
@@ -156,12 +163,15 @@ function OptimizationSection({
               <Link
                 href={href}
                 className={cn(
-                  'group flex min-h-[44px] items-center gap-2 rounded-md px-2 py-2 pl-8 text-sm transition-colors',
+                  'group flex min-h-[44px] items-center gap-2 rounded-md px-2 py-2 pl-5 text-sm transition-colors',
                   isActive
                     ? 'bg-accent text-accent-foreground font-medium'
                     : 'text-foreground hover:bg-accent/50'
                 )}
               >
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-[10px] font-medium text-muted-foreground">
+                  {startIndex + i}
+                </span>
                 <span className="truncate">{example.title}</span>
               </Link>
             </li>
@@ -220,6 +230,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           <ConditionsSection
             categoryId={conditionsCategory.id}
             examples={conditionsCategory.examples}
+            startIndex={1}
           />
         )}
 
@@ -229,6 +240,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             categoryId={optimizationCategory.id}
             examples={optimizationCategory.examples}
             defaultExpanded={params.categoryId === 'optimization'}
+            startIndex={(conditionsCategory?.examples.length ?? 0) + 1}
           />
         )}
       </nav>

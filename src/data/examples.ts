@@ -2908,3 +2908,29 @@ export function getDefaultExample() {
     exampleId: exampleCategories[0].examples[0].id,
   }
 }
+
+/**
+ * Get previous and next examples in the recommended learning order.
+ * Navigates across category boundaries (conditions → optimization).
+ * @param categoryId - Current category
+ * @param exampleId - Current example
+ * @returns Previous and next example with their category, or null if at boundary
+ * @example
+ * getAdjacentExamples('conditions', 'props-change')
+ * // => { prev: { categoryId: 'conditions', exampleId: 'state-change', title: 'State Change' },
+ * //      next: { categoryId: 'conditions', exampleId: 'parent-rerender', title: 'Parent Re-render' } }
+ */
+export function getAdjacentExamples(categoryId: string, exampleId: string) {
+  const allExamples = exampleCategories.flatMap((cat) =>
+    cat.examples.map((ex) => ({ categoryId: cat.id, exampleId: ex.id, title: ex.title }))
+  )
+  const currentIndex = allExamples.findIndex(
+    (ex) => ex.categoryId === categoryId && ex.exampleId === exampleId
+  )
+  return {
+    prev: currentIndex > 0 ? allExamples[currentIndex - 1] : null,
+    next: currentIndex < allExamples.length - 1 ? allExamples[currentIndex + 1] : null,
+    step: currentIndex + 1,
+    total: allExamples.length,
+  }
+}
