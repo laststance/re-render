@@ -57,6 +57,8 @@ export interface Example {
   explanation?: ExampleExplanation
   /** Optional tag to clarify the example's nature (e.g., "Pattern" vs a trigger) */
   tag?: string
+  /** Optional subtitle shown below the title in sidebar (e.g., hook/API name) */
+  subtitle?: string
 }
 
 /**

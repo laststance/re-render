@@ -675,6 +675,7 @@ const [, forceUpdate] = useReducer(x => x + 1, 0)
       {
         id: 'use-reducer',
         title: 'Reducer Dispatch',
+        subtitle: 'useReducer',
         description: 'Complex state management with useReducer',
         files: [
           {
@@ -820,6 +821,7 @@ export function Input({ value, onChange, placeholder, type }: {
       {
         id: 'use-sync-external-store',
         title: 'External Store',
+        subtitle: 'useSyncExternalStore',
         description: 'Subscribing to external stores without tearing',
         files: [
           {
@@ -1130,6 +1132,7 @@ function UserProfile({ userId }) {
       {
         id: 'concurrent',
         title: 'Concurrent Update',
+        subtitle: 'useTransition',
         description: 'useTransition and useDeferredValue for non-blocking updates',
         files: [
           {
@@ -1285,6 +1288,7 @@ const deferredValue = useDeferredValue(value)
       {
         id: 'use-effect-deps',
         title: 'Effect Dependencies',
+        subtitle: 'useEffect',
         description: 'How useEffect dependencies control re-runs',
         files: [
           {

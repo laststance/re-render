@@ -28,13 +28,18 @@ function ConditionsSection({
   examples,
 }: {
   categoryId: string
-  examples: { id: string; title: string; tag?: string }[]
+  examples: { id: string; title: string; tag?: string; subtitle?: string }[]
 }) {
   const pathname = usePathname()
   const basicExamples = examples.slice(0, BASIC_CONDITIONS_COUNT)
   const advancedExamples = examples.slice(BASIC_CONDITIONS_COUNT)
 
-  const renderLink = (example: { id: string; title: string; tag?: string }) => {
+  const renderLink = (example: {
+    id: string
+    title: string
+    tag?: string
+    subtitle?: string
+  }) => {
     const href = `/${categoryId}/${example.id}`
     const isActive = pathname === href
     return (
@@ -48,7 +53,14 @@ function ConditionsSection({
               : 'text-foreground hover:bg-accent/50'
           )}
         >
-          <span className="truncate">{example.title}</span>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate">{example.title}</span>
+            {example.subtitle && (
+              <span className="block truncate text-xs text-muted-foreground">
+                {example.subtitle}
+              </span>
+            )}
+          </span>
           {example.tag && (
             <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
               {example.tag}
