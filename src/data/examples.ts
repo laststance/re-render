@@ -1558,6 +1558,7 @@ countRef.current = 1  // No re-render!
       {
         id: 'compound-component',
         title: 'Compound Component',
+        tag: 'Pattern',
         description: 'Context-based sub-components all re-render when shared state changes',
         files: [
           {
@@ -1695,7 +1696,7 @@ export function Heading({ children }: { children: ReactNode }) {
         },
         explanation: {
           content:
-            'The Compound Component pattern uses Context to share state between related sub-components (like Select.Trigger, Select.Options, Select.Option). The tradeoff: when ANY piece of shared context changes, ALL consumers re-render, even if they only read part of the context.',
+            'This is not a new re-render trigger — it\'s a component pattern where existing triggers (context changes) propagate differently. The Compound Component pattern uses Context to share state between related sub-components (like Select.Trigger, Select.Options, Select.Option). The tradeoff: when ANY piece of shared context changes, ALL consumers re-render, even if they only read part of the context.',
           keyPoints: [
             'All sub-components share a single Context provider',
             'Changing any context value re-renders every consumer',
@@ -1731,6 +1732,7 @@ setIsOpen(false)
       {
         id: 'render-props',
         title: 'Render Props',
+        tag: 'Pattern',
         description: 'Render function creates new JSX each call, causing re-renders',
         files: [
           {
@@ -1857,7 +1859,7 @@ export function Text({ children }: { children: ReactNode }) {
         },
         explanation: {
           content:
-            'The Render Props pattern passes a function that returns JSX. Because the render function is called on every parent render, it creates new React elements each time. Both the wrapper component and the rendered content re-render together on every state change.',
+            'This is not a new re-render trigger — it\'s a component pattern where existing triggers (state/props changes) cause re-renders in a specific way. The Render Props pattern passes a function that returns JSX. Because the render function is called on every parent render, it creates new React elements each time. Both the wrapper component and the rendered content re-render together on every state change.',
           keyPoints: [
             'render() is called on every MouseTracker render, creating new JSX',
             'DisplayCoords gets new props each time (even if x,y are same object shape)',
