@@ -1,4 +1,4 @@
-export { useComponentTreeWithCounts } from './useComponentTreeWithCounts'
+export { useComponentTreeWithCounts, useMemoizedTreeWithCounts } from './useComponentTreeWithCounts'
 export { useFlashOnChange } from './useFlashOnChange'
 export { useMediaQuery, useIsDesktop, useIsTablet, useIsMobile, useDeviceType } from './useMediaQuery'
 export type { DeviceType } from './useMediaQuery'

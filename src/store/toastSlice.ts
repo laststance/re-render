@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { RenderInfo } from '@/types'
+import type { RenderInfo, RenderReason } from '@/types'
 
 /**
  * Toast notification for re-render event(s).
@@ -31,6 +31,23 @@ interface ToastState {
 const initialState: ToastState = {
   toasts: [],
   maxToasts: 10,
+}
+
+/**
+ * Priority order for render reasons — lower number = higher priority (root cause).
+ * Used to select the most informative render event as the primary toast display.
+ *
+ * @example
+ * // state-change (0) beats parent-rerender (4) as the primary display reason
+ * const sorted = renders.sort((a, b) => REASON_PRIORITY[a.reason] - REASON_PRIORITY[b.reason])
+ */
+const REASON_PRIORITY: Record<RenderReason, number> = {
+  'state-change': 0,
+  'props-change': 1,
+  'context-change': 2,
+  'force-update': 3,
+  'parent-rerender': 4,
+  'initial': 5,
 }
 
 /**
@@ -69,10 +86,16 @@ export const toastSlice = createSlice({
       const renders = action.payload
       if (renders.length === 0) return
 
+      // Sort by reason priority so the root cause (e.g. state-change) is shown
+      // as the primary toast info instead of a cascade artifact (parent-rerender).
+      const sorted = [...renders].sort(
+        (a, b) => REASON_PRIORITY[a.reason] - REASON_PRIORITY[b.reason]
+      )
+
       const newToast: Toast = {
         id: `toast-batch-${Date.now()}`,
-        renderInfo: renders[0],
-        batchRenders: renders,
+        renderInfo: sorted[0],
+        batchRenders: sorted,
         isExpanded: false,
         createdAt: Date.now(),
       }

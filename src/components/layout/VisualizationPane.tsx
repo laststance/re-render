@@ -83,10 +83,9 @@ export function VisualizationPane({
         )}
       </div>
 
-      {/* Visualization content area with fade transition */}
+      {/* Visualization content area */}
       <div
-        key={viewMode}
-        className="animate-view-transition flex-1 p-4"
+        className="flex-1 p-4"
       >
         {children ?? (
           <div className="flex h-full items-center justify-center rounded-lg border-2 border-dashed border-muted">
