@@ -27,6 +27,7 @@ export {
 
 export {
   addToast,
+  addBatchToast,
   removeToast,
   toggleToastExpanded,
   clearAllToasts,

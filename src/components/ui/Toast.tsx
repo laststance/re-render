@@ -1,13 +1,13 @@
 import { useEffect, useRef } from 'react'
 import { cn } from '@/lib/utils'
 import type { Toast as ToastType } from '@/store'
-import type { RenderReason, ChangedValue } from '@/types'
+import type { RenderReason, RenderInfo, ChangedValue } from '@/types'
 
 interface ToastProps {
   toast: ToastType
   onDismiss: () => void
   onToggleExpand: () => void
-  /** Auto-dismiss delay in ms (default: 5000) */
+  /** Auto-dismiss delay in ms (default: 10000) */
   dismissDelay?: number
 }
 
@@ -70,7 +70,52 @@ function ChangedValueRow({ change }: { change: ChangedValue }) {
 }
 
 /**
- * Toast notification showing re-render details
+ * Groups render events by reason and returns a summary string.
+ * @param renders - Array of render events to summarize
+ * @returns Summary like "State Changed (1), Parent Re-rendered (3)"
+ * @example
+ * groupReasonSummary([stateRender, parentRender1, parentRender2])
+ * // => "State Changed (1), Parent Re-rendered (2)"
+ */
+function groupReasonSummary(renders: RenderInfo[]): string {
+  const counts = new Map<RenderReason, number>()
+  for (const r of renders) {
+    counts.set(r.reason, (counts.get(r.reason) ?? 0) + 1)
+  }
+  return Array.from(counts.entries())
+    .map(([reason, count]) => `${REASON_LABELS[reason]} (${count})`)
+    .join(', ')
+}
+
+/**
+ * Expanded row for a single render event within a batch toast
+ */
+function BatchRenderRow({ render }: { render: RenderInfo }) {
+  return (
+    <div className="flex items-center justify-between gap-2 py-1.5">
+      <div className="flex items-center gap-2 min-w-0">
+        <span
+          className="h-1.5 w-1.5 rounded-full shrink-0"
+          style={{ backgroundColor: 'var(--flash-color)' }}
+          aria-hidden="true"
+        />
+        <span className="text-sm font-medium truncate">{render.componentName}</span>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        <span className="text-xs text-muted-foreground">
+          {REASON_LABELS[render.reason]}
+        </span>
+        <span className="inline-flex items-center justify-center rounded-full bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-secondary-foreground">
+          #{render.renderCount}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Toast notification showing re-render details.
+ * Supports both single-render and batch-render modes.
  */
 export function Toast({
   toast,
@@ -79,7 +124,8 @@ export function Toast({
   dismissDelay = 10000,
 }: ToastProps) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const { renderInfo, isExpanded } = toast
+  const { renderInfo, batchRenders, isExpanded } = toast
+  const isBatch = batchRenders && batchRenders.length > 1
 
   // Auto-dismiss after delay
   useEffect(() => {
@@ -102,6 +148,41 @@ export function Toast({
     }
   }, [isExpanded, onDismiss, dismissDelay])
 
+  if (isBatch) {
+    return (
+      <BatchToastView
+        batchRenders={batchRenders}
+        isExpanded={isExpanded}
+        onDismiss={onDismiss}
+        onToggleExpand={onToggleExpand}
+      />
+    )
+  }
+
+  return (
+    <SingleToastView
+      renderInfo={renderInfo}
+      isExpanded={isExpanded}
+      onDismiss={onDismiss}
+      onToggleExpand={onToggleExpand}
+    />
+  )
+}
+
+/**
+ * Toast view for a single re-render event
+ */
+function SingleToastView({
+  renderInfo,
+  isExpanded,
+  onDismiss,
+  onToggleExpand,
+}: {
+  renderInfo: RenderInfo
+  isExpanded: boolean
+  onDismiss: () => void
+  onToggleExpand: () => void
+}) {
   const hasPropChanges = renderInfo.propChanges && renderInfo.propChanges.length > 0
   const hasStateChanges = renderInfo.stateChanges && renderInfo.stateChanges.length > 0
   const hasDetailedChanges = hasPropChanges || hasStateChanges
@@ -109,7 +190,7 @@ export function Toast({
   return (
     <div
       className={cn(
-        'animate-toast-slide-in',
+        'pointer-events-auto animate-toast-slide-in',
         'w-80 rounded-lg border bg-card text-card-foreground shadow-lg',
         'transition-all duration-200 ease-out',
         isExpanded && 'ring-2 ring-ring'
@@ -117,22 +198,17 @@ export function Toast({
       role="alert"
       aria-live="polite"
     >
-      {/* Header - Always visible */}
+      {/* Header */}
       <div className="flex items-center justify-between gap-2 p-3">
         <div className="flex items-center gap-2 min-w-0">
-          {/* Flash indicator */}
           <span
             className="h-2 w-2 rounded-full shrink-0"
             style={{ backgroundColor: 'var(--flash-color)' }}
             aria-hidden="true"
           />
-
-          {/* Component name */}
           <span className="font-medium truncate">
             {renderInfo.componentName}
           </span>
-
-          {/* Re-render count badge */}
           <span
             className={cn(
               'inline-flex items-center justify-center',
@@ -143,62 +219,14 @@ export function Toast({
             #{renderInfo.renderCount}
           </span>
         </div>
-
-        {/* Actions */}
-        <div className="flex items-center gap-1 shrink-0">
-          {/* Expand/collapse button */}
-          <button
-            type="button"
-            onClick={onToggleExpand}
-            className={cn(
-              'inline-flex items-center justify-center',
-              'h-6 w-6 rounded-md text-muted-foreground',
-              'hover:bg-secondary hover:text-foreground',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
-            )}
-            aria-expanded={isExpanded}
-            aria-label={isExpanded ? 'Collapse details' : 'Expand details'}
-          >
-            <svg
-              className={cn(
-                'h-4 w-4 transition-transform duration-200',
-                isExpanded && 'rotate-180'
-              )}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-
-          {/* Dismiss button */}
-          <button
-            type="button"
-            onClick={onDismiss}
-            className={cn(
-              'inline-flex items-center justify-center',
-              'h-6 w-6 rounded-md text-muted-foreground',
-              'hover:bg-secondary hover:text-foreground',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
-            )}
-            aria-label="Dismiss notification"
-          >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+        <ToastActions
+          isExpanded={isExpanded}
+          onToggleExpand={onToggleExpand}
+          onDismiss={onDismiss}
+        />
       </div>
 
-      {/* Reason label - Always visible */}
+      {/* Reason label */}
       <div className="px-3 pb-2">
         <span className="text-sm text-muted-foreground">
           {REASON_LABELS[renderInfo.reason]}
@@ -208,14 +236,12 @@ export function Toast({
       {/* Expanded details */}
       {isExpanded && (
         <div className="border-t px-3 py-2 space-y-3 text-sm">
-          {/* What happened explanation */}
           <div>
             <p className="text-muted-foreground">
               {REASON_EXPLANATIONS[renderInfo.reason]}
             </p>
           </div>
 
-          {/* Detailed prop changes with values */}
           {hasPropChanges && (
             <div className="space-y-1">
               <div className="flex items-center gap-2">
@@ -232,7 +258,6 @@ export function Toast({
             </div>
           )}
 
-          {/* Detailed state changes with values */}
           {hasStateChanges && (
             <div className="space-y-1">
               <div className="flex items-center gap-2">
@@ -249,7 +274,6 @@ export function Toast({
             </div>
           )}
 
-          {/* React mechanism explanation */}
           <div className="border-t border-border/50 pt-2">
             <div className="flex items-start gap-2">
               <span className="text-xs font-medium text-primary shrink-0">⚛ React:</span>
@@ -259,7 +283,6 @@ export function Toast({
             </div>
           </div>
 
-          {/* Debug info for parent re-renders without detected changes */}
           {renderInfo.reason === 'parent-rerender' && !hasDetailedChanges && (
             <div className="bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs rounded-md px-2 py-1.5">
               <span className="font-medium">💡 Tip:</span> Wrap this component with{' '}
@@ -269,6 +292,134 @@ export function Toast({
           )}
         </div>
       )}
+    </div>
+  )
+}
+
+/**
+ * Toast view for a batch of re-render events triggered together
+ */
+function BatchToastView({
+  batchRenders,
+  isExpanded,
+  onDismiss,
+  onToggleExpand,
+}: {
+  batchRenders: RenderInfo[]
+  isExpanded: boolean
+  onDismiss: () => void
+  onToggleExpand: () => void
+}) {
+  return (
+    <div
+      className={cn(
+        'pointer-events-auto animate-toast-slide-in',
+        'w-80 rounded-lg border bg-card text-card-foreground shadow-lg',
+        'transition-all duration-200 ease-out',
+        isExpanded && 'ring-2 ring-ring'
+      )}
+      role="alert"
+      aria-live="polite"
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between gap-2 p-3">
+        <div className="flex items-center gap-2 min-w-0">
+          <span
+            className="h-2 w-2 rounded-full shrink-0"
+            style={{ backgroundColor: 'var(--flash-color)' }}
+            aria-hidden="true"
+          />
+          <span className="font-medium truncate">
+            {batchRenders.length} components re-rendered
+          </span>
+        </div>
+        <ToastActions
+          isExpanded={isExpanded}
+          onToggleExpand={onToggleExpand}
+          onDismiss={onDismiss}
+        />
+      </div>
+
+      {/* Reason summary */}
+      <div className="px-3 pb-2">
+        <span className="text-sm text-muted-foreground">
+          {groupReasonSummary(batchRenders)}
+        </span>
+      </div>
+
+      {/* Expanded: per-component details */}
+      {isExpanded && (
+        <div className="border-t px-3 py-2 space-y-1">
+          {batchRenders.map((render) => (
+            <BatchRenderRow key={render.id} render={render} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/**
+ * Shared expand/collapse + dismiss button group
+ */
+function ToastActions({
+  isExpanded,
+  onToggleExpand,
+  onDismiss,
+}: {
+  isExpanded: boolean
+  onToggleExpand: () => void
+  onDismiss: () => void
+}) {
+  return (
+    <div className="flex items-center gap-1 shrink-0">
+      <button
+        type="button"
+        onClick={onToggleExpand}
+        className={cn(
+          'inline-flex items-center justify-center',
+          'h-6 w-6 rounded-md text-muted-foreground',
+          'hover:bg-secondary hover:text-foreground',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+        )}
+        aria-expanded={isExpanded}
+        aria-label={isExpanded ? 'Collapse details' : 'Expand details'}
+      >
+        <svg
+          className={cn(
+            'h-4 w-4 transition-transform duration-200',
+            isExpanded && 'rotate-180'
+          )}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        onClick={onDismiss}
+        className={cn(
+          'inline-flex items-center justify-center',
+          'h-6 w-6 rounded-md text-muted-foreground',
+          'hover:bg-secondary hover:text-foreground',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+        )}
+        aria-label="Dismiss notification"
+      >
+        <svg
+          className="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
     </div>
   )
 }

@@ -16,6 +16,13 @@ import { ThemeToggle } from '@/components/ui'
  *   examples={[{ id: 'state-change', title: 'State Change' }]}
  * />
  */
+/**
+ * Number of examples in the "basic conditions" group.
+ * First 5 = fundamental re-render triggers (state, props, parent, context, force-update).
+ * Remaining = advanced patterns involving specific React APIs.
+ */
+const BASIC_CONDITIONS_COUNT = 5
+
 function ConditionsSection({
   categoryId,
   examples,
@@ -24,6 +31,28 @@ function ConditionsSection({
   examples: { id: string; title: string }[]
 }) {
   const pathname = usePathname()
+  const basicExamples = examples.slice(0, BASIC_CONDITIONS_COUNT)
+  const advancedExamples = examples.slice(BASIC_CONDITIONS_COUNT)
+
+  const renderLink = (example: { id: string; title: string }) => {
+    const href = `/${categoryId}/${example.id}`
+    const isActive = pathname === href
+    return (
+      <li key={example.id}>
+        <Link
+          href={href}
+          className={cn(
+            'group flex min-h-[44px] items-center gap-2 rounded-md px-2 py-2 pl-6 text-sm transition-colors',
+            isActive
+              ? 'bg-accent text-accent-foreground font-medium'
+              : 'text-foreground hover:bg-accent/50'
+          )}
+        >
+          <span className="truncate">{example.title}</span>
+        </Link>
+      </li>
+    )
+  }
 
   return (
     <div className="mb-2">
@@ -32,26 +61,22 @@ function ConditionsSection({
       </div>
 
       <ul id={`category-${categoryId}`} role="list" className="space-y-0.5">
-        {examples.map((example) => {
-          const href = `/${categoryId}/${example.id}`
-          const isActive = pathname === href
-          return (
-            <li key={example.id}>
-              <Link
-                href={href}
-                className={cn(
-                  'group flex min-h-[44px] items-center gap-2 rounded-md px-2 py-2 pl-6 text-sm transition-colors',
-                  isActive
-                    ? 'bg-accent text-accent-foreground font-medium'
-                    : 'text-foreground hover:bg-accent/50'
-                )}
-              >
-                <span className="truncate">{example.title}</span>
-              </Link>
-            </li>
-          )
-        })}
+        {basicExamples.map(renderLink)}
       </ul>
+
+      {advancedExamples.length > 0 && (
+        <>
+          <div className="mt-3 flex min-h-[44px] w-full items-center gap-2 px-2 py-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Advanced Patterns
+            <span className="ml-auto rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+              {advancedExamples.length}
+            </span>
+          </div>
+          <ul id={`category-${categoryId}-advanced`} role="list" className="space-y-0.5">
+            {advancedExamples.map(renderLink)}
+          </ul>
+        </>
+      )}
     </div>
   )
 }

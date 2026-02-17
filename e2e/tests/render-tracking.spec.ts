@@ -31,13 +31,21 @@ test.describe('Render Tracking', () => {
     await expect(page.locator(sel.toast).first()).toBeVisible()
   })
 
-  test('toast shows component name', async ({ app, page }) => {
+  test('toast shows re-render info', async ({ app, page }) => {
     await app.reset()
     await page.waitForTimeout(300)
     await app.clickTrigger('Trigger State Change')
     await app.waitForToast()
-    const toastText = await page.locator(sel.toast).first().textContent()
-    expect(toastText).toContain('App')
+    const firstToast = page.locator(sel.toast).first()
+    const toastText = await firstToast.textContent()
+    // Batch toast: "N components re-rendered"; single toast: component name
+    expect(toastText).toContain('re-rendered')
+
+    // Expand to see per-component details
+    const toggleBtn = firstToast.locator('button[aria-expanded]')
+    await toggleBtn.click()
+    const expandedText = await firstToast.textContent()
+    expect(expandedText).toContain('App')
   })
 
   test('toast expand shows details', async ({ app, page }) => {
