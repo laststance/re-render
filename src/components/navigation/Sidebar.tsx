@@ -8,17 +8,70 @@ import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { ThemeToggle } from '@/components/ui'
 
 /**
- * Collapsible category section in the sidebar.
- * Tracks expanded state and highlights active examples.
+ * Always-expanded section for re-render conditions.
+ * No collapse toggle — all conditions visible at a glance.
+ * @example
+ * <ConditionsSection
+ *   categoryId="conditions"
+ *   examples={[{ id: 'state-change', title: 'State Change' }]}
+ * />
  */
-function CategorySection({
+function ConditionsSection({
   categoryId,
-  categoryName,
+  examples,
+}: {
+  categoryId: string
+  examples: { id: string; title: string }[]
+}) {
+  const pathname = usePathname()
+
+  return (
+    <div className="mb-2">
+      <div className="flex min-h-[44px] w-full items-center gap-2 px-2 py-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        When does React re-render?
+      </div>
+
+      <ul id={`category-${categoryId}`} role="list" className="space-y-0.5">
+        {examples.map((example) => {
+          const href = `/${categoryId}/${example.id}`
+          const isActive = pathname === href
+          return (
+            <li key={example.id}>
+              <Link
+                href={href}
+                className={cn(
+                  'group flex min-h-[44px] items-center gap-2 rounded-md px-2 py-2 pl-6 text-sm transition-colors',
+                  isActive
+                    ? 'bg-accent text-accent-foreground font-medium'
+                    : 'text-foreground hover:bg-accent/50'
+                )}
+              >
+                <span className="truncate">{example.title}</span>
+              </Link>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  )
+}
+
+/**
+ * Collapsible section for optimization examples.
+ * Shows count badge and supports expand/collapse.
+ * @example
+ * <OptimizationSection
+ *   categoryId="optimization"
+ *   examples={[{ id: 'memo', title: 'React.memo' }]}
+ *   defaultExpanded={false}
+ * />
+ */
+function OptimizationSection({
+  categoryId,
   examples,
   defaultExpanded,
 }: {
   categoryId: string
-  categoryName: string
   examples: { id: string; title: string }[]
   defaultExpanded: boolean
 }) {
@@ -38,7 +91,10 @@ function CategorySection({
         ) : (
           <ChevronRight className="h-4 w-4 shrink-0" aria-hidden="true" />
         )}
-        {categoryName}
+        Optimization
+        <span className="ml-auto rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+          {examples.length}
+        </span>
       </button>
 
       <ul
@@ -76,11 +132,15 @@ function CategorySection({
 
 /**
  * Navigation content shared between desktop sidebar and mobile sheet.
+ * Renders conditions section (always expanded) + optimization section (collapsible).
  */
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const params = useParams<{ categoryId: string }>()
   const pathname = usePathname()
   const isHome = pathname === '/'
+
+  const conditionsCategory = exampleCategories.find((c) => c.id === 'conditions')
+  const optimizationCategory = exampleCategories.find((c) => c.id === 'optimization')
 
   return (
     <>
@@ -113,16 +173,22 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           Home
         </Link>
 
-        {/* Category sections */}
-        {exampleCategories.map((category) => (
-          <CategorySection
-            key={category.id}
-            categoryId={category.id}
-            categoryName={category.name}
-            examples={category.examples}
-            defaultExpanded={category.id === params.categoryId || (isHome && category.id === 'without-memo')}
+        {/* Conditions: always expanded, flat list */}
+        {conditionsCategory && (
+          <ConditionsSection
+            categoryId={conditionsCategory.id}
+            examples={conditionsCategory.examples}
           />
-        ))}
+        )}
+
+        {/* Optimization: collapsible with count badge */}
+        {optimizationCategory && (
+          <OptimizationSection
+            categoryId={optimizationCategory.id}
+            examples={optimizationCategory.examples}
+            defaultExpanded={params.categoryId === 'optimization'}
+          />
+        )}
       </nav>
     </>
   )
@@ -177,8 +243,8 @@ function MobileSheet({
 }
 
 /**
- * Sidebar navigation showing all categories and examples.
- * - Desktop: Fixed sidebar with collapsible categories
+ * Sidebar navigation showing re-render conditions and optimization examples.
+ * - Desktop: Fixed sidebar with conditions always visible
  * - Mobile: Hamburger button opening sheet overlay
  */
 export function Sidebar() {

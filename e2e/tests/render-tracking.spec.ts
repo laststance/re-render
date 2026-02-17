@@ -3,12 +3,12 @@ import { sel } from '../helpers/selectors.js'
 
 /**
  * Core render tracking tests.
- * Uses without-memo/state-change as the canonical example.
+ * Uses conditions/state-change as the canonical example.
  * Each test resets counters first to clear layout-switch artifacts.
  */
 test.describe('Render Tracking', () => {
   test.beforeEach(async ({ app, page }) => {
-    await app.gotoExample('without-memo', 'state-change')
+    await app.gotoExample('conditions', 'state-change')
     // Reset and wait for cascade to settle (initial renders + layout switch)
     await app.reset()
     await page.waitForTimeout(500)

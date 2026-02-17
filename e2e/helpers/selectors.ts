@@ -25,9 +25,8 @@ export const sel = {
   exampleTitle: 'main header h2',
   exampleDescription: 'main header p',
 
-  // Explanation panel (ExplanationPanel.tsx)
-  explanationToggle: 'button[aria-controls="explanation-content"]',
-  explanationContent: '#explanation-content',
+  // Explanation panel (ExplanationPanel.tsx) — always visible, no toggle
+  explanationPanel: 'div:has(> div > h3:text("Understanding This Pattern"))',
 
   // Code editor file tabs (FileTabs.tsx)
   fileTabList: 'div[role="tablist"][aria-label="Code files"]',

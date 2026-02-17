@@ -48,7 +48,7 @@ test.describe('Theme', () => {
     await expect(html).toHaveClass(/dark/)
 
     // Navigate to an example
-    await page.locator('a[href="/without-memo/state-change"]').first().click()
+    await page.locator('a[href="/conditions/state-change"]').first().click()
     await expect(html).toHaveClass(/dark/)
 
     // Reload the page

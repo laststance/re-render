@@ -4,7 +4,7 @@ import { examples } from '../helpers/examples.js'
 
 test.describe('Example Page', () => {
   test('displays title and description', async ({ app, page }) => {
-    await app.gotoExample('without-memo', 'state-change')
+    await app.gotoExample('conditions', 'state-change')
     await expect(page.locator(sel.exampleTitle)).toHaveText('State Change')
     await expect(page.locator(sel.exampleDescription)).toContainText(
       'How useState triggers re-renders'
@@ -12,7 +12,7 @@ test.describe('Example Page', () => {
   })
 
   test('code editor loads with file tabs', async ({ app, page }) => {
-    await app.gotoExample('without-memo', 'state-change')
+    await app.gotoExample('conditions', 'state-change')
     await expect(page.locator(sel.fileTabList)).toBeVisible()
     // At least one file tab
     const tabCount = await page.locator(`${sel.fileTabList} button[role="tab"]`).count()
@@ -21,7 +21,7 @@ test.describe('Example Page', () => {
 
   test('file tabs switch content in multi-file example', async ({ app, page }) => {
     // context-change has multiple files (app, context, display, button)
-    await app.gotoExample('without-memo', 'context-change')
+    await app.gotoExample('conditions', 'context-change')
     const tabs = page.locator(`${sel.fileTabList} button[role="tab"]`)
     const tabCount = await tabs.count()
 
@@ -37,33 +37,20 @@ test.describe('Example Page', () => {
     await expect(tabs.first()).toHaveAttribute('aria-selected', 'false')
   })
 
-  test('explanation panel toggles open and closed', async ({ app, page }) => {
-    await app.gotoExample('without-memo', 'state-change')
-    const toggle = page.locator(sel.explanationToggle)
-    const content = page.locator(sel.explanationContent)
-
-    // Initially collapsed
-    await expect(toggle).toHaveAttribute('aria-expanded', 'false')
-
-    // Expand
-    await toggle.click()
-    await expect(toggle).toHaveAttribute('aria-expanded', 'true')
-    await expect(content).toBeVisible()
-
-    // Collapse
-    await toggle.click()
-    await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+  test('explanation panel is always visible', async ({ app, page }) => {
+    await app.gotoExample('conditions', 'state-change')
+    const panel = page.locator(sel.explanationPanel)
+    await expect(panel).toBeVisible()
   })
 
-  test('explanation shows key points when expanded', async ({ app, page }) => {
-    await app.gotoExample('without-memo', 'state-change')
-    await page.locator(sel.explanationToggle).click()
-    const content = page.locator(sel.explanationContent)
-    await expect(content).toContainText('Key Points')
+  test('explanation shows key points', async ({ app, page }) => {
+    await app.gotoExample('conditions', 'state-change')
+    const panel = page.locator(sel.explanationPanel)
+    await expect(panel).toContainText('Key Points')
   })
 
   test('component tree is visible in default view', async ({ app, page }) => {
-    await app.gotoExample('without-memo', 'state-change')
+    await app.gotoExample('conditions', 'state-change')
     // Two data-component="App" exist (tree view + live preview); use first (tree view)
     await expect(page.locator(sel.componentBox('App')).first()).toBeVisible()
   })

@@ -2,7 +2,7 @@ import { test, expect } from '../fixtures/app.fixture.js'
 import { sel } from '../helpers/selectors.js'
 
 /**
- * Optimization-specific tests for "with-memo" and key "without-memo" examples.
+ * Optimization-specific tests for "optimization" and key "conditions" examples.
  *
  * Note: LivePreviewWrapper wraps all components and is NOT itself memoized,
  * so render counts in the tree view reflect "without-optimization" behavior.
@@ -16,7 +16,7 @@ import { sel } from '../helpers/selectors.js'
 test.describe('With-Memo Examples', () => {
   test.describe('React.memo', () => {
     test.beforeEach(async ({ app, page }) => {
-      await app.gotoExample('with-memo', 'memo')
+      await app.gotoExample('optimization', 'memo')
       await app.reset()
       await page.waitForTimeout(500)
     })
@@ -44,15 +44,14 @@ test.describe('With-Memo Examples', () => {
     })
 
     test('explanation mentions React.memo', async ({ page }) => {
-      await page.locator(sel.explanationToggle).click()
-      const content = page.locator(sel.explanationContent)
-      await expect(content).toContainText('memo')
+      const panel = page.locator(sel.explanationPanel)
+      await expect(panel).toContainText('memo')
     })
   })
 
   test.describe('useCallback', () => {
     test.beforeEach(async ({ app, page }) => {
-      await app.gotoExample('with-memo', 'usecallback')
+      await app.gotoExample('optimization', 'usecallback')
       await app.reset()
       await page.waitForTimeout(500)
     })
@@ -87,7 +86,7 @@ test.describe('With-Memo Examples', () => {
 
   test.describe('useMemo', () => {
     test.beforeEach(async ({ app, page }) => {
-      await app.gotoExample('with-memo', 'usememo')
+      await app.gotoExample('optimization', 'usememo')
       await app.reset()
       await page.waitForTimeout(500)
     })
@@ -114,7 +113,7 @@ test.describe('With-Memo Examples', () => {
 
   test.describe('children-pattern', () => {
     test.beforeEach(async ({ app, page }) => {
-      await app.gotoExample('with-memo', 'children-pattern')
+      await app.gotoExample('optimization', 'children-pattern')
       await app.reset()
       await page.waitForTimeout(500)
     })
@@ -141,7 +140,7 @@ test.describe('With-Memo Examples', () => {
 
   test.describe('usecallback-comparison', () => {
     test.beforeEach(async ({ app, page }) => {
-      await app.gotoExample('with-memo', 'usecallback-comparison')
+      await app.gotoExample('optimization', 'usecallback-comparison')
       await app.reset()
       await page.waitForTimeout(500)
     })
@@ -176,7 +175,7 @@ test.describe('With-Memo Examples', () => {
 
   test.describe('usememo-comparison', () => {
     test.beforeEach(async ({ app, page }) => {
-      await app.gotoExample('with-memo', 'usememo-comparison')
+      await app.gotoExample('optimization', 'usememo-comparison')
       await app.reset()
       await page.waitForTimeout(500)
     })
@@ -213,7 +212,7 @@ test.describe('With-Memo Examples', () => {
 test.describe('Without-Memo Key Behaviors', () => {
   test.describe('ref-vs-state', () => {
     test.beforeEach(async ({ app, page }) => {
-      await app.gotoExample('without-memo', 'ref-vs-state')
+      await app.gotoExample('conditions', 'ref-vs-state')
       await app.reset()
       await page.waitForTimeout(500)
     })
@@ -254,7 +253,7 @@ test.describe('Without-Memo Key Behaviors', () => {
 
   test.describe('parent-rerender', () => {
     test.beforeEach(async ({ app, page }) => {
-      await app.gotoExample('without-memo', 'parent-rerender')
+      await app.gotoExample('conditions', 'parent-rerender')
       await app.reset()
       await page.waitForTimeout(500)
     })
@@ -277,7 +276,7 @@ test.describe('Without-Memo Key Behaviors', () => {
 
   test.describe('context-change', () => {
     test.beforeEach(async ({ app, page }) => {
-      await app.gotoExample('without-memo', 'context-change')
+      await app.gotoExample('conditions', 'context-change')
       await app.reset()
       await page.waitForTimeout(500)
     })
@@ -310,7 +309,7 @@ test.describe('Without-Memo Key Behaviors', () => {
 
   test.describe('use-reducer', () => {
     test.beforeEach(async ({ app, page }) => {
-      await app.gotoExample('without-memo', 'use-reducer')
+      await app.gotoExample('conditions', 'use-reducer')
       await app.reset()
       await page.waitForTimeout(500)
     })
@@ -344,7 +343,7 @@ test.describe('Without-Memo Key Behaviors', () => {
 
   test.describe('compound-component', () => {
     test.beforeEach(async ({ app, page }) => {
-      await app.gotoExample('without-memo', 'compound-component')
+      await app.gotoExample('conditions', 'compound-component')
       await app.reset()
       await page.waitForTimeout(500)
     })

@@ -11,41 +11,41 @@ interface ExampleInfo {
 }
 
 export const examples: ExampleInfo[] = [
-  // Without memo (13)
+  // Re-render Conditions (13)
   {
-    categoryId: 'without-memo',
+    categoryId: 'conditions',
     exampleId: 'state-change',
     title: 'State Change',
     triggers: ['Trigger State Change'],
   },
   {
-    categoryId: 'without-memo',
+    categoryId: 'conditions',
     exampleId: 'props-change',
     title: 'Props Change',
     triggers: ['Trigger Props Change'],
   },
   {
-    categoryId: 'without-memo',
+    categoryId: 'conditions',
     exampleId: 'parent-rerender',
     title: 'Parent Re-render',
     triggers: ['Trigger Parent Re-render'],
   },
   {
-    categoryId: 'without-memo',
+    categoryId: 'conditions',
     exampleId: 'context-change',
     title: 'Context Change',
     triggers: ['Trigger Context Change'],
   },
   {
-    categoryId: 'without-memo',
+    categoryId: 'conditions',
     exampleId: 'force-update',
     title: 'Force Update',
     triggers: ['Reset Timer (Key Change)', 'Force Re-render'],
   },
   {
-    categoryId: 'without-memo',
+    categoryId: 'conditions',
     exampleId: 'use-reducer',
-    title: 'useReducer',
+    title: 'Reducer Dispatch',
     triggers: [
       'Dispatch Increment',
       'Dispatch Decrement',
@@ -54,88 +54,88 @@ export const examples: ExampleInfo[] = [
     ],
   },
   {
-    categoryId: 'without-memo',
+    categoryId: 'conditions',
     exampleId: 'use-sync-external-store',
-    title: 'useSyncExternalStore',
+    title: 'External Store',
     triggers: ['Store Increment', 'Store Decrement'],
   },
   {
-    categoryId: 'without-memo',
+    categoryId: 'conditions',
     exampleId: 'suspense',
     title: 'Suspense',
     triggers: ['Switch User'],
   },
   {
-    categoryId: 'without-memo',
+    categoryId: 'conditions',
     exampleId: 'concurrent',
-    title: 'Concurrent Features',
+    title: 'Concurrent Update',
     triggers: ['Type Character', 'Clear Input'],
   },
   {
-    categoryId: 'without-memo',
+    categoryId: 'conditions',
     exampleId: 'use-effect-deps',
     title: 'useEffect Dependencies',
     triggers: ['Increment Count', 'Type Character'],
   },
   {
-    categoryId: 'without-memo',
+    categoryId: 'conditions',
     exampleId: 'ref-vs-state',
-    title: 'Ref vs State',
+    title: 'Ref Mutation',
     triggers: ['Increment State', 'Increment Ref'],
   },
   {
-    categoryId: 'without-memo',
+    categoryId: 'conditions',
     exampleId: 'compound-component',
     title: 'Compound Component',
     triggers: ['Select Option', 'Toggle Dropdown'],
   },
   {
-    categoryId: 'without-memo',
+    categoryId: 'conditions',
     exampleId: 'render-props',
     title: 'Render Props',
     triggers: ['Simulate Mouse Move'],
   },
-  // With memo (7)
+  // Optimization (7)
   {
-    categoryId: 'with-memo',
+    categoryId: 'optimization',
     exampleId: 'memo',
     title: 'React.memo',
     triggers: ['Trigger Parent State Change'],
   },
   {
-    categoryId: 'with-memo',
+    categoryId: 'optimization',
     exampleId: 'usecallback',
     title: 'useCallback',
     triggers: ['Trigger Increment', 'Trigger Text Input'],
   },
   {
-    categoryId: 'with-memo',
+    categoryId: 'optimization',
     exampleId: 'usememo',
     title: 'useMemo',
     triggers: ['Trigger Recomputation', 'Type Without Recomputation'],
   },
   {
-    categoryId: 'with-memo',
+    categoryId: 'optimization',
     exampleId: 'react-lazy',
     title: 'React.lazy',
     triggers: ['Toggle Chart'],
   },
   {
-    categoryId: 'with-memo',
+    categoryId: 'optimization',
     exampleId: 'children-pattern',
     title: 'Children Pattern',
     triggers: ['Change Color'],
   },
   {
-    categoryId: 'with-memo',
+    categoryId: 'optimization',
     exampleId: 'usecallback-comparison',
-    title: 'useCallback Comparison',
+    title: 'useCallback: Before vs After',
     triggers: ['Type Text', 'Increment Count'],
   },
   {
-    categoryId: 'with-memo',
+    categoryId: 'optimization',
     exampleId: 'usememo-comparison',
-    title: 'useMemo Comparison',
+    title: 'useMemo: Before vs After',
     triggers: ['Type Text', 'Increment Count'],
   },
 ]
@@ -149,10 +149,10 @@ export function allExamplePaths(): string[] {
 }
 
 /** Category IDs in order. */
-export const categoryIds = ['without-memo', 'with-memo'] as const
+export const categoryIds = ['conditions', 'optimization'] as const
 
 /** Category display names. */
 export const categoryNames: Record<string, string> = {
-  'without-memo': 'Without memo',
-  'with-memo': 'With memo',
+  'conditions': 'Re-render Conditions',
+  'optimization': 'Optimization',
 }

@@ -178,7 +178,7 @@ export function LandingPage() {
           <div className="rounded-xl border border-[var(--border)] bg-[var(--secondary)] p-8">
             <h2 className="mb-2 text-xl font-semibold">Ready to Start?</h2>
             <p className="mb-4 text-[var(--muted-foreground)]">
-              Start without memo to understand default behavior, then add memo to see the difference.
+              Explore every re-render condition, then learn optimization techniques to prevent unnecessary renders.
             </p>
             <Link
               href={quickStartPath}
@@ -198,10 +198,10 @@ export function LandingPage() {
  */
 function getCategoryDescription(categoryId: string): string {
   switch (categoryId) {
-    case 'without-memo':
-      return 'How React re-renders by default: state, props, context, compound components, render props, and more.'
-    case 'with-memo':
-      return 'Optimize with memo(), useCallback, useMemo, and composition patterns to skip unnecessary re-renders.'
+    case 'conditions':
+      return 'All the conditions that trigger React re-renders: state changes, props, context, parent re-renders, and more.'
+    case 'optimization':
+      return 'Skip unnecessary re-renders with React.memo, useCallback, useMemo, and composition patterns.'
     default:
       return ''
   }

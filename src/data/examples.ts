@@ -2,12 +2,12 @@ import type { ExampleCategory } from '@/types'
 
 /**
  * All re-render examples organized by category.
- * Categories: without-memo (default rendering behavior), with-memo (optimization with memo/useCallback/useMemo)
+ * Categories: conditions (re-render triggers), optimization (preventing re-renders with memo/useCallback/useMemo)
  */
 export const exampleCategories: ExampleCategory[] = [
   {
-    id: 'without-memo',
-    name: 'Without memo',
+    id: 'conditions',
+    name: 'Re-render Conditions',
     examples: [
       {
         id: 'state-change',
@@ -674,7 +674,7 @@ const [, forceUpdate] = useReducer(x => x + 1, 0)
       },
       {
         id: 'use-reducer',
-        title: 'useReducer',
+        title: 'Reducer Dispatch',
         description: 'Complex state management with useReducer',
         files: [
           {
@@ -819,7 +819,7 @@ export function Input({ value, onChange, placeholder, type }: {
       },
       {
         id: 'use-sync-external-store',
-        title: 'useSyncExternalStore',
+        title: 'External Store',
         description: 'Subscribing to external stores without tearing',
         files: [
           {
@@ -1129,7 +1129,7 @@ function UserProfile({ userId }) {
       },
       {
         id: 'concurrent',
-        title: 'Concurrent Features',
+        title: 'Concurrent Update',
         description: 'useTransition and useDeferredValue for non-blocking updates',
         files: [
           {
@@ -1413,7 +1413,7 @@ useEffect(() => { ... })
       },
       {
         id: 'ref-vs-state',
-        title: 'Refs vs State',
+        title: 'Ref Mutation',
         description: 'Why refs don\'t trigger re-renders',
         files: [
           {
@@ -1894,8 +1894,8 @@ export function Text({ children }: { children: ReactNode }) {
     ],
   },
   {
-    id: 'with-memo',
-    name: 'With memo',
+    id: 'optimization',
+    name: 'Optimization',
     examples: [
       {
         id: 'memo',
@@ -2570,7 +2570,7 @@ function App() {
       },
       {
         id: 'usecallback-comparison',
-        title: 'useCallback Comparison',
+        title: 'useCallback: Before vs After',
         description: 'Before/After: useCallback alone vs useCallback + memo',
         files: [
           {
@@ -2725,7 +2725,7 @@ const handler = useCallback(() => { ... }, [])
       },
       {
         id: 'usememo-comparison',
-        title: 'useMemo Comparison',
+        title: 'useMemo: Before vs After',
         description: 'Before/After: useMemo caches value but child needs memo too',
         files: [
           {
