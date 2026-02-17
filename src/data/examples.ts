@@ -2927,6 +2927,9 @@ export function getAdjacentExamples(categoryId: string, exampleId: string) {
   const currentIndex = allExamples.findIndex(
     (ex) => ex.categoryId === categoryId && ex.exampleId === exampleId
   )
+  if (currentIndex === -1) {
+    return { prev: null, next: null, step: 0, total: allExamples.length }
+  }
   return {
     prev: currentIndex > 0 ? allExamples[currentIndex - 1] : null,
     next: currentIndex < allExamples.length - 1 ? allExamples[currentIndex + 1] : null,
