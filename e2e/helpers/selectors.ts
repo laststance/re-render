@@ -7,10 +7,12 @@
 export const sel = {
   // Navigation (Sidebar.tsx)
   nav: 'nav[aria-label="Example navigation"]',
-  categoryToggle: (id: string) => `button[aria-controls="category-${id}"]`,
-  categoryList: (id: string) => `#category-${id}`,
+  matrixGrid: 'table[aria-label="Re-render comparison matrix"]',
+  optimizationToggle: 'table[aria-label="Re-render comparison matrix"] button[aria-expanded]',
   sidebarExampleLink: (cat: string, ex: string) =>
     `nav[aria-label="Example navigation"] a[href="/${cat}/${ex}"]`,
+  sidebarExampleRow: (cat: string, ex: string) =>
+    `nav[aria-label="Example navigation"] tr:has(a[href="/${cat}/${ex}"])`,
   homeLink: 'nav[aria-label="Example navigation"] a[href="/"]',
 
   // Mobile (Sidebar.tsx)

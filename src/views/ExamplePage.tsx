@@ -16,10 +16,13 @@ import type { ViewMode } from '@/components/layout/VisualizationPane'
 import type { LivePreviewHandle } from '@/data/livePreviewExamples'
 
 /**
- * Page component displaying a single re-render example.
- * Reads category and example IDs from URL params.
- * Supports switching between Component Tree view and Live Preview.
- * Includes trigger panel for intentionally causing re-renders.
+ * Page component displaying a single re-render example with dual-tree comparison.
+ * Shows the same scenario for both `<Child />` (orange) and `<MemoizedChild />` (blue),
+ * making it viscerally clear whether React.memo prevents re-renders in each case.
+ *
+ * @example
+ * // URL: /conditions/state-change → shows dual trees for state change scenario
+ * // URL: /optimization/usecallback → shows dual trees for useCallback scenario
  */
 export function ExamplePage() {
   const params = useParams<{ categoryId: string; exampleId: string }>()
@@ -60,9 +63,12 @@ export function ExamplePage() {
 
   const example = categoryId && exampleId ? getExample(categoryId, exampleId) : null
 
-  // Merge static tree structure with live Redux render counts
-  // Called before early return to satisfy React rules of hooks
+  // Merge static tree structures with live Redux render counts.
+  // <Child /> tree uses componentTree; <MemoizedChild /> falls back to same tree if not defined.
   const liveTree = useComponentTreeWithCounts(example?.componentTree ?? null)
+  const memoizedLiveTree = useComponentTreeWithCounts(
+    example?.memoizedTree ?? example?.componentTree ?? null
+  )
 
   // Check if this example has a live preview component
   const LivePreviewComponent = exampleId ? livePreviewMap[exampleId] : undefined
@@ -119,14 +125,17 @@ export function ExamplePage() {
           onViewModeChange={handleViewModeChange}
           hasLivePreview={hasLivePreview}
         >
-          {/* Trigger Panel - always accessible when triggers exist */}
+          {/* Trigger Panel - shared between both tree sections */}
           {hasTriggers && LivePreviewComponent && (
             <TriggerPanel triggers={triggers} onTrigger={handleTrigger} />
           )}
 
-          {/* Tree view - visible in box mode */}
+          {/* Dual-tree comparison view - visible in box mode */}
           <div className={cn(viewMode !== 'box' && 'hidden')}>
-            <ComponentBoxView tree={liveTree!} />
+            <DualTreeView
+              childTree={liveTree}
+              memoizedTree={memoizedLiveTree}
+            />
           </div>
 
           {/* Live preview - always mounted to keep useRenderTracker active */}
@@ -152,6 +161,75 @@ export function ExamplePage() {
           next={adjacent.next}
         />
       )}
+    </div>
+  )
+}
+
+/**
+ * Dual-tree comparison showing `<Child />` and `<MemoizedChild />` side by side vertically.
+ * Orange-themed section for unmemoized, blue-themed for memoized.
+ * Scrollable vertically when both sections exceed viewport height.
+ *
+ * @param childTree - Live tree with render counts for the unmemoized variant
+ * @param memoizedTree - Live tree with render counts for the memoized variant
+ *
+ * @example
+ * <DualTreeView childTree={liveTree} memoizedTree={memoizedLiveTree} />
+ */
+function DualTreeView({
+  childTree,
+  memoizedTree,
+}: {
+  childTree: import('@/types').ComponentNode | null
+  memoizedTree: import('@/types').ComponentNode | null
+}) {
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Without Memo section — orange accent */}
+      <section
+        className="rounded-lg border-2 border-[var(--flash-color)]/40 bg-card"
+        aria-label="Without memo comparison"
+      >
+        <div className="flex items-center gap-2 border-b border-[var(--flash-color)]/20 px-4 py-2">
+          <div
+            className="h-3 w-3 rounded-full"
+            style={{ backgroundColor: 'var(--flash-color)' }}
+            aria-hidden="true"
+          />
+          <h3 className="text-base font-semibold" style={{ color: 'var(--flash-color)' }}>
+            {'<Child />'}
+          </h3>
+          <span className="text-xs text-muted-foreground">Without React.memo</span>
+        </div>
+        <div className="p-4">
+          {childTree ? (
+            <ComponentBoxView tree={childTree} variant="child" />
+          ) : (
+            <p className="text-sm text-muted-foreground">No component tree</p>
+          )}
+        </div>
+      </section>
+
+      {/* With Memo section — blue accent */}
+      <section
+        className="rounded-lg border-2 border-blue-500/40 bg-card"
+        aria-label="With memo comparison"
+      >
+        <div className="flex items-center gap-2 border-b border-blue-500/20 px-4 py-2">
+          <div className="h-3 w-3 rounded-full bg-blue-500" aria-hidden="true" />
+          <h3 className="text-base font-semibold text-blue-500">
+            {'<MemoizedChild />'}
+          </h3>
+          <span className="text-xs text-muted-foreground">With React.memo</span>
+        </div>
+        <div className="p-4">
+          {memoizedTree ? (
+            <ComponentBoxView tree={memoizedTree} variant="memoized" />
+          ) : (
+            <p className="text-sm text-muted-foreground">No component tree</p>
+          )}
+        </div>
+      </section>
     </div>
   )
 }

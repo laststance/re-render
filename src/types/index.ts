@@ -8,6 +8,7 @@ export type {
   ChangedValue,
 } from './render'
 export type {
+  MemoEffect,
   Example,
   ExampleCategory,
   NavItem,

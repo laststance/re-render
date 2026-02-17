@@ -38,7 +38,20 @@ export interface ExampleExplanation {
 }
 
 /**
+ * Whether React.memo prevents re-render in this scenario.
+ * - 'prevents': memo successfully skips re-render (green ✓ in matrix)
+ * - 'no-effect': re-render still happens despite memo (red ✗ in matrix)
+ * - 'not-applicable': scenario doesn't involve re-render comparison (gray — in matrix)
+ * @example
+ * 'prevents'       // Parent re-render with same props → memo skips
+ * 'no-effect'      // Own state change → memo can't prevent
+ * 'not-applicable' // Ref mutation → no re-render at all
+ */
+export type MemoEffect = 'prevents' | 'no-effect' | 'not-applicable'
+
+/**
  * Represents a re-render example with code and component tree visualization.
+ * Each example shows the same scenario for both `<Child />` and `<MemoizedChild />`.
  */
 export interface Example {
   /** Unique identifier used in URL path */
@@ -49,8 +62,12 @@ export interface Example {
   description: string
   /** Code files to display in the editor */
   files: CodeFile[]
-  /** Component tree for visualization */
+  /** Component tree for the unmemoized variant (`<Child />`) */
   componentTree: ComponentNode
+  /** Component tree for the memoized variant (`<MemoizedChild />`), mirrors componentTree structure */
+  memoizedTree?: ComponentNode
+  /** Whether React.memo prevents re-render in this scenario */
+  memoEffect: MemoEffect
   /** Optional live preview JSX wrapped with LivePreviewWrapper components */
   livePreview?: ReactNode
   /** Detailed explanation of the re-render condition */

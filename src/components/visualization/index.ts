@@ -1,4 +1,5 @@
 export { ComponentBox } from './ComponentBox'
+export type { ComponentBoxVariant } from './ComponentBox'
 export { ComponentBoxView } from './ComponentBoxView'
 export { LivePreview } from './LivePreview'
 export { useLivePreview } from './LivePreviewContext'

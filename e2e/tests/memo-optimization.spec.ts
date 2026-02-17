@@ -13,42 +13,7 @@ import { sel } from '../helpers/selectors.js'
  * triggers should NOT cause a re-render (e.g., ref mutations).
  */
 
-test.describe('With-Memo Examples', () => {
-  test.describe('React.memo', () => {
-    test.beforeEach(async ({ app, page }) => {
-      await app.gotoExample('optimization', 'memo')
-      await app.reset()
-      await page.waitForTimeout(500)
-    })
-
-    test('parent state change trigger increments App render count', async ({
-      app,
-      page,
-    }) => {
-      const before = Number(await app.getRenderCount('App'))
-      await app.clickTrigger('Trigger Parent State Change')
-      await page.waitForTimeout(500)
-      const after = Number(await app.getRenderCount('App'))
-      expect(after).toBeGreaterThan(before)
-    })
-
-    test('component tree shows both App and MemoChild', async ({
-      page,
-    }) => {
-      await expect(
-        page.locator(sel.componentBox('App')).first()
-      ).toBeVisible()
-      await expect(
-        page.locator(sel.componentBox('MemoChild')).first()
-      ).toBeVisible()
-    })
-
-    test('explanation mentions React.memo', async ({ page }) => {
-      const panel = page.locator(sel.explanationPanel)
-      await expect(panel).toContainText('memo')
-    })
-  })
-
+test.describe('Optimization Examples', () => {
   test.describe('useCallback', () => {
     test.beforeEach(async ({ app, page }) => {
       await app.gotoExample('optimization', 'usecallback')
@@ -138,75 +103,6 @@ test.describe('With-Memo Examples', () => {
     })
   })
 
-  test.describe('usecallback-comparison', () => {
-    test.beforeEach(async ({ app, page }) => {
-      await app.gotoExample('optimization', 'usecallback-comparison')
-      await app.reset()
-      await page.waitForTimeout(500)
-    })
-
-    test('type text trigger works', async ({ app, page }) => {
-      const before = Number(await app.getRenderCount('Root'))
-      await app.clickTrigger('Type Text')
-      await page.waitForTimeout(500)
-      const after = Number(await app.getRenderCount('Root'))
-      expect(after).toBeGreaterThan(before)
-    })
-
-    test('increment count trigger works', async ({ app, page }) => {
-      const before = Number(await app.getRenderCount('Root'))
-      await app.clickTrigger('Increment Count')
-      await page.waitForTimeout(500)
-      const after = Number(await app.getRenderCount('Root'))
-      expect(after).toBeGreaterThan(before)
-    })
-
-    test('component tree shows Before and After comparison', async ({
-      page,
-    }) => {
-      await expect(
-        page.locator(sel.componentBox('BeforeApp')).first()
-      ).toBeVisible()
-      await expect(
-        page.locator(sel.componentBox('AfterApp')).first()
-      ).toBeVisible()
-    })
-  })
-
-  test.describe('usememo-comparison', () => {
-    test.beforeEach(async ({ app, page }) => {
-      await app.gotoExample('optimization', 'usememo-comparison')
-      await app.reset()
-      await page.waitForTimeout(500)
-    })
-
-    test('type text trigger works', async ({ app, page }) => {
-      const before = Number(await app.getRenderCount('Root'))
-      await app.clickTrigger('Type Text')
-      await page.waitForTimeout(500)
-      const after = Number(await app.getRenderCount('Root'))
-      expect(after).toBeGreaterThan(before)
-    })
-
-    test('increment count trigger works', async ({ app, page }) => {
-      const before = Number(await app.getRenderCount('Root'))
-      await app.clickTrigger('Increment Count')
-      await page.waitForTimeout(500)
-      const after = Number(await app.getRenderCount('Root'))
-      expect(after).toBeGreaterThan(before)
-    })
-
-    test('component tree shows Before and After comparison', async ({
-      page,
-    }) => {
-      await expect(
-        page.locator(sel.componentBox('BeforeApp')).first()
-      ).toBeVisible()
-      await expect(
-        page.locator(sel.componentBox('AfterApp')).first()
-      ).toBeVisible()
-    })
-  })
 })
 
 test.describe('Without-Memo Key Behaviors', () => {

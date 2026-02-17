@@ -38,8 +38,10 @@
   --input: oklch(90.3% 0.005 285.74);
   --ring: oklch(21.5% 0.01 285.74);
 
-  /* Re-render flash color */
+  /* Re-render flash color — <Child /> (without memo) */
   --flash-color: oklch(79.7% 0.165 64.87); /* orange-400 */
+  /* Re-render flash color — <MemoizedChild /> (with memo) */
+  --flash-color-memo: oklch(62.3% 0.209 255.09); /* blue-500 */
 }
 
 .dark {
@@ -63,8 +65,10 @@
   --input: oklch(26.9% 0.015 285.74);
   --ring: oklch(83.9% 0.005 285.74);
 
-  /* Re-render flash color dark */
+  /* Re-render flash color dark — <Child /> (without memo) */
   --flash-color: oklch(70.5% 0.186 64.87); /* orange-500 */
+  /* Re-render flash color dark — <MemoizedChild /> (with memo) */
+  --flash-color-memo: oklch(55.1% 0.225 261.35); /* blue-600 */
 }
 
 * {
@@ -142,6 +146,22 @@ body {
 
 .animate-flash {
   animation: flash-rerender 300ms ease-out forwards;
+}
+
+/* Re-render flash animation — memoized variant (blue) */
+@keyframes flash-rerender-memo {
+  0% {
+    border-color: var(--flash-color-memo);
+    box-shadow: 0 0 0 2px var(--flash-color-memo), 0 0 12px var(--flash-color-memo);
+  }
+  100% {
+    border-color: var(--border);
+    box-shadow: 0 0 0 0px transparent, 0 0 0 transparent;
+  }
+}
+
+.animate-flash-memo {
+  animation: flash-rerender-memo 300ms ease-out forwards;
 }
 
 /* Toast slide-in animation */

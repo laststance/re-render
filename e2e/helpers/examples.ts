@@ -1,5 +1,5 @@
 /**
- * Static map of all 20 examples with route info and trigger labels.
+ * Static map of all 17 examples with route info and trigger labels.
  * Mirrors src/data/triggerConfig.ts for test data.
  */
 
@@ -95,13 +95,7 @@ export const examples: ExampleInfo[] = [
     title: 'Render Props',
     triggers: ['Simulate Mouse Move'],
   },
-  // Optimization (7)
-  {
-    categoryId: 'optimization',
-    exampleId: 'memo',
-    title: 'React.memo',
-    triggers: ['Trigger Parent State Change'],
-  },
+  // Optimization (4)
   {
     categoryId: 'optimization',
     exampleId: 'usecallback',
@@ -125,18 +119,6 @@ export const examples: ExampleInfo[] = [
     exampleId: 'children-pattern',
     title: 'Children Pattern',
     triggers: ['Change Color'],
-  },
-  {
-    categoryId: 'optimization',
-    exampleId: 'usecallback-comparison',
-    title: 'useCallback: Before vs After',
-    triggers: ['Type Text', 'Increment Count'],
-  },
-  {
-    categoryId: 'optimization',
-    exampleId: 'usememo-comparison',
-    title: 'useMemo: Before vs After',
-    triggers: ['Type Text', 'Increment Count'],
   },
 ]
 

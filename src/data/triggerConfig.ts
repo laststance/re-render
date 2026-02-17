@@ -51,14 +51,6 @@ export const triggerConfigMap: Record<string, TriggerAction[]> = {
       variant: 'force',
     },
   ],
-  memo: [
-    {
-      id: 'increment',
-      label: 'Trigger Parent State Change',
-      description: 'Parent re-renders but memoized child does not',
-      variant: 'state',
-    },
-  ],
   usecallback: [
     {
       id: 'increment',
@@ -212,34 +204,6 @@ export const triggerConfigMap: Record<string, TriggerAction[]> = {
       id: 'move-mouse',
       label: 'Simulate Mouse Move',
       description: 'Updates position state — render() creates new JSX',
-      variant: 'state',
-    },
-  ],
-  'usecallback-comparison': [
-    {
-      id: 'type',
-      label: 'Type Text',
-      description: 'Before: Button re-renders. After: MemoButton skips',
-      variant: 'state',
-    },
-    {
-      id: 'increment',
-      label: 'Increment Count',
-      description: 'Both buttons re-render (count prop changed)',
-      variant: 'state',
-    },
-  ],
-  'usememo-comparison': [
-    {
-      id: 'type',
-      label: 'Type Text',
-      description: 'Before: Child re-renders. After: MemoChild skips',
-      variant: 'state',
-    },
-    {
-      id: 'increment',
-      label: 'Increment Count',
-      description: 'Both children re-render (value prop changed)',
       variant: 'state',
     },
   ],

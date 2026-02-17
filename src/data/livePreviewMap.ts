@@ -6,7 +6,6 @@ import {
   ParentRerenderPreview,
   ContextChangePreview,
   ForceUpdatePreview,
-  MemoPreview,
   UseCallbackPreview,
   UseMemoPreview,
   ReactLazyPreview,
@@ -19,8 +18,6 @@ import {
   RefVsStatePreview,
   CompoundComponentPreview,
   RenderPropsPreview,
-  UseCallbackComparisonPreview,
-  UseMemoComparisonPreview,
 } from './livePreviewExamples'
 
 /**
@@ -40,7 +37,6 @@ export const livePreviewMap: Record<string, LivePreviewComponent> = {
   'parent-rerender': ParentRerenderPreview,
   'context-change': ContextChangePreview,
   'force-update': ForceUpdatePreview,
-  memo: MemoPreview,
   usecallback: UseCallbackPreview,
   usememo: UseMemoPreview,
   'react-lazy': ReactLazyPreview,
@@ -53,6 +49,4 @@ export const livePreviewMap: Record<string, LivePreviewComponent> = {
   'ref-vs-state': RefVsStatePreview,
   'compound-component': CompoundComponentPreview,
   'render-props': RenderPropsPreview,
-  'usecallback-comparison': UseCallbackComparisonPreview,
-  'usememo-comparison': UseMemoComparisonPreview,
 }
