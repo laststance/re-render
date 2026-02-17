@@ -254,12 +254,12 @@ export function useRenderTracker(
       }
     : undefined
 
-  // Create render info object — renderCount is a placeholder (0) here.
-  // It gets overwritten with the correct meaningfulCountRef value at dispatch time.
+  // Create render info object — renderCount uses the current meaningful count.
+  // It gets overwritten with the incremented value at dispatch time inside setTimeout.
   const renderInfo: RenderInfo = {
     id: generateRenderEventId(),
     componentName,
-    renderCount: 0,
+    renderCount: meaningfulCountRef.current,
     reason,
     timestamp: Date.now(),
     ...(changes.changedProps.length > 0 && { changedProps: changes.changedProps }),

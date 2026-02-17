@@ -2118,8 +2118,8 @@ export function Input({ value, onChange, placeholder, type }: {
           renderCount: 0,
           children: [
             { id: 'input', name: 'Input', renderCount: 0 },
-            { id: 'text-value', name: 'Text', renderCount: 0, memoProtected: true },
-            { id: 'button', name: 'Button', renderCount: 0, memoProtected: true },
+            { id: 'text-value', name: 'Text', renderCount: 0 },
+            { id: 'button', name: 'Button', renderCount: 0 },
           ],
         },
         memoEffect: 'prevents',
