@@ -11,4 +11,7 @@ export interface ComponentNode {
   renderCount: number
   /** Child components nested within this component */
   children?: ComponentNode[]
+  /** When true, this node would be protected by React.memo in the memoized tree.
+   * Protected nodes skip re-renders caused by parent-rerender. */
+  memoProtected?: boolean
 }

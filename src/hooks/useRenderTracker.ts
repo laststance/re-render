@@ -176,8 +176,15 @@ export function useRenderTracker(
 ): RenderTrackerResult {
   const dispatch = useAppDispatch()
 
-  // Track render count across renders (persists but doesn't cause re-renders)
+  // Track total render invocations — increments on EVERY React render including
+  // cascade renders from Redux updates. Used solely as a useEffect dependency
+  // to detect when a new render occurred.
   const renderCountRef = useRef(0)
+
+  // Track meaningful (non-cascade) renders — this is the count users see.
+  // Only incremented inside the dispatch callback, after confirming the render
+  // is genuine (not a cascade artifact from our own Redux dispatch).
+  const meaningfulCountRef = useRef(0)
 
   // Track previous props and state for comparison
   const prevDepsRef = useRef<TrackableDeps | undefined>(undefined)
@@ -192,7 +199,21 @@ export function useRenderTracker(
   // 'parent-rerender' renders are cascade artifacts and should be skipped.
   const dispatchInFlightRef = useRef(false)
 
-  // Increment render count on every render
+  // Holds the committed (first-render) reason within a StrictMode render batch.
+  // StrictMode calls the render function twice. On the 1st call we detect the
+  // correct reason (e.g. 'state-change') and capture it here. On the 2nd call,
+  // prevDepsRef has already been updated so getChangedKeys returns [], giving us
+  // 'parent-rerender'. We use this ref to preserve the 1st call's reason.
+  // The ref is reset to null in useEffect after we consume it.
+  const committedReasonRef = useRef<RenderReason | null>(null)
+  const committedChangesRef = useRef<{
+    changedProps: string[]
+    changedState: string[]
+    propChanges: ChangedValue[]
+    stateChanges: ChangedValue[]
+  } | null>(null)
+
+  // Increment on every render for useEffect dependency tracking
   renderCountRef.current += 1
   const renderCount = renderCountRef.current
 
@@ -208,34 +229,52 @@ export function useRenderTracker(
   const stateChanges = getChangedValues(prevDepsRef.current?.state, deps?.state)
 
   // Determine the reason for this render
-  const reason = determineRenderReason(
+  const rawReason = determineRenderReason(
     isInitialRender,
     changedProps,
     changedState
   )
 
-  // Create render info object
-  const renderInfo: RenderInfo = {
-    id: generateRenderEventId(),
-    componentName,
-    renderCount,
-    reason,
-    timestamp: Date.now(),
-    ...(changedProps.length > 0 && { changedProps }),
-    ...(changedState.length > 0 && { changedState }),
-    ...(propChanges.length > 0 && { propChanges }),
-    ...(stateChanges.length > 0 && { stateChanges }),
+  // StrictMode double-render fix: if rawReason detected real changes (not
+  // parent-rerender), commit it. If rawReason is parent-rerender BUT we already
+  // committed a better reason (from the 1st StrictMode render), keep the committed one.
+  if (rawReason !== 'parent-rerender' || committedReasonRef.current === null) {
+    committedReasonRef.current = rawReason
+    committedChangesRef.current = { changedProps, changedState, propChanges, stateChanges }
   }
+  const reason = committedReasonRef.current
+  const changes = committedChangesRef.current!
 
-  // Update previous deps for next render comparison
-  // This must happen during render, not in useEffect, to capture the value
-  // at the time of render (before any effects run)
+  // Update previous deps for next render comparison.
+  // This runs during the render phase so the next render sees correct baselines.
+  //
+  // Concurrent rendering note: if React aborts this render (e.g. due to
+  // startTransition), prevDepsRef will already hold the new deps. When the
+  // render retries, getChangedKeys returns [] and rawReason becomes
+  // 'parent-rerender'. However, committedReasonRef still holds the correct
+  // reason from the first (aborted) render attempt, so the final `reason`
+  // used for dispatch is correct. The effect only runs for committed renders,
+  // so no stale data reaches Redux.
   prevDepsRef.current = deps
     ? {
         props: deps.props ? { ...deps.props } : undefined,
         state: deps.state ? { ...deps.state } : undefined,
       }
     : undefined
+
+  // Create render info object — renderCount uses the current meaningful count.
+  // It gets overwritten with the incremented value at dispatch time inside setTimeout.
+  const renderInfo: RenderInfo = {
+    id: generateRenderEventId(),
+    componentName,
+    renderCount: meaningfulCountRef.current,
+    reason,
+    timestamp: Date.now(),
+    ...(changes.changedProps.length > 0 && { changedProps: changes.changedProps }),
+    ...(changes.changedState.length > 0 && { changedState: changes.changedState }),
+    ...(changes.propChanges.length > 0 && { propChanges: changes.propChanges }),
+    ...(changes.stateChanges.length > 0 && { stateChanges: changes.stateChanges }),
+  }
 
   // Dispatch to Redux store using a debounced pattern that prevents infinite loops.
   //
@@ -259,6 +298,10 @@ export function useRenderTracker(
 
     pendingInfoRef.current = renderInfo
 
+    // Reset committed reason so the next render batch starts fresh
+    committedReasonRef.current = null
+    committedChangesRef.current = null
+
     // Clear any pending dispatch — only the latest render info will be dispatched
     if (timerRef.current !== null) {
       clearTimeout(timerRef.current)
@@ -269,6 +312,13 @@ export function useRenderTracker(
     timerRef.current = setTimeout(() => {
       timerRef.current = null
       if (pendingInfoRef.current) {
+        // Increment the meaningful count only when we actually dispatch —
+        // this excludes all cascade renders that were skipped above.
+        meaningfulCountRef.current += 1
+        pendingInfoRef.current = {
+          ...pendingInfoRef.current,
+          renderCount: meaningfulCountRef.current,
+        }
         dispatch(recordRender(pendingInfoRef.current))
         pendingInfoRef.current = null
       }
@@ -285,7 +335,7 @@ export function useRenderTracker(
   }, [renderCount])
 
   return {
-    renderCount,
+    renderCount: meaningfulCountRef.current,
     renderInfo,
   }
 }

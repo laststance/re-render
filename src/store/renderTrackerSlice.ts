@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { RenderInfo } from '@/types'
+import type { RenderInfo, RenderReason } from '@/types'
 
 /**
  * State for tracking component renders across the application
@@ -9,6 +9,9 @@ interface RenderTrackerState {
   renderHistory: Record<string, RenderInfo[]>
   /** Map of component name to current render count */
   renderCounts: Record<string, number>
+  /** Map of component name to per-reason render counts.
+   * Used by useMemoizedTreeWithCounts to compute counts excluding parent-rerender. */
+  renderCountsByReason: Record<string, Partial<Record<RenderReason, number>>>
   /** Most recent render event (for flash animations) */
   lastRender: RenderInfo | null
   /** When true, render events are recorded but don't update lastRender (suppresses toasts) */
@@ -18,6 +21,7 @@ interface RenderTrackerState {
 const initialState: RenderTrackerState = {
   renderHistory: {},
   renderCounts: {},
+  renderCountsByReason: {},
   lastRender: null,
   suppressToasts: false,
 }
@@ -35,7 +39,7 @@ export const renderTrackerSlice = createSlice({
      * but lastRender is not updated (so toasts won't fire).
      */
     recordRender: (state, action: PayloadAction<RenderInfo>) => {
-      const { componentName } = action.payload
+      const { componentName, reason } = action.payload
 
       // Initialize history array if needed
       if (!state.renderHistory[componentName]) {
@@ -50,6 +54,13 @@ export const renderTrackerSlice = createSlice({
 
       // Update render count
       state.renderCounts[componentName] = action.payload.renderCount
+
+      // Track per-reason counts for memoized tree simulation
+      if (!state.renderCountsByReason[componentName]) {
+        state.renderCountsByReason[componentName] = {}
+      }
+      const byReason = state.renderCountsByReason[componentName]
+      byReason[reason] = (byReason[reason] ?? 0) + 1
 
       // Track last render for animations — skip when suppressed
       if (!state.suppressToasts) {
@@ -79,6 +90,7 @@ export const renderTrackerSlice = createSlice({
     clearRenderHistory: (state) => {
       state.renderHistory = {}
       state.renderCounts = {}
+      state.renderCountsByReason = {}
       state.lastRender = null
     },
 

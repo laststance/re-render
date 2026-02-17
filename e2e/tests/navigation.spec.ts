@@ -69,8 +69,11 @@ test.describe('Navigation', () => {
     await expect(page.locator(sel.exampleTitle)).toContainText('useCallback')
   })
 
-  test('invalid route redirects to default example', async ({ page }) => {
+  test('invalid route shows empty content', async ({ page }) => {
     await page.goto('/invalid/invalid')
-    await expect(page).toHaveURL(/\/conditions\/state-change/)
+    // No redirect — page stays at invalid URL
+    await expect(page).toHaveURL('/invalid/invalid')
+    // No example title should render (ExamplePage returns null)
+    await expect(page.locator(sel.exampleTitle)).not.toBeVisible()
   })
 })

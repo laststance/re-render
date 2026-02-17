@@ -47,7 +47,10 @@ test.describe('View Mode', () => {
     await app.clickTrigger('Trigger State Change')
     await app.setViewMode('Tree')
 
-    const count = await app.getRenderCount('App')
-    expect(Number(count)).toBeGreaterThan(0)
+    // Poll for render count — allows async Redux dispatch + React re-render to settle
+    await expect.poll(
+      async () => Number(await app.getRenderCount('App')),
+      { timeout: 5_000 }
+    ).toBeGreaterThan(0)
   })
 })

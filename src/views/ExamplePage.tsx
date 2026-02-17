@@ -1,14 +1,14 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import Link from 'next/link'
-import { useParams, redirect } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { SplitPaneLayout } from '@/components/layout'
 import { ComponentBoxView, LivePreview } from '@/components/visualization'
 import { TriggerPanel, ExplanationPanel } from '@/components/ui'
-import { useComponentTreeWithCounts, useSuppressToasts } from '@/hooks'
+import { useComponentTreeWithCounts, useMemoizedTreeWithCounts, useSuppressToasts } from '@/hooks'
 import { useAppDispatch } from '@/store/hooks'
 import { clearRenderHistory, beginSuppressToasts, endSuppressToasts } from '@/store'
-import { getExample, getDefaultExample, getAdjacentExamples } from '@/data/examples'
+import { getExample, getAdjacentExamples } from '@/data/examples'
 import { livePreviewMap } from '@/data/livePreviewMap'
 import { getTriggers } from '@/data/triggerConfig'
 import { cn } from '@/lib/utils'
@@ -66,9 +66,7 @@ export function ExamplePage() {
   // Merge static tree structures with live Redux render counts.
   // <Child /> tree uses componentTree; <MemoizedChild /> falls back to same tree if not defined.
   const liveTree = useComponentTreeWithCounts(example?.componentTree ?? null)
-  const memoizedLiveTree = useComponentTreeWithCounts(
-    example?.memoizedTree ?? example?.componentTree ?? null
-  )
+  const memoizedLiveTree = useMemoizedTreeWithCounts(example?.componentTree ?? null)
 
   // Check if this example has a live preview component
   const LivePreviewComponent = exampleId ? livePreviewMap[exampleId] : undefined
@@ -86,10 +84,7 @@ export function ExamplePage() {
     livePreviewRef.current?.trigger(triggerId)
   }
 
-  if (!example) {
-    const { categoryId: defaultCat, exampleId: defaultEx } = getDefaultExample()
-    redirect(`/${defaultCat}/${defaultEx}`)
-  }
+  if (!example) return null
 
   const adjacent = categoryId && exampleId
     ? getAdjacentExamples(categoryId, exampleId)
