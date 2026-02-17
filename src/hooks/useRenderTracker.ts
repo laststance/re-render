@@ -247,6 +247,14 @@ export function useRenderTracker(
 
   // Update previous deps for next render comparison.
   // This runs during the render phase so the next render sees correct baselines.
+  //
+  // Concurrent rendering note: if React aborts this render (e.g. due to
+  // startTransition), prevDepsRef will already hold the new deps. When the
+  // render retries, getChangedKeys returns [] and rawReason becomes
+  // 'parent-rerender'. However, committedReasonRef still holds the correct
+  // reason from the first (aborted) render attempt, so the final `reason`
+  // used for dispatch is correct. The effect only runs for committed renders,
+  // so no stale data reaches Redux.
   prevDepsRef.current = deps
     ? {
         props: deps.props ? { ...deps.props } : undefined,

@@ -290,8 +290,8 @@ export function Button({ onClick, children }: { onClick?: () => void; children: 
           name: 'App',
           renderCount: 0,
           children: [
-            { id: 'heading', name: 'Heading', renderCount: 0, memoProtected: true },
-            { id: 'button', name: 'Button', renderCount: 0, memoProtected: true },
+            { id: 'heading', name: 'Heading', renderCount: 0 },
+            { id: 'button', name: 'Button', renderCount: 0 },
             {
               id: 'child',
               name: 'Child',
