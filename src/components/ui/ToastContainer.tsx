@@ -54,9 +54,9 @@ export function ToastContainer() {
       >
         {latestToast && (
           <span>
-            {latestToast.renderInfo.componentName} re-rendered.{' '}
-            {REASON_LABELS[latestToast.renderInfo.reason] || latestToast.renderInfo.reason}.{' '}
-            Render count: {latestToast.renderInfo.renderCount}.
+            {latestToast.batchRenders
+              ? `${latestToast.batchRenders.length} components re-rendered.`
+              : `${latestToast.renderInfo.componentName} re-rendered. ${REASON_LABELS[latestToast.renderInfo.reason] || latestToast.renderInfo.reason}. Render count: ${latestToast.renderInfo.renderCount}.`}
           </span>
         )}
       </div>
@@ -64,7 +64,7 @@ export function ToastContainer() {
       {/* Visual toast container */}
       {toasts.length > 0 && (
         <div
-          className="fixed bottom-4 right-4 z-50 flex flex-col-reverse gap-2"
+          className="pointer-events-none fixed right-4 top-4 z-50 flex flex-col gap-2"
           aria-label="Notifications"
           role="region"
         >

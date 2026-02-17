@@ -675,6 +675,7 @@ const [, forceUpdate] = useReducer(x => x + 1, 0)
       {
         id: 'use-reducer',
         title: 'Reducer Dispatch',
+        subtitle: 'useReducer',
         description: 'Complex state management with useReducer',
         files: [
           {
@@ -820,6 +821,7 @@ export function Input({ value, onChange, placeholder, type }: {
       {
         id: 'use-sync-external-store',
         title: 'External Store',
+        subtitle: 'useSyncExternalStore',
         description: 'Subscribing to external stores without tearing',
         files: [
           {
@@ -1130,6 +1132,7 @@ function UserProfile({ userId }) {
       {
         id: 'concurrent',
         title: 'Concurrent Update',
+        subtitle: 'useTransition',
         description: 'useTransition and useDeferredValue for non-blocking updates',
         files: [
           {
@@ -1285,6 +1288,7 @@ const deferredValue = useDeferredValue(value)
       {
         id: 'use-effect-deps',
         title: 'Effect Dependencies',
+        subtitle: 'useEffect',
         description: 'How useEffect dependencies control re-runs',
         files: [
           {
@@ -1558,6 +1562,7 @@ countRef.current = 1  // No re-render!
       {
         id: 'compound-component',
         title: 'Compound Component',
+        tag: 'Pattern',
         description: 'Context-based sub-components all re-render when shared state changes',
         files: [
           {
@@ -1695,7 +1700,7 @@ export function Heading({ children }: { children: ReactNode }) {
         },
         explanation: {
           content:
-            'The Compound Component pattern uses Context to share state between related sub-components (like Select.Trigger, Select.Options, Select.Option). The tradeoff: when ANY piece of shared context changes, ALL consumers re-render, even if they only read part of the context.',
+            'This is not a new re-render trigger — it\'s a component pattern where existing triggers (context changes) propagate differently. The Compound Component pattern uses Context to share state between related sub-components (like Select.Trigger, Select.Options, Select.Option). The tradeoff: when ANY piece of shared context changes, ALL consumers re-render, even if they only read part of the context.',
           keyPoints: [
             'All sub-components share a single Context provider',
             'Changing any context value re-renders every consumer',
@@ -1731,6 +1736,7 @@ setIsOpen(false)
       {
         id: 'render-props',
         title: 'Render Props',
+        tag: 'Pattern',
         description: 'Render function creates new JSX each call, causing re-renders',
         files: [
           {
@@ -1857,7 +1863,7 @@ export function Text({ children }: { children: ReactNode }) {
         },
         explanation: {
           content:
-            'The Render Props pattern passes a function that returns JSX. Because the render function is called on every parent render, it creates new React elements each time. Both the wrapper component and the rendered content re-render together on every state change.',
+            'This is not a new re-render trigger — it\'s a component pattern where existing triggers (state/props changes) cause re-renders in a specific way. The Render Props pattern passes a function that returns JSX. Because the render function is called on every parent render, it creates new React elements each time. Both the wrapper component and the rendered content re-render together on every state change.',
           keyPoints: [
             'render() is called on every MouseTracker render, creating new JSX',
             'DisplayCoords gets new props each time (even if x,y are same object shape)',
@@ -2900,5 +2906,34 @@ export function getDefaultExample() {
   return {
     categoryId: exampleCategories[0].id,
     exampleId: exampleCategories[0].examples[0].id,
+  }
+}
+
+/**
+ * Get previous and next examples in the recommended learning order.
+ * Navigates across category boundaries (conditions → optimization).
+ * @param categoryId - Current category
+ * @param exampleId - Current example
+ * @returns Previous and next example with their category, or null if at boundary
+ * @example
+ * getAdjacentExamples('conditions', 'props-change')
+ * // => { prev: { categoryId: 'conditions', exampleId: 'state-change', title: 'State Change' },
+ * //      next: { categoryId: 'conditions', exampleId: 'parent-rerender', title: 'Parent Re-render' } }
+ */
+export function getAdjacentExamples(categoryId: string, exampleId: string) {
+  const allExamples = exampleCategories.flatMap((cat) =>
+    cat.examples.map((ex) => ({ categoryId: cat.id, exampleId: ex.id, title: ex.title }))
+  )
+  const currentIndex = allExamples.findIndex(
+    (ex) => ex.categoryId === categoryId && ex.exampleId === exampleId
+  )
+  if (currentIndex === -1) {
+    return { prev: null, next: null, step: 0, total: allExamples.length }
+  }
+  return {
+    prev: currentIndex > 0 ? allExamples[currentIndex - 1] : null,
+    next: currentIndex < allExamples.length - 1 ? allExamples[currentIndex + 1] : null,
+    step: currentIndex + 1,
+    total: allExamples.length,
   }
 }

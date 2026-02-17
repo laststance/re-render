@@ -2,13 +2,16 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import type { RenderInfo } from '@/types'
 
 /**
- * Toast notification for a re-render event
+ * Toast notification for re-render event(s).
+ * A toast may represent a single render or a batch of renders triggered together.
  */
 export interface Toast {
   /** Unique ID for this toast */
   id: string
-  /** The render info that triggered this toast */
+  /** The primary render info (first in batch, or the only one) */
   renderInfo: RenderInfo
+  /** All render events in this batch (present when multiple components re-rendered together) */
+  batchRenders?: RenderInfo[]
   /** Whether the toast is expanded to show details */
   isExpanded: boolean
   /** Timestamp when the toast was created */
@@ -38,7 +41,7 @@ export const toastSlice = createSlice({
   initialState,
   reducers: {
     /**
-     * Add a new toast notification for a re-render event
+     * Add a single toast notification for a re-render event
      */
     addToast: (state, action: PayloadAction<RenderInfo>) => {
       const newToast: Toast = {
@@ -48,10 +51,34 @@ export const toastSlice = createSlice({
         createdAt: Date.now(),
       }
 
-      // Add to beginning (newest first)
       state.toasts.unshift(newToast)
 
-      // Keep only maxToasts
+      if (state.toasts.length > state.maxToasts) {
+        state.toasts = state.toasts.slice(0, state.maxToasts)
+      }
+    },
+
+    /**
+     * Add a batch toast consolidating multiple re-render events.
+     * @param action.payload - Array of RenderInfo from renders that occurred together
+     * @example
+     * dispatch(addBatchToast([renderA, renderB, renderC]))
+     * // Creates one toast showing "3 components re-rendered"
+     */
+    addBatchToast: (state, action: PayloadAction<RenderInfo[]>) => {
+      const renders = action.payload
+      if (renders.length === 0) return
+
+      const newToast: Toast = {
+        id: `toast-batch-${Date.now()}`,
+        renderInfo: renders[0],
+        batchRenders: renders,
+        isExpanded: false,
+        createdAt: Date.now(),
+      }
+
+      state.toasts.unshift(newToast)
+
       if (state.toasts.length > state.maxToasts) {
         state.toasts = state.toasts.slice(0, state.maxToasts)
       }
@@ -83,7 +110,7 @@ export const toastSlice = createSlice({
   },
 })
 
-export const { addToast, removeToast, toggleToastExpanded, clearAllToasts } =
+export const { addToast, addBatchToast, removeToast, toggleToastExpanded, clearAllToasts } =
   toastSlice.actions
 
 export default toastSlice.reducer
