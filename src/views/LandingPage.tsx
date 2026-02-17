@@ -49,7 +49,10 @@ export function LandingPage() {
           <h2 className="mb-6 text-center text-2xl font-semibold">
             Interactive Learning Environment
           </h2>
-          <div className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)]">
+          <Link
+            href={quickStartPath}
+            className="group block overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] transition-all duration-200 hover:border-[var(--primary)] hover:shadow-lg"
+          >
             <div className="flex items-center gap-2 border-b border-[var(--border)] bg-[var(--secondary)] px-4 py-2">
               <div className="h-3 w-3 rounded-full bg-red-500/60"></div>
               <div className="h-3 w-3 rounded-full bg-yellow-500/60"></div>
@@ -108,7 +111,13 @@ export function LandingPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </Link>
+          <p className="mt-3 text-center text-sm text-[var(--muted-foreground)]">
+            Preview of the learning interface —{' '}
+            <Link href={quickStartPath} className="text-[var(--primary)] underline-offset-2 hover:underline">
+              see it in action →
+            </Link>
+          </p>
         </section>
 
         {/* Categories Overview */}
