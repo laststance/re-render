@@ -378,8 +378,9 @@ function ToastActions({
         onClick={onToggleExpand}
         className={cn(
           'inline-flex items-center justify-center',
-          'h-6 w-6 rounded-md text-muted-foreground',
+          'min-h-[44px] min-w-[44px] -m-2 rounded-md text-muted-foreground',
           'hover:bg-secondary hover:text-foreground',
+          'active:scale-[0.98]',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
         )}
         aria-expanded={isExpanded}
@@ -404,8 +405,9 @@ function ToastActions({
         onClick={onDismiss}
         className={cn(
           'inline-flex items-center justify-center',
-          'h-6 w-6 rounded-md text-muted-foreground',
+          'min-h-[44px] min-w-[44px] -m-2 rounded-md text-muted-foreground',
           'hover:bg-secondary hover:text-foreground',
+          'active:scale-[0.98]',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
         )}
         aria-label="Dismiss notification"
