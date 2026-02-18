@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { cn } from '@/lib/utils'
+import { REASON_LABELS, REASON_EXPLANATIONS, REACT_MECHANISMS } from '@/data/renderReasonLabels'
 import type { Toast as ToastType } from '@/store'
-import type { RenderReason, RenderInfo, ChangedValue } from '@/types'
+import type { RenderInfo, ChangedValue } from '@/types'
 
 interface ToastProps {
   toast: ToastType
@@ -9,42 +10,6 @@ interface ToastProps {
   onToggleExpand: () => void
   /** Auto-dismiss delay in ms (default: 10000) */
   dismissDelay?: number
-}
-
-/**
- * Mapping of render reasons to human-readable explanations
- */
-const REASON_EXPLANATIONS: Record<RenderReason, string> = {
-  initial: 'This was the first render of the component.',
-  'props-change': 'One or more props passed to this component changed.',
-  'state-change': 'The component\'s internal state was updated.',
-  'context-change': 'A React context value this component consumes changed.',
-  'parent-rerender': 'The parent component re-rendered, causing this component to re-render.',
-  'force-update': 'A force update was triggered on this component.',
-}
-
-/**
- * Mapping of render reasons to display labels
- */
-const REASON_LABELS: Record<RenderReason, string> = {
-  initial: 'Initial Render',
-  'props-change': 'Props Changed',
-  'state-change': 'State Changed',
-  'context-change': 'Context Changed',
-  'parent-rerender': 'Parent Re-rendered',
-  'force-update': 'Force Update',
-}
-
-/**
- * Detailed React mechanism explanations for each re-render cause
- */
-const REACT_MECHANISMS: Record<RenderReason, string> = {
-  initial: 'React calls the component function for the first time to build the initial virtual DOM tree.',
-  'props-change': 'When a parent passes new prop values, React detects the reference change and schedules a re-render. Use React.memo() to skip re-renders when props are shallowly equal.',
-  'state-change': 'Calling setState/useState setter enqueues a state update. React batches updates and re-renders the component with the new state.',
-  'context-change': 'Context.Provider value changed → all consuming components re-render. Consider splitting contexts or memoizing values to reduce scope.',
-  'parent-rerender': 'Without React.memo(), a component re-renders whenever its parent renders, even if props haven\'t changed. This is React\'s default behavior.',
-  'force-update': 'Key prop change unmounts/remounts the component. useReducer dispatch or forceUpdate() bypasses normal comparison.',
 }
 
 /**

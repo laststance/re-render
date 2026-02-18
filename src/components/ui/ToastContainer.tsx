@@ -2,16 +2,8 @@ import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import { removeToast, toggleToastExpanded } from '@/store'
+import { REASON_LABELS } from '@/data/renderReasonLabels'
 import { Toast } from './Toast'
-
-const REASON_LABELS: Record<string, string> = {
-  initial: 'Initial Render',
-  'props-change': 'Props Changed',
-  'state-change': 'State Changed',
-  'context-change': 'Context Changed',
-  'parent-rerender': 'Parent Re-rendered',
-  'force-update': 'Force Update',
-}
 
 /**
  * Container for toast notifications, rendered via portal
