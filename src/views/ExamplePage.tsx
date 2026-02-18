@@ -84,7 +84,23 @@ export function ExamplePage() {
     livePreviewRef.current?.trigger(triggerId)
   }
 
-  if (!example) return null
+  if (!example) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center">
+        <h2 className="text-2xl font-semibold text-foreground">Example Not Found</h2>
+        <p className="max-w-md text-sm text-muted-foreground">
+          The example &quot;{exampleId}&quot; in category &quot;{categoryId}&quot; could not be found.
+          It may have been moved or removed.
+        </p>
+        <Link
+          href="/"
+          className="inline-flex min-h-[44px] items-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
+        >
+          Back to Home
+        </Link>
+      </div>
+    )
+  }
 
   const adjacent = categoryId && exampleId
     ? getAdjacentExamples(categoryId, exampleId)
