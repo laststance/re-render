@@ -38,7 +38,7 @@ export function ExamplePage() {
   // Clear stale render counts when navigating between examples.
   // Suppress toasts during the initial mount phase — useRenderTracker dispatches
   // recordRender via setTimeout(0) for each component, and each dispatch causes
-  // a Redux update → parent re-render cascade. Without suppression these cascade
+  // a Redux update → parent-rerender cascade. Without suppression these cascade
   // renders (reason: 'parent-rerender') would trigger a flood of false toasts.
   useEffect(() => {
     dispatch(beginSuppressToasts())

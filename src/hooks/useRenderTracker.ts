@@ -139,8 +139,8 @@ function determineRenderReason(
     return 'props-change'
   }
 
-  // No props or state changed, but component still re-rendered
-  // This happens when parent re-renders and component isn't memoized
+  // No props or state changed, but component still re-rendered.
+  // This happens when parent re-renders and component isn't memoized (parent-rerender).
   return 'parent-rerender'
 }
 
@@ -148,7 +148,7 @@ function determineRenderReason(
  * Hook that tracks and reports component re-renders.
  *
  * Detects initial render vs. re-renders and determines the reason
- * for re-rendering (props change, state change, parent re-render, etc.).
+ * for re-rendering (props-change, state-change, parent-rerender, etc.).
  *
  * Dispatches render events to the Redux store for visualization.
  *
