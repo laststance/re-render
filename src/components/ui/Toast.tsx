@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { cn } from '@/lib/utils'
 import { REASON_LABELS, REASON_EXPLANATIONS, REACT_MECHANISMS } from '@/data/renderReasonLabels'
 import type { Toast as ToastType } from '@/store'
-import type { RenderInfo, ChangedValue } from '@/types'
+import type { RenderInfo, RenderReason, ChangedValue } from '@/types'
 
 interface ToastProps {
   toast: ToastType
