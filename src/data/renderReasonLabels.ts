@@ -52,7 +52,7 @@ export const REACT_MECHANISMS: Record<RenderReason, string> = {
  * Used to select the most informative render event as the primary toast display.
  * @example
  * // state-change (0) beats parent-rerender (4) as the primary display reason
- * const sorted = renders.sort((a, b) => REASON_PRIORITY[a.reason] - REASON_PRIORITY[b.reason])
+ * const sorted = [...renders].sort((a, b) => REASON_PRIORITY[a.reason] - REASON_PRIORITY[b.reason])
  */
 export const REASON_PRIORITY: Record<RenderReason, number> = {
   'state-change': 0,
