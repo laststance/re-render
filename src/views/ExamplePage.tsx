@@ -38,7 +38,7 @@ export function ExamplePage() {
   // Clear stale render counts when navigating between examples.
   // Suppress toasts during the initial mount phase — useRenderTracker dispatches
   // recordRender via setTimeout(0) for each component, and each dispatch causes
-  // a Redux update → parent re-render cascade. Without suppression these cascade
+  // a Redux update → parent-rerender cascade. Without suppression these cascade
   // renders (reason: 'parent-rerender') would trigger a flood of false toasts.
   useEffect(() => {
     dispatch(beginSuppressToasts())
@@ -84,7 +84,25 @@ export function ExamplePage() {
     livePreviewRef.current?.trigger(triggerId)
   }
 
-  if (!example) return null
+  if (!example) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center">
+        <h2 className="text-2xl font-semibold text-foreground">Example Not Found</h2>
+        <p className="max-w-md text-sm text-muted-foreground">
+          {exampleId && categoryId
+            ? <>The example &quot;{exampleId}&quot; in category &quot;{categoryId}&quot; could not be found. It may have been moved or removed.</>
+            : 'The requested example could not be found. It may have been moved or removed.'
+          }
+        </p>
+        <Link
+          href="/"
+          className="inline-flex min-h-[44px] items-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
+        >
+          Back to Home
+        </Link>
+      </div>
+    )
+  }
 
   const adjacent = categoryId && exampleId
     ? getAdjacentExamples(categoryId, exampleId)
@@ -191,7 +209,7 @@ function DualTreeView({
             style={{ backgroundColor: 'var(--flash-color)' }}
             aria-hidden="true"
           />
-          <h3 className="text-base font-semibold" style={{ color: 'var(--flash-color)' }}>
+          <h3 className="text-lg font-semibold" style={{ color: 'var(--flash-color)' }}>
             {'<Child />'}
           </h3>
           <span className="text-xs text-muted-foreground">Without React.memo</span>
@@ -207,12 +225,16 @@ function DualTreeView({
 
       {/* With Memo section — blue accent */}
       <section
-        className="rounded-lg border-2 border-blue-500/40 bg-card"
+        className="rounded-lg border-2 border-[var(--flash-color-memo)]/40 bg-card"
         aria-label="With memo comparison"
       >
-        <div className="flex items-center gap-2 border-b border-blue-500/20 px-4 py-2">
-          <div className="h-3 w-3 rounded-full bg-blue-500" aria-hidden="true" />
-          <h3 className="text-base font-semibold text-blue-500">
+        <div className="flex items-center gap-2 border-b border-[var(--flash-color-memo)]/20 px-4 py-2">
+          <div
+            className="h-3 w-3 rounded-full"
+            style={{ backgroundColor: 'var(--flash-color-memo)' }}
+            aria-hidden="true"
+          />
+          <h3 className="text-lg font-semibold" style={{ color: 'var(--flash-color-memo)' }}>
             {'<MemoizedChild />'}
           </h3>
           <span className="text-xs text-muted-foreground">With React.memo</span>

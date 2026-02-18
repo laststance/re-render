@@ -133,7 +133,7 @@ function MatrixSidebar({ onNavigate }: { onNavigate?: () => void }) {
         <td className="py-1.5 pl-2 pr-1">
           <Link
             href={href}
-            className="flex items-center gap-1.5"
+            className="flex items-center gap-1.5 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-1 active:scale-[0.98]"
             onClick={() => onNavigate?.()}
           >
             <span className="flex h-4 w-4 shrink-0 items-center justify-center text-[10px] font-medium text-muted-foreground">
@@ -172,10 +172,16 @@ function MatrixSidebar({ onNavigate }: { onNavigate?: () => void }) {
             <th className="py-2 pl-2 pr-1 text-left text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
               Scenario
             </th>
-            <th className="w-16 px-1 py-2 text-center text-[10px] font-medium leading-tight text-red-500">
+            <th
+              className="w-16 px-1 py-2 text-center text-[10px] font-medium leading-tight"
+              style={{ color: 'var(--flash-color)' }}
+            >
               {'<Child />'}
             </th>
-            <th className="w-16 px-1 py-2 text-center text-[10px] font-medium leading-tight text-blue-500">
+            <th
+              className="w-16 px-1 py-2 text-center text-[10px] font-medium leading-tight"
+              style={{ color: 'var(--flash-color-memo)' }}
+            >
               {'<Memo />'}
             </th>
           </tr>
@@ -280,7 +286,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         <Link
           href="/"
           className={cn(
-            'mb-2 flex min-h-[44px] items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors',
+            'mb-2 flex min-h-[44px] items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-1 active:scale-[0.98]',
             isHome
               ? 'bg-accent text-accent-foreground font-medium'
               : 'text-foreground hover:bg-accent/50'

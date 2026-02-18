@@ -51,7 +51,7 @@ export function LandingPage() {
           </h2>
           <Link
             href={quickStartPath}
-            className="group block overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] transition-all duration-200 hover:border-[var(--primary)] hover:shadow-lg"
+            className="group block overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--card)] transition-all duration-200 hover:border-[var(--primary)] hover:shadow-lg"
           >
             <div className="flex items-center gap-2 border-b border-[var(--border)] bg-[var(--secondary)] px-4 py-2">
               <div className="h-3 w-3 rounded-full bg-red-500/60"></div>
@@ -129,7 +129,7 @@ export function LandingPage() {
             {exampleCategories.map((category) => (
               <div
                 key={category.id}
-                className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6"
+                className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-6"
               >
                 <h3 className="mb-2 text-lg font-semibold">{category.name}</h3>
                 <p className="mb-4 text-sm text-[var(--muted-foreground)]">
@@ -184,8 +184,8 @@ export function LandingPage() {
 
         {/* Call to Action */}
         <section className="text-center">
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--secondary)] p-8">
-            <h2 className="mb-2 text-xl font-semibold">Ready to Start?</h2>
+          <div className="rounded-lg border border-[var(--border)] bg-[var(--secondary)] p-8">
+            <h2 className="mb-2 text-2xl font-semibold">Ready to Start?</h2>
             <p className="mb-4 text-[var(--muted-foreground)]">
               Explore every re-render condition, then learn optimization techniques to prevent unnecessary renders.
             </p>

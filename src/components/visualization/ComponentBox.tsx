@@ -50,7 +50,7 @@ export function ComponentBox({
       className={cn(
         'relative rounded-lg border-2 border-border bg-card/50',
         'transition-colors duration-150',
-        depth === 0 && (isMemoized ? 'border-blue-500/60' : 'border-primary/60'),
+        depth === 0 && (isMemoized ? 'border-[var(--flash-color-memo)]/60' : 'border-primary/60'),
         // Only apply animation class when there have been re-renders
         hasReRenders && flashClass,
         className
@@ -65,7 +65,7 @@ export function ComponentBox({
           className={cn(
             'text-sm font-medium',
             depth === 0
-              ? isMemoized ? 'text-blue-500' : 'text-primary'
+              ? isMemoized ? 'text-[var(--flash-color-memo)]' : 'text-primary'
               : 'text-foreground'
           )}
         >
