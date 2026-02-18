@@ -42,7 +42,7 @@ export function LivePreview({ children, className }: LivePreviewProps) {
           type="button"
           onClick={handleToggleOverlays}
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors',
+            'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors active:scale-[0.98]',
             'min-h-[44px] min-w-[44px] touch-manipulation', // Apple HIG tap target
             showOverlays
               ? 'bg-primary text-primary-foreground hover:bg-primary/90'

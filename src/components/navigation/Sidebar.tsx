@@ -133,7 +133,7 @@ function MatrixSidebar({ onNavigate }: { onNavigate?: () => void }) {
         <td className="py-1.5 pl-2 pr-1">
           <Link
             href={href}
-            className="flex items-center gap-1.5 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+            className="flex items-center gap-1.5 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 active:scale-[0.98]"
             onClick={() => onNavigate?.()}
           >
             <span className="flex h-4 w-4 shrink-0 items-center justify-center text-[10px] font-medium text-muted-foreground">
@@ -280,7 +280,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         <Link
           href="/"
           className={cn(
-            'mb-2 flex min-h-[44px] items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
+            'mb-2 flex min-h-[44px] items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 active:scale-[0.98]',
             isHome
               ? 'bg-accent text-accent-foreground font-medium'
               : 'text-foreground hover:bg-accent/50'
