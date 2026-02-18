@@ -46,3 +46,19 @@ export const REACT_MECHANISMS: Record<RenderReason, string> = {
   'parent-rerender': 'Without React.memo(), a component re-renders whenever its parent renders, even if props haven\'t changed. This is React\'s default behavior.',
   'force-update': 'Key prop change unmounts/remounts the component. useReducer dispatch or forceUpdate() bypasses normal comparison.',
 }
+
+/**
+ * Priority order for render reasons — lower number = higher priority (root cause).
+ * Used to select the most informative render event as the primary toast display.
+ * @example
+ * // state-change (0) beats parent-rerender (4) as the primary display reason
+ * const sorted = renders.sort((a, b) => REASON_PRIORITY[a.reason] - REASON_PRIORITY[b.reason])
+ */
+export const REASON_PRIORITY: Record<RenderReason, number> = {
+  'state-change': 0,
+  'props-change': 1,
+  'context-change': 2,
+  'force-update': 3,
+  'parent-rerender': 4,
+  'initial': 5,
+}
