@@ -185,7 +185,7 @@ export function LandingPage() {
         {/* Call to Action */}
         <section className="text-center">
           <div className="rounded-lg border border-[var(--border)] bg-[var(--secondary)] p-8">
-            <h2 className="mb-2 text-xl font-semibold">Ready to Start?</h2>
+            <h2 className="mb-2 text-2xl font-semibold">Ready to Start?</h2>
             <p className="mb-4 text-[var(--muted-foreground)]">
               Explore every re-render condition, then learn optimization techniques to prevent unnecessary renders.
             </p>
