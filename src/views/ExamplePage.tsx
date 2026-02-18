@@ -223,12 +223,16 @@ function DualTreeView({
 
       {/* With Memo section — blue accent */}
       <section
-        className="rounded-lg border-2 border-blue-500/40 bg-card"
+        className="rounded-lg border-2 border-[var(--flash-color-memo)]/40 bg-card"
         aria-label="With memo comparison"
       >
-        <div className="flex items-center gap-2 border-b border-blue-500/20 px-4 py-2">
-          <div className="h-3 w-3 rounded-full bg-blue-500" aria-hidden="true" />
-          <h3 className="text-lg font-semibold text-blue-500">
+        <div className="flex items-center gap-2 border-b border-[var(--flash-color-memo)]/20 px-4 py-2">
+          <div
+            className="h-3 w-3 rounded-full"
+            style={{ backgroundColor: 'var(--flash-color-memo)' }}
+            aria-hidden="true"
+          />
+          <h3 className="text-lg font-semibold" style={{ color: 'var(--flash-color-memo)' }}>
             {'<MemoizedChild />'}
           </h3>
           <span className="text-xs text-muted-foreground">With React.memo</span>

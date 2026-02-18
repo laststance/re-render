@@ -172,10 +172,16 @@ function MatrixSidebar({ onNavigate }: { onNavigate?: () => void }) {
             <th className="py-2 pl-2 pr-1 text-left text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
               Scenario
             </th>
-            <th className="w-16 px-1 py-2 text-center text-[10px] font-medium leading-tight text-red-500">
+            <th
+              className="w-16 px-1 py-2 text-center text-[10px] font-medium leading-tight"
+              style={{ color: 'var(--flash-color)' }}
+            >
               {'<Child />'}
             </th>
-            <th className="w-16 px-1 py-2 text-center text-[10px] font-medium leading-tight text-blue-500">
+            <th
+              className="w-16 px-1 py-2 text-center text-[10px] font-medium leading-tight"
+              style={{ color: 'var(--flash-color-memo)' }}
+            >
               {'<Memo />'}
             </th>
           </tr>
