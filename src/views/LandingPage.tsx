@@ -46,7 +46,7 @@ export function LandingPage() {
 
         {/* Interface Preview */}
         <section className="mb-16">
-          <h2 className="mb-6 text-center text-2xl font-semibold">
+          <h2 className="mb-6 text-center text-2xl font-semibold tracking-tight">
             Interactive Learning Environment
           </h2>
           <Link
@@ -122,7 +122,7 @@ export function LandingPage() {
 
         {/* Categories Overview */}
         <section className="mb-16">
-          <h2 className="mb-6 text-center text-2xl font-semibold">
+          <h2 className="mb-6 text-center text-2xl font-semibold tracking-tight">
             Explore by Topic
           </h2>
           <div className="grid gap-6 sm:grid-cols-2">
@@ -159,7 +159,7 @@ export function LandingPage() {
 
         {/* Key Concepts */}
         <section className="mb-16">
-          <h2 className="mb-6 text-center text-2xl font-semibold">
+          <h2 className="mb-6 text-center text-2xl font-semibold tracking-tight">
             Key Concepts You'll Learn
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -185,7 +185,7 @@ export function LandingPage() {
         {/* Call to Action */}
         <section className="text-center">
           <div className="rounded-lg border border-[var(--border)] bg-[var(--secondary)] p-8">
-            <h2 className="mb-2 text-2xl font-semibold">Ready to Start?</h2>
+            <h2 className="mb-2 text-2xl font-semibold tracking-tight">Ready to Start?</h2>
             <p className="mb-4 text-[var(--muted-foreground)]">
               Explore every re-render condition, then learn optimization techniques to prevent unnecessary renders.
             </p>
