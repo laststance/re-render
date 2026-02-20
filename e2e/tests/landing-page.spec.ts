@@ -7,12 +7,13 @@ test.describe('Landing Page', () => {
 
   test('renders hero section with title, description, and CTAs', async ({ page }) => {
     const main = page.locator('main')
+    const hero = main.locator('header')
     await expect(main.locator('h1')).toHaveText('React Re-render Visualizer')
-    await expect(main.locator('header p')).toContainText(
+    await expect(hero.locator('p')).toContainText(
       'Learn when and why React components re-render'
     )
-    await expect(page.getByRole('link', { name: 'Start Learning' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'React Docs' })).toBeVisible()
+    await expect(hero.getByRole('link', { name: 'Start Learning' })).toBeVisible()
+    await expect(hero.getByRole('link', { name: 'React Docs' })).toBeVisible()
   })
 
   test('"Start Learning" navigates to first example', async ({ page }) => {
