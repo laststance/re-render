@@ -101,6 +101,7 @@ export const renderTrackerSlice = createSlice({
       const componentName = action.payload
       delete state.renderHistory[componentName]
       delete state.renderCounts[componentName]
+      delete state.renderCountsByReason[componentName]
     },
   },
 })
