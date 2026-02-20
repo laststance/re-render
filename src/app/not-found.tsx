@@ -2,8 +2,13 @@ import Link from 'next/link'
 import { getDefaultExample } from '@/data/examples'
 
 export default function NotFound() {
-  const { categoryId, exampleId } = getDefaultExample()
-  const startPath = `/${categoryId}/${exampleId}`
+  let startPath = '/'
+  try {
+    const { categoryId, exampleId } = getDefaultExample()
+    startPath = `/${categoryId}/${exampleId}`
+  } catch {
+    // fall back to home if examples data is unavailable
+  }
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 p-8">
