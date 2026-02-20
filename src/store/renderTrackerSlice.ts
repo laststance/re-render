@@ -2,7 +2,8 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import type { RenderInfo, RenderReason } from '@/types'
 
 /**
- * State for tracking component renders across the application
+ * State for tracking component renders across the application.
+ * Pure data recording — toast signaling lives in toastSlice.
  */
 interface RenderTrackerState {
   /** Map of component name to array of render events */
@@ -12,20 +13,18 @@ interface RenderTrackerState {
   /** Map of component name to per-reason render counts.
    * Used by useMemoizedTreeWithCounts to compute counts excluding parent-rerender. */
   renderCountsByReason: Record<string, Partial<Record<RenderReason, number>>>
-  /** When true, render events are recorded but don't trigger toasts.
-   * Checked by listenerMiddleware to gate toast creation. */
-  suppressToasts: boolean
 }
 
 const initialState: RenderTrackerState = {
   renderHistory: {},
   renderCounts: {},
   renderCountsByReason: {},
-  suppressToasts: false,
 }
 
 /**
- * Redux slice for tracking component re-renders
+ * Redux slice for tracking component re-renders.
+ * Records render events, counts, and per-reason breakdowns.
+ * Toast creation is handled separately by listenerMiddleware + toastSlice.
  */
 export const renderTrackerSlice = createSlice({
   name: 'renderTracker',
@@ -61,22 +60,6 @@ export const renderTrackerSlice = createSlice({
     },
 
     /**
-     * Temporarily suppress toast notifications.
-     * Re-renders are still recorded in history but don't trigger toasts.
-     * Use before UI chrome actions (view mode switch, overlay toggle).
-     */
-    beginSuppressToasts: (state) => {
-      state.suppressToasts = true
-    },
-
-    /**
-     * Re-enable toast notifications after suppression.
-     */
-    endSuppressToasts: (state) => {
-      state.suppressToasts = false
-    },
-
-    /**
      * Clear all render tracking data
      */
     clearRenderHistory: (state) => {
@@ -99,8 +82,6 @@ export const renderTrackerSlice = createSlice({
 
 export const {
   recordRender,
-  beginSuppressToasts,
-  endSuppressToasts,
   clearRenderHistory,
   clearComponentHistory,
 } = renderTrackerSlice.actions

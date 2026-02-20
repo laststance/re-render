@@ -35,7 +35,7 @@ let flushTimer: ReturnType<typeof setTimeout> | null = null
 startAppListening({
   actionCreator: recordRender,
   effect: (action, { getState, dispatch }) => {
-    const { suppressToasts } = getState().renderTracker
+    const { suppressToasts } = getState().toast
     const renderInfo = action.payload
 
     // Skip initial renders and suppressed toasts
