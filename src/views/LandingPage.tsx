@@ -14,7 +14,7 @@ export function LandingPage() {
   const quickStartPath = `/${categoryId}/${exampleId}`
 
   return (
-    <div className="h-full overflow-auto">
+    <div className="flex h-full flex-col overflow-auto">
       <div className="mx-auto max-w-4xl px-6 py-12">
         {/* Hero Section */}
         <header className="relative mb-16 overflow-hidden rounded-2xl px-8 py-16 text-center">
@@ -213,6 +213,36 @@ export function LandingPage() {
           </div>
         </section>
       </div>
+
+      {/* Footer */}
+      <footer className="mt-auto border-t border-[var(--border)] px-6 py-8">
+        <div className="mx-auto flex max-w-4xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-medium">Re-Render</p>
+            <p className="text-sm text-[var(--muted-foreground)]">
+              React re-render visualizer
+            </p>
+          </div>
+          <div className="flex gap-6 text-sm text-[var(--muted-foreground)]">
+            <a
+              href="https://github.com/laststance/re-render"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-[var(--foreground)]"
+            >
+              GitHub
+            </a>
+            <a
+              href="https://react.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-[var(--foreground)]"
+            >
+              React Docs
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
