@@ -4,7 +4,6 @@ import { Provider } from 'react-redux'
 import { store } from '@/store'
 import { Sidebar } from '@/components/navigation'
 import { ToastContainer } from '@/components/ui'
-import { useReRenderToasts } from '@/hooks'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import './globals.css'
 
@@ -23,10 +22,9 @@ const themeScript = `
 
 /**
  * Inner layout shell containing the sidebar + main content area.
- * Separated so useReRenderToasts is called inside the Redux Provider.
+ * Toast creation is handled by listenerMiddleware (no hook needed).
  */
 function AppShell({ children }: { children: React.ReactNode }) {
-  useReRenderToasts()
   const isDesktop = useIsDesktop()
 
   return (

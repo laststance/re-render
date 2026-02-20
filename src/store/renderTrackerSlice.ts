@@ -12,9 +12,8 @@ interface RenderTrackerState {
   /** Map of component name to per-reason render counts.
    * Used by useMemoizedTreeWithCounts to compute counts excluding parent-rerender. */
   renderCountsByReason: Record<string, Partial<Record<RenderReason, number>>>
-  /** Most recent render event (for flash animations) */
-  lastRender: RenderInfo | null
-  /** When true, render events are recorded but don't update lastRender (suppresses toasts) */
+  /** When true, render events are recorded but don't trigger toasts.
+   * Checked by listenerMiddleware to gate toast creation. */
   suppressToasts: boolean
 }
 
@@ -22,7 +21,6 @@ const initialState: RenderTrackerState = {
   renderHistory: {},
   renderCounts: {},
   renderCountsByReason: {},
-  lastRender: null,
   suppressToasts: false,
 }
 
@@ -35,8 +33,7 @@ export const renderTrackerSlice = createSlice({
   reducers: {
     /**
      * Record a new render event for a component.
-     * When suppressToasts is true, the event is recorded in history
-     * but lastRender is not updated (so toasts won't fire).
+     * Toast creation is handled by listenerMiddleware (not this reducer).
      */
     recordRender: (state, action: PayloadAction<RenderInfo>) => {
       const { componentName, reason } = action.payload
@@ -61,11 +58,6 @@ export const renderTrackerSlice = createSlice({
       }
       const byReason = state.renderCountsByReason[componentName]
       byReason[reason] = (byReason[reason] ?? 0) + 1
-
-      // Track last render for animations — skip when suppressed
-      if (!state.suppressToasts) {
-        state.lastRender = action.payload
-      }
     },
 
     /**
@@ -91,7 +83,6 @@ export const renderTrackerSlice = createSlice({
       state.renderHistory = {}
       state.renderCounts = {}
       state.renderCountsByReason = {}
-      state.lastRender = null
     },
 
     /**

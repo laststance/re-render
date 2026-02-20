@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import renderTrackerReducer from './renderTrackerSlice'
 import toastReducer from './toastSlice'
+import { listenerMiddleware } from './listenerMiddleware'
 
 /**
  * Redux store for the re-render visualization tool
@@ -10,6 +11,8 @@ export const store = configureStore({
     renderTracker: renderTrackerReducer,
     toast: toastReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().prepend(listenerMiddleware.middleware),
 })
 
 
