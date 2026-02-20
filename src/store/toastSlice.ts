@@ -27,11 +27,15 @@ interface ToastState {
   toasts: Toast[]
   /** Maximum number of toasts to display */
   maxToasts: number
+  /** When true, listenerMiddleware skips toast creation for incoming render events.
+   * Used by useSuppressToasts to prevent false toasts during UI chrome actions. */
+  suppressToasts: boolean
 }
 
 const initialState: ToastState = {
   toasts: [],
   maxToasts: 10,
+  suppressToasts: false,
 }
 
 /**
@@ -114,10 +118,33 @@ export const toastSlice = createSlice({
     clearAllToasts: (state) => {
       state.toasts = []
     },
+
+    /**
+     * Temporarily suppress toast notifications.
+     * Re-renders are still recorded in renderTrackerSlice but don't trigger toasts.
+     * Use before UI chrome actions (view mode switch, overlay toggle).
+     */
+    beginSuppressToasts: (state) => {
+      state.suppressToasts = true
+    },
+
+    /**
+     * Re-enable toast notifications after suppression.
+     */
+    endSuppressToasts: (state) => {
+      state.suppressToasts = false
+    },
   },
 })
 
-export const { addToast, addBatchToast, removeToast, toggleToastExpanded, clearAllToasts } =
-  toastSlice.actions
+export const {
+  addToast,
+  addBatchToast,
+  removeToast,
+  toggleToastExpanded,
+  clearAllToasts,
+  beginSuppressToasts,
+  endSuppressToasts,
+} = toastSlice.actions
 
 export default toastSlice.reducer

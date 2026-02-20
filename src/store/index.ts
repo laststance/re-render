@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import renderTrackerReducer from './renderTrackerSlice'
 import toastReducer from './toastSlice'
+import { listenerMiddleware } from './listenerMiddleware'
 
 /**
  * Redux store for the re-render visualization tool
@@ -10,6 +11,8 @@ export const store = configureStore({
     renderTracker: renderTrackerReducer,
     toast: toastReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().prepend(listenerMiddleware.middleware),
 })
 
 
@@ -20,8 +23,6 @@ export type AppDispatch = typeof store.dispatch
 // Re-export slice actions for convenience
 export {
   recordRender,
-  beginSuppressToasts,
-  endSuppressToasts,
   clearRenderHistory,
   clearComponentHistory,
 } from './renderTrackerSlice'
@@ -32,6 +33,8 @@ export {
   removeToast,
   toggleToastExpanded,
   clearAllToasts,
+  beginSuppressToasts,
+  endSuppressToasts,
 } from './toastSlice'
 
 export type { Toast } from './toastSlice'
