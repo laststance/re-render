@@ -17,16 +17,31 @@ export function LandingPage() {
     <div className="h-full overflow-auto">
       <div className="mx-auto max-w-4xl px-6 py-12">
         {/* Hero Section */}
-        <header className="mb-16 text-center">
-          <h1 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl">
+        <header className="relative mb-16 overflow-hidden rounded-2xl px-8 py-16 text-center">
+          {/* Radial gradient glow */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background: 'radial-gradient(ellipse 80% 60% at 50% 30%, var(--muted), transparent)',
+            }}
+          />
+          {/* Fine dot grid overlay */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.4]"
+            style={{
+              backgroundImage: 'radial-gradient(circle, var(--border) 1px, transparent 1px)',
+              backgroundSize: '24px 24px',
+            }}
+          />
+          <h1 className="relative mb-4 text-4xl font-bold tracking-tight md:text-5xl">
             React Re-render Visualizer
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-[var(--muted-foreground)]">
+          <p className="relative mx-auto max-w-2xl text-lg text-[var(--muted-foreground)]">
             Learn when and why React components re-render through interactive
             examples. Visualize component trees, trigger re-renders, and
             understand optimization techniques.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
+          <div className="relative mt-8 flex flex-wrap justify-center gap-4">
             <Link
               href={quickStartPath}
               className="inline-flex min-h-[44px] items-center rounded-lg bg-[var(--primary)] px-6 py-3 font-medium text-[var(--primary-foreground)] transition-colors hover:opacity-90"
