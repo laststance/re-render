@@ -49,6 +49,10 @@ startAppListening({
       buffer = []
       flushTimer = null
 
+      // Re-check suppression at flush time — a UI chrome action may have
+      // activated suppression after events were buffered (race condition fix).
+      if (getState().toast.suppressToasts) return
+
       if (batch.length === 1) {
         dispatch(addToast(batch[0]))
       } else if (batch.length > 1) {
