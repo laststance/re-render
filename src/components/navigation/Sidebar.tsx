@@ -136,7 +136,7 @@ function MatrixSidebar({ onNavigate }: { onNavigate?: () => void }) {
             className="flex items-center gap-1.5 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 active:scale-[0.98]"
             onClick={() => onNavigate?.()}
           >
-            <span className="flex h-4 w-4 shrink-0 items-center justify-center text-[10px] font-medium text-muted-foreground">
+            <span className="flex h-4 w-4 shrink-0 items-center justify-center text-xs font-medium text-muted-foreground">
               {stepNumber}
             </span>
             <span
@@ -169,17 +169,17 @@ function MatrixSidebar({ onNavigate }: { onNavigate?: () => void }) {
         {/* Sticky column header */}
         <thead className="sticky top-0 z-10 bg-background">
           <tr className="border-b border-border">
-            <th className="py-2 pl-2 pr-1 text-left text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+            <th className="py-2 pl-2 pr-1 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Scenario
             </th>
             <th
-              className="w-16 px-1 py-2 text-center text-[10px] font-medium leading-tight"
+              className="w-16 px-1 py-2 text-center text-xs font-medium leading-tight"
               style={{ color: 'var(--flash-color)' }}
             >
               {'<Child />'}
             </th>
             <th
-              className="w-16 px-1 py-2 text-center text-[10px] font-medium leading-tight"
+              className="w-16 px-1 py-2 text-center text-xs font-medium leading-tight"
               style={{ color: 'var(--flash-color-memo)' }}
             >
               {'<Memo />'}
@@ -190,7 +190,7 @@ function MatrixSidebar({ onNavigate }: { onNavigate?: () => void }) {
         <tbody>
           {/* Section: Re-render Conditions */}
           <tr>
-            <td colSpan={3} className="px-2 pb-1 pt-3 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+            <td colSpan={3} className="px-2 pb-1 pt-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
               When does React re-render?
             </td>
           </tr>
@@ -205,10 +205,10 @@ function MatrixSidebar({ onNavigate }: { onNavigate?: () => void }) {
             <>
               <tr>
                 <td colSpan={3} className="px-2 pb-1 pt-3">
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                  <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                     Advanced Patterns
                   </span>
-                  <span className="ml-1 rounded-full bg-accent px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
+                  <span className="ml-1 rounded-full bg-accent px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
                     {advancedExamples.length}
                   </span>
                 </td>
@@ -230,7 +230,7 @@ function MatrixSidebar({ onNavigate }: { onNavigate?: () => void }) {
                       e.stopPropagation()
                       setOptimizationExpanded(!effectiveOptExpanded)
                     }}
-                    className="flex w-full items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
+                    className="flex w-full items-center gap-1 text-xs font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
                     aria-expanded={effectiveOptExpanded}
                   >
                     {effectiveOptExpanded ? (
@@ -239,7 +239,7 @@ function MatrixSidebar({ onNavigate }: { onNavigate?: () => void }) {
                       <ChevronRight className="h-3 w-3 shrink-0" aria-hidden="true" />
                     )}
                     Optimization
-                    <span className="ml-1 rounded-full bg-accent px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
+                    <span className="ml-1 rounded-full bg-accent px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
                       {optimizationExamples.length}
                     </span>
                   </button>
