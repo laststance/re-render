@@ -14,19 +14,34 @@ export function LandingPage() {
   const quickStartPath = `/${categoryId}/${exampleId}`
 
   return (
-    <div className="h-full overflow-auto">
+    <div className="flex h-full flex-col overflow-auto">
       <div className="mx-auto max-w-4xl px-6 py-12">
         {/* Hero Section */}
-        <header className="mb-16 text-center">
-          <h1 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl">
+        <header className="relative mb-16 overflow-hidden rounded-2xl px-8 py-16 text-center">
+          {/* Radial gradient glow */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background: 'radial-gradient(ellipse 80% 60% at 50% 30%, var(--muted), transparent)',
+            }}
+          />
+          {/* Fine dot grid overlay */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.4]"
+            style={{
+              backgroundImage: 'radial-gradient(circle, var(--border) 1px, transparent 1px)',
+              backgroundSize: '24px 24px',
+            }}
+          />
+          <h1 className="relative mb-4 text-4xl font-bold tracking-tight md:text-5xl">
             React Re-render Visualizer
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-[var(--muted-foreground)]">
+          <p className="relative mx-auto max-w-2xl text-lg text-[var(--muted-foreground)]">
             Learn when and why React components re-render through interactive
             examples. Visualize component trees, trigger re-renders, and
             understand optimization techniques.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
+          <div className="relative mt-8 flex flex-wrap justify-center gap-4">
             <Link
               href={quickStartPath}
               className="inline-flex min-h-[44px] items-center rounded-lg bg-[var(--primary)] px-6 py-3 font-medium text-[var(--primary-foreground)] transition-colors hover:opacity-90"
@@ -46,7 +61,7 @@ export function LandingPage() {
 
         {/* Interface Preview */}
         <section className="mb-16">
-          <h2 className="mb-6 text-center text-2xl font-semibold">
+          <h2 className="mb-6 text-center text-2xl font-semibold tracking-tight">
             Interactive Learning Environment
           </h2>
           <Link
@@ -122,7 +137,7 @@ export function LandingPage() {
 
         {/* Categories Overview */}
         <section className="mb-16">
-          <h2 className="mb-6 text-center text-2xl font-semibold">
+          <h2 className="mb-6 text-center text-2xl font-semibold tracking-tight">
             Explore by Topic
           </h2>
           <div className="grid gap-6 sm:grid-cols-2">
@@ -159,7 +174,7 @@ export function LandingPage() {
 
         {/* Key Concepts */}
         <section className="mb-16">
-          <h2 className="mb-6 text-center text-2xl font-semibold">
+          <h2 className="mb-6 text-center text-2xl font-semibold tracking-tight">
             Key Concepts You'll Learn
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -185,7 +200,7 @@ export function LandingPage() {
         {/* Call to Action */}
         <section className="text-center">
           <div className="rounded-lg border border-[var(--border)] bg-[var(--secondary)] p-8">
-            <h2 className="mb-2 text-2xl font-semibold">Ready to Start?</h2>
+            <h2 className="mb-2 text-2xl font-semibold tracking-tight">Ready to Start?</h2>
             <p className="mb-4 text-[var(--muted-foreground)]">
               Explore every re-render condition, then learn optimization techniques to prevent unnecessary renders.
             </p>
@@ -198,6 +213,36 @@ export function LandingPage() {
           </div>
         </section>
       </div>
+
+      {/* Footer */}
+      <footer className="mt-auto border-t border-[var(--border)] px-6 py-8">
+        <div className="mx-auto flex max-w-4xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-medium">Re-Render</p>
+            <p className="text-sm text-[var(--muted-foreground)]">
+              React re-render visualizer
+            </p>
+          </div>
+          <div className="flex gap-6 text-sm text-[var(--muted-foreground)]">
+            <a
+              href="https://github.com/laststance/re-render"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-[var(--foreground)]"
+            >
+              GitHub
+            </a>
+            <a
+              href="https://react.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-[var(--foreground)]"
+            >
+              React Docs
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

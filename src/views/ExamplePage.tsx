@@ -88,7 +88,7 @@ export function ExamplePage() {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center">
         <h2 className="text-2xl font-semibold text-foreground">Example Not Found</h2>
-        <p className="max-w-md text-sm text-muted-foreground">
+        <p className="max-w-[28rem] text-sm text-muted-foreground">
           {exampleId && categoryId
             ? <>The example &quot;{exampleId}&quot; in category &quot;{categoryId}&quot; could not be found. It may have been moved or removed.</>
             : 'The requested example could not be found. It may have been moved or removed.'
