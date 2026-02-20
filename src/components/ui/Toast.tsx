@@ -70,7 +70,7 @@ function BatchRenderRow({ render }: { render: RenderInfo }) {
         <span className="text-xs text-muted-foreground">
           {REASON_LABELS[render.reason]}
         </span>
-        <span className="inline-flex items-center justify-center rounded-full bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-secondary-foreground">
+        <span className="inline-flex items-center justify-center rounded-full bg-secondary px-1.5 py-0.5 text-xs font-medium text-secondary-foreground">
           #{render.renderCount}
         </span>
       </div>

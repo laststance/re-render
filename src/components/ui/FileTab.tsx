@@ -18,7 +18,7 @@ export function FileTab({ filename, isActive, onClick }: FileTabProps) {
       className={cn(
         'relative flex-shrink-0 px-4 py-2 text-sm font-medium transition-colors active:scale-[0.98]',
         'border-r border-[var(--border)] last:border-r-0',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-inset',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset',
         'min-w-[44px] min-h-[44px]', // Apple HIG minimum tap target
         isActive
           ? 'bg-[var(--background)] text-[var(--foreground)]'
