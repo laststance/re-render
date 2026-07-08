@@ -18,4 +18,12 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // Render tracking intentionally reads/writes refs during render to detect changes.
+    files: ['src/hooks/useRenderTracker.ts'],
+    rules: {
+      'react-hooks/refs': 'off',
+      'react-hooks/purity': 'off',
+    },
+  },
 ])
