@@ -36,3 +36,5 @@ tasks/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+.serena
