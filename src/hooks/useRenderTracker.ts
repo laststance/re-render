@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react'
-import { useAppDispatch } from '@/store/hooks'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { recordRender } from '@/store'
 import type {
   RenderInfo,
@@ -120,15 +120,10 @@ function getChangedValues(
 function determineRenderReason(
   isInitialRender: boolean,
   changedProps: string[],
-  changedState: string[],
-  forceUpdate?: boolean
+  changedState: string[]
 ): RenderReason {
   if (isInitialRender) {
     return 'initial'
-  }
-
-  if (forceUpdate) {
-    return 'force-update'
   }
 
   if (changedState.length > 0) {
@@ -150,7 +145,20 @@ function determineRenderReason(
  * Detects initial render vs. re-renders and determines the reason
  * for re-rendering (props-change, state-change, parent-rerender, etc.).
  *
- * Dispatches render events to the Redux store for visualization.
+ * Dispatches one recordRender action per committed render. Counting is
+ * commit-accurate: a no-deps useEffect runs exactly once per commit, and a
+ * render-token dedupes StrictMode's double-invoked mount effects.
+ *
+ * Render isolation: the Redux subscription for render counts lives inside
+ * the visualization tree (ConnectedDualTreeView), NOT in a shared ancestor
+ * of the live preview — so a recordRender dispatch never re-renders any
+ * tracked component. There is no feedback loop to suppress, and every
+ * committed render is counted honestly.
+ *
+ * Reset handling: clearRenderHistory bumps `renderTracker.generation`. The
+ * subscription re-render it causes is instrumentation, not demo code — the
+ * commit that observes the generation change is absorbed as a fresh baseline
+ * (counted as the new initial render, not dispatched).
  *
  * @param componentName - Unique name for this component
  * @param deps - Optional dependencies to track (props and/or state)
@@ -176,49 +184,33 @@ export function useRenderTracker(
 ): RenderTrackerResult {
   const dispatch = useAppDispatch()
 
-  // Track total render invocations — increments on EVERY React render including
-  // cascade renders from Redux updates. Used solely as a useEffect dependency
-  // to detect when a new render occurred.
-  const renderCountRef = useRef(0)
+  // Subscription is scoped to the reset generation — a primitive that changes
+  // only on clearRenderHistory — so this hook never re-renders on recordRender.
+  const generation = useAppSelector((state) => state.renderTracker.generation)
+  const generationRef = useRef(generation)
 
-  // Track meaningful (non-cascade) renders — this is the count users see.
-  // Only incremented inside the dispatch callback, after confirming the render
-  // is genuine (not a cascade artifact from our own Redux dispatch).
-  const meaningfulCountRef = useRef(0)
+  // Fresh object token per render invocation. StrictMode double-invokes the
+  // component body, so the last invocation's token is what the commit effect
+  // sees. Mount-effect replay (StrictMode setup→cleanup→setup) observes the
+  // same token and is deduped — one dispatch per commit, never two.
+  const renderTokenRef = useRef<object>({})
+  renderTokenRef.current = {}
+  const countedTokenRef = useRef<object | null>(null)
 
-  // Track previous props and state for comparison
+  // Committed render count for THIS instance — the authoritative number that
+  // gets dispatched and displayed. Reset boundaries are absorbed via the
+  // generation check below, so it stays in sync with the cleared store.
+  const committedCountRef = useRef(0)
+
+  // Snapshot of the deps from the last COMMITTED render. Updated only inside
+  // the commit effect — an aborted/concurrent render must not advance it,
+  // or the next commit would diff against never-committed values and record
+  // changes that never actually happened.
   const prevDepsRef = useRef<TrackableDeps | undefined>(undefined)
 
-  // Store the latest render info for deferred dispatch
-  const pendingInfoRef = useRef<RenderInfo | null>(null)
-
-  // Timer ref for debounced dispatch
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  // Tracks whether we have a dispatch in flight. When true, subsequent
-  // 'parent-rerender' renders are cascade artifacts and should be skipped.
-  const dispatchInFlightRef = useRef(false)
-
-  // Holds the committed (first-render) reason within a StrictMode render batch.
-  // StrictMode calls the render function twice. On the 1st call we detect the
-  // correct reason (e.g. 'state-change') and capture it here. On the 2nd call,
-  // prevDepsRef has already been updated so getChangedKeys returns [], giving us
-  // 'parent-rerender'. We use this ref to preserve the 1st call's reason.
-  // The ref is reset to null in useEffect after we consume it.
-  const committedReasonRef = useRef<RenderReason | null>(null)
-  const committedChangesRef = useRef<{
-    changedProps: string[]
-    changedState: string[]
-    propChanges: ChangedValue[]
-    stateChanges: ChangedValue[]
-  } | null>(null)
-
-  // Increment on every render for useEffect dependency tracking
-  renderCountRef.current += 1
-  const renderCount = renderCountRef.current
-
-  // Determine if this is the initial render
-  const isInitialRender = renderCount === 1
+  // Whether this commit is the instance's initial render
+  const isInitialRender = committedCountRef.current === 0 &&
+    countedTokenRef.current === null
 
   // Calculate what changed since last render
   const changedProps = getChangedKeys(prevDepsRef.current?.props, deps?.props)
@@ -235,107 +227,74 @@ export function useRenderTracker(
     changedState
   )
 
-  // StrictMode double-render fix: if rawReason detected real changes (not
-  // parent-rerender), commit it. If rawReason is parent-rerender BUT we already
-  // committed a better reason (from the 1st StrictMode render), keep the committed one.
-  if (rawReason !== 'parent-rerender' || committedReasonRef.current === null) {
-    committedReasonRef.current = rawReason
-    committedChangesRef.current = { changedProps, changedState, propChanges, stateChanges }
-  }
-  const reason = committedReasonRef.current
-  const changes = committedChangesRef.current!
+  // The reason/changes computed above are render-pure: prevDepsRef only
+  // advances inside the commit effect, so both StrictMode invocations of a
+  // render pass compute identical values — no "first invocation" capture is
+  // needed. Keeping them in refs written during render would let an aborted
+  // concurrent render leak its reason into the next commit.
+  const reason = rawReason
 
-  // Update previous deps for next render comparison.
-  // This runs during the render phase so the next render sees correct baselines.
-  //
-  // Concurrent rendering note: if React aborts this render (e.g. due to
-  // startTransition), prevDepsRef will already hold the new deps. When the
-  // render retries, getChangedKeys returns [] and rawReason becomes
-  // 'parent-rerender'. However, committedReasonRef still holds the correct
-  // reason from the first (aborted) render attempt, so the final `reason`
-  // used for dispatch is correct. The effect only runs for committed renders,
-  // so no stale data reaches Redux.
-  prevDepsRef.current = deps
-    ? {
-        props: deps.props ? { ...deps.props } : undefined,
-        state: deps.state ? { ...deps.state } : undefined,
-      }
-    : undefined
-
-  // Create render info object — renderCount uses the current meaningful count.
-  // It gets overwritten with the incremented value at dispatch time inside setTimeout.
+  // Create render info object — renderCount is filled in at dispatch time
+  // with the post-increment committed count. `generation` is stamped so the
+  // store can drop events rendered before a reset (see renderTrackerSlice).
   const renderInfo: RenderInfo = {
     id: generateRenderEventId(),
     componentName,
-    renderCount: meaningfulCountRef.current,
+    renderCount: committedCountRef.current,
     reason,
     timestamp: Date.now(),
-    ...(changes.changedProps.length > 0 && { changedProps: changes.changedProps }),
-    ...(changes.changedState.length > 0 && { changedState: changes.changedState }),
-    ...(changes.propChanges.length > 0 && { propChanges: changes.propChanges }),
-    ...(changes.stateChanges.length > 0 && { stateChanges: changes.stateChanges }),
+    generation,
+    ...(changedProps.length > 0 && { changedProps }),
+    ...(changedState.length > 0 && { changedState }),
+    ...(propChanges.length > 0 && { propChanges }),
+    ...(stateChanges.length > 0 && { stateChanges }),
   }
 
-  // Dispatch to Redux store using a debounced pattern that prevents infinite loops.
-  //
-  // The problem: dispatching recordRender → Redux update → ExamplePage re-renders
-  // (via useComponentTreeWithCounts subscription) → child LivePreviewWrapper re-renders
-  // → renderCountRef increments → useEffect fires → dispatch again → infinite loop.
-  //
-  // The solution: when we have a dispatch in flight (pending setTimeout), skip
-  // cascade renders (reason='parent-rerender'). These are artifacts of our own
-  // dispatch updating Redux and causing the parent to re-render. Only genuine
-  // renders (initial, state-change, props-change) or the first parent-rerender
-  // after user interaction should trigger a new dispatch.
+  // Dispatch exactly once per committed render. Runs after every commit
+  // (no dep array) because every commit of this component is a render worth
+  // counting. React flushes all of a commit's passive effects before the next
+  // render begins, so back-to-back commits each produce their own dispatch.
   useEffect(() => {
-    // Skip cascade renders caused by our own dispatch still in flight.
-    // When a dispatch is pending or just completed, Redux notifies subscribers
-    // which re-renders the parent (ExamplePage via useComponentTreeWithCounts),
-    // cascading to this component. These are artifacts, not user-triggered renders.
-    if (dispatchInFlightRef.current && reason === 'parent-rerender') {
+    // StrictMode mount dedupe: the same commit re-runs effects with the same
+    // render token — count it once.
+    if (countedTokenRef.current === renderTokenRef.current) {
       return
     }
+    countedTokenRef.current = renderTokenRef.current
 
-    pendingInfoRef.current = renderInfo
-
-    // Reset committed reason so the next render batch starts fresh
-    committedReasonRef.current = null
-    committedChangesRef.current = null
-
-    // Clear any pending dispatch — only the latest render info will be dispatched
-    if (timerRef.current !== null) {
-      clearTimeout(timerRef.current)
+    // Reset boundary: clearRenderHistory bumped the generation. Absorb the
+    // subscription-driven commit as the new baseline (equivalent to a fresh
+    // mount). If the same commit ALSO carried a real demo change (a deferred
+    // update batched with the reset), record it as the baseline event so the
+    // render isn't silently erased from history.
+    if (generation !== generationRef.current) {
+      generationRef.current = generation
+      committedCountRef.current = 1
+      const carriedRealChange =
+        renderInfo.reason !== 'initial' &&
+        renderInfo.reason !== 'parent-rerender'
+      if (carriedRealChange) {
+        dispatch(recordRender({ ...renderInfo, renderCount: 1 }))
+      }
+    } else {
+      committedCountRef.current += 1
+      dispatch(
+        recordRender({ ...renderInfo, renderCount: committedCountRef.current })
+      )
     }
 
-    dispatchInFlightRef.current = true
-
-    timerRef.current = setTimeout(() => {
-      timerRef.current = null
-      if (pendingInfoRef.current) {
-        // Increment the meaningful count only when we actually dispatch —
-        // this excludes all cascade renders that were skipped above.
-        meaningfulCountRef.current += 1
-        pendingInfoRef.current = {
-          ...pendingInfoRef.current,
-          renderCount: meaningfulCountRef.current,
+    // Advance the committed-deps snapshot — this render's deps are now the
+    // committed baseline every future render diffs against.
+    prevDepsRef.current = deps
+      ? {
+          props: deps.props ? { ...deps.props } : undefined,
+          state: deps.state ? { ...deps.state } : undefined,
         }
-        dispatch(recordRender(pendingInfoRef.current))
-        pendingInfoRef.current = null
-      }
-      // Keep the flag true through the synchronous cascade that follows
-      // dispatch (Redux → subscriber re-render → child re-render). Clear
-      // in the next macrotask so cascade renders (which happen synchronously
-      // after Redux notifies) are all skipped.
-      setTimeout(() => {
-        dispatchInFlightRef.current = false
-      }, 0)
-    }, 0)
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [renderCount])
+      : undefined
+  })
 
   return {
-    renderCount: meaningfulCountRef.current,
+    renderCount: committedCountRef.current,
     renderInfo,
   }
 }

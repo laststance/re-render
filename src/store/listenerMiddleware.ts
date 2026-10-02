@@ -1,6 +1,6 @@
-import { createListenerMiddleware } from '@reduxjs/toolkit'
-import { recordRender } from './renderTrackerSlice'
-import { addToast, addBatchToast } from './toastSlice'
+import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit'
+import { recordRender, clearRenderHistory } from './renderTrackerSlice'
+import { addToast, addBatchToast, clearAllToasts } from './toastSlice'
 import type { RootState, AppDispatch } from './index'
 import type { RenderInfo } from '@/types'
 
@@ -38,8 +38,17 @@ startAppListening({
     const { suppressToasts } = getState().toast
     const renderInfo = action.payload
 
-    // Skip initial renders and suppressed toasts
-    if (renderInfo.reason === 'initial' || suppressToasts) return
+    // Skip initial renders, suppressed toasts, and events rendered under a
+    // stale generation (a reset landed between commit and passive dispatch —
+    // the reducer drops them too, but the buffer must not see them either).
+    if (
+      renderInfo.reason === 'initial' ||
+      suppressToasts ||
+      (renderInfo.generation !== undefined &&
+        renderInfo.generation !== getState().renderTracker.generation)
+    ) {
+      return
+    }
 
     // Buffer the event and reset debounce timer
     buffer.push(renderInfo)
@@ -59,5 +68,20 @@ startAppListening({
         dispatch(addBatchToast(batch))
       }
     }, BATCH_DEBOUNCE_MS)
+  },
+})
+
+// Drop buffered-but-unflushed render events when the demo resets or toasts
+// are cleared — otherwise a stale flush surfaces a "ghost" toast after
+// clearAllToasts already ran (observed with the concurrent example's
+// deferred transition commit).
+startAppListening({
+  matcher: isAnyOf(clearRenderHistory, clearAllToasts),
+  effect: () => {
+    buffer = []
+    if (flushTimer) {
+      clearTimeout(flushTimer)
+      flushTimer = null
+    }
   },
 })

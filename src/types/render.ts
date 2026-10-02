@@ -45,6 +45,10 @@ export interface RenderInfo {
   propChanges?: ChangedValue[]
   /** Detailed state changes with previous/current values */
   stateChanges?: ChangedValue[]
+  /** Reset generation the render was produced under — stale-generation
+   * events (rendered before a clearRenderHistory but dispatched after)
+   * are dropped by the store instead of resurrecting cleared counts. */
+  generation?: number
 }
 
 /**
