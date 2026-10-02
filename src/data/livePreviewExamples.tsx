@@ -403,14 +403,17 @@ export const ReactLazyPreview = forwardRef<LivePreviewHandle>(
             <LivePreviewWrapper componentName="Suspense">
               <div className="rounded border border-border bg-muted/30 p-4">
                 {isLoading ? (
-                  <LivePreviewWrapper componentName="Fallback">
+                  // Distinct keys: same wrapper type at the same position would
+                  // otherwise reuse the fiber, leaking Fallback's render count
+                  // into HeavyChart.
+                  <LivePreviewWrapper key="fallback" componentName="Fallback">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                       Loading chart...
                     </div>
                   </LivePreviewWrapper>
                 ) : (
-                  <LivePreviewWrapper componentName="HeavyChart">
+                  <LivePreviewWrapper key="chart" componentName="HeavyChart">
                     <div className="space-y-2">
                       <h2 className="font-medium">Heavy Chart Component</h2>
                       <p className="text-sm text-muted-foreground">
@@ -735,14 +738,17 @@ export const SuspensePreview = forwardRef<LivePreviewHandle>(
           <LivePreviewWrapper componentName="Suspense">
             <div className="rounded border border-border bg-muted/30 p-4">
               {isLoading ? (
-                <LivePreviewWrapper componentName="Fallback">
+                // Distinct keys: same wrapper type at the same position would
+                // otherwise reuse the fiber, leaking Fallback's render count
+                // into UserProfile.
+                <LivePreviewWrapper key="fallback" componentName="Fallback">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                     Loading user...
                   </div>
                 </LivePreviewWrapper>
               ) : (
-                <LivePreviewWrapper componentName="UserProfile">
+                <LivePreviewWrapper key="profile" componentName="UserProfile">
                   <div className="space-y-1">
                     <h2 className="font-medium">{userData.name}</h2>
                     <p className="text-sm text-muted-foreground">

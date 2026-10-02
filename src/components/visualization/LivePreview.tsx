@@ -2,7 +2,6 @@ import { useState, useCallback, type ReactNode } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSuppressToasts } from '@/hooks'
-import { LivePreviewContext } from './LivePreviewContext'
 
 interface LivePreviewProps {
   /** The preview content to render */
@@ -17,7 +16,10 @@ interface LivePreviewProps {
  * Provides:
  * - Toggle button to show/hide component boundary overlays
  * - Isolated rendering environment for preview UI
- * - Passes `showOverlays` via context for children to read
+ * - Exposes `showOverlays` via the `data-show-overlays` attribute so
+ *   overlay visibility is pure CSS — toggling it never re-renders the
+ *   tracked preview components below (context would propagate a render
+ *   into every LivePreviewWrapper and pollute the render counts).
  */
 export function LivePreview({ children, className }: LivePreviewProps) {
   const [showOverlays, setShowOverlays] = useState(true)
@@ -65,14 +67,13 @@ export function LivePreview({ children, className }: LivePreviewProps) {
         </button>
       </div>
 
-      {/* Preview area with padding for labels */}
+      {/* Preview area with padding for labels — `group/preview` lets
+          descendant overlays react to data-show-overlays via CSS only */}
       <div
-        className="flex-1 overflow-auto p-6 pt-8"
+        className="group/preview flex-1 overflow-auto p-6 pt-8"
         data-show-overlays={showOverlays}
       >
-        <LivePreviewContext.Provider value={{ showOverlays }}>
-          {children}
-        </LivePreviewContext.Provider>
+        {children}
       </div>
     </div>
   )

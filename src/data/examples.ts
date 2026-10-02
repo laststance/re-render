@@ -175,6 +175,9 @@ export function Button({ onClick, children }: { onClick?: () => void; children: 
               id: 'counter',
               name: 'Counter',
               renderCount: 0,
+              // React.memo does NOT block prop-driven re-renders — the
+              // memoized tree must still count genuine props-change events.
+              memoProtected: true,
               children: [
                 { id: 'text-count', name: 'Text', renderCount: 0 },
                 { id: 'button', name: 'Button', renderCount: 0 },

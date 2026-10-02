@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -7,11 +7,12 @@ import { ComponentBoxView, LivePreview } from '@/components/visualization'
 import { TriggerPanel, ExplanationPanel } from '@/components/ui'
 import { useComponentTreeWithCounts, useMemoizedTreeWithCounts, useSuppressToasts } from '@/hooks'
 import { useAppDispatch } from '@/store/hooks'
-import { clearRenderHistory, beginSuppressToasts, endSuppressToasts } from '@/store'
+import { clearRenderHistory, clearAllToasts, beginSuppressToasts, endSuppressToasts } from '@/store'
 import { getExample, getAdjacentExamples } from '@/data/examples'
 import { livePreviewMap } from '@/data/livePreviewMap'
 import { getTriggers } from '@/data/triggerConfig'
 import { cn } from '@/lib/utils'
+import type { ComponentNode } from '@/types'
 import type { ViewMode } from '@/components/layout/VisualizationPane'
 import type { LivePreviewHandle } from '@/data/livePreviewExamples'
 
@@ -36,18 +37,32 @@ export function ExamplePage() {
   const dispatch = useAppDispatch()
 
   // Clear stale render counts when navigating between examples.
-  // Suppress toasts during the initial mount phase — useRenderTracker dispatches
-  // recordRender via setTimeout(0) for each component, and each dispatch causes
-  // a Redux update → parent-rerender cascade. Without suppression these cascade
-  // renders (reason: 'parent-rerender') would trigger a flood of false toasts.
+  // Keep toasts quiet through the remount window: generation-absorbed
+  // commits never dispatch, and initial-mount dispatches are already
+  // skipped by the listener middleware, so suppression remains only as a
+  // safety net for stray non-initial commits during navigation.
   useEffect(() => {
     dispatch(beginSuppressToasts())
     dispatch(clearRenderHistory())
-    const timer = setTimeout(() => {
+    // suppression is refcounted, so each begin needs exactly one end: the
+    // timer ends on schedule, and cleanup ends early only when the page
+    // unmounts (or re-navigates) inside the 100ms window.
+    let ended = false
+    const end = () => {
+      if (ended) return
+      ended = true
       dispatch(endSuppressToasts())
-    }, 100)
-    return () => clearTimeout(timer)
-  }, [exampleId, dispatch])
+    }
+    const timer = setTimeout(end, 100)
+    return () => {
+      clearTimeout(timer)
+      end()
+      // Events buffered in the listener's 300ms debounce would otherwise flush
+      // a ghost toast onto the landing page (or the next example) after this
+      // page unmounts — clearAllToasts also purges that pending batch.
+      dispatch(clearAllToasts())
+    }
+  }, [categoryId, exampleId, dispatch])
 
   // Suppress toasts when switching view mode (UI chrome, not a meaningful re-render)
   const handleViewModeChange = useCallback(
@@ -63,21 +78,33 @@ export function ExamplePage() {
 
   const example = categoryId && exampleId ? getExample(categoryId, exampleId) : null
 
-  // Merge static tree structures with live Redux render counts.
-  // <Child /> tree uses componentTree; <MemoizedChild /> falls back to same tree if not defined.
-  const liveTree = useComponentTreeWithCounts(example?.componentTree ?? null)
-  const memoizedLiveTree = useMemoizedTreeWithCounts(example?.componentTree ?? null)
+  // Render-count subscription lives inside ConnectedDualTreeView — NOT here.
+  // If this page subscribed to renderTracker, every recordRender dispatch
+  // would re-render the whole page including LivePreview, producing cascade
+  // renders that corrupt the counts being displayed.
 
   // Check if this example has a live preview component
   const LivePreviewComponent = exampleId ? livePreviewMap[exampleId] : undefined
   const hasLivePreview = !!LivePreviewComponent
 
+  // Stable element for the tracked preview: page-level state changes
+  // (view mode, active file tab) re-render this page, and an identical
+  // element reference lets React bail out of the entire preview subtree —
+  // chrome actions never count as renders of the demo components.
+  const livePreviewContent = useMemo(
+    () => (LivePreviewComponent ? <LivePreviewComponent ref={livePreviewRef} /> : null),
+    [LivePreviewComponent]
+  )
+
   // Get available triggers for this example
   const triggers = exampleId ? getTriggers(exampleId) : []
   const hasTriggers = triggers.length > 0
 
-  // Reset active file when example changes
-  const effectiveActiveFileId = activeFileId || example?.files[0]?.id || ''
+  // Keep the selected tab only if the new example actually has that file —
+  // a stale id from the previous example would otherwise leave FileTabs with
+  // no selection while the editor falls back to files[0] (tab/content mismatch).
+  const activeFileExists = example?.files.some((f) => f.id === activeFileId)
+  const effectiveActiveFileId = activeFileExists ? activeFileId : (example?.files[0]?.id ?? '')
 
   // Handle trigger button clicks
   const handleTrigger = (triggerId: string) => {
@@ -143,13 +170,12 @@ export function ExamplePage() {
             <TriggerPanel triggers={triggers} onTrigger={handleTrigger} />
           )}
 
-          {/* Dual-tree comparison view - visible in box mode */}
-          <div className={cn(viewMode !== 'box' && 'hidden')}>
-            <DualTreeView
-              childTree={liveTree}
-              memoizedTree={memoizedLiveTree}
-            />
-          </div>
+          {/* Dual-tree comparison view — mounted only in box mode so a
+              recordRender dispatch doesn't re-render a hidden tree while
+              the user is in live mode */}
+          {viewMode === 'box' && (
+            <ConnectedDualTreeView tree={example.componentTree} />
+          )}
 
           {/* Live preview - always mounted to keep useRenderTracker active */}
           {LivePreviewComponent && (
@@ -158,10 +184,9 @@ export function ExamplePage() {
                 viewMode !== 'live' && 'h-0 overflow-hidden pointer-events-none'
               )}
               aria-hidden={viewMode !== 'live'}
+              inert={viewMode !== 'live'}
             >
-              <LivePreview>
-                <LivePreviewComponent ref={livePreviewRef} />
-              </LivePreview>
+              <LivePreview>{livePreviewContent}</LivePreview>
             </div>
           )}
         </SplitPaneLayout>
@@ -179,6 +204,24 @@ export function ExamplePage() {
 }
 
 /**
+ * Subscribes to live render counts and renders the dual-tree comparison.
+ *
+ * This component is the ONLY renderTracker subscriber in the example page
+ * tree. Keeping the subscription here — below SplitPaneLayout and outside the
+ * LivePreview subtree — means a recordRender dispatch re-renders just this
+ * view and never cascades into the tracked preview components, so displayed
+ * counts match the demo's actual React renders.
+ *
+ * @param tree - Static component tree from the example definition
+ */
+function ConnectedDualTreeView({ tree }: { tree: ComponentNode | null }) {
+  const liveTree = useComponentTreeWithCounts(tree)
+  const memoizedTree = useMemoizedTreeWithCounts(tree)
+
+  return <DualTreeView childTree={liveTree} memoizedTree={memoizedTree} />
+}
+
+/**
  * Dual-tree comparison showing `<Child />` and `<MemoizedChild />` side by side vertically.
  * Orange-themed section for unmemoized, blue-themed for memoized.
  * Scrollable vertically when both sections exceed viewport height.
@@ -193,8 +236,8 @@ function DualTreeView({
   childTree,
   memoizedTree,
 }: {
-  childTree: import('@/types').ComponentNode | null
-  memoizedTree: import('@/types').ComponentNode | null
+  childTree: ComponentNode | null
+  memoizedTree: ComponentNode | null
 }) {
   return (
     <div className="flex flex-col gap-4">
