@@ -5,7 +5,9 @@ import { useSyncExternalStore } from 'react'
  * the SplitPaneLayout device detection can never drift apart.
  */
 const DESKTOP_QUERY = '(min-width: 1024px)'
-const TABLET_QUERY = '(min-width: 768px)'
+// Bounded so useIsTablet() is false on desktop — useDeviceType short-circuits
+// on desktop first, but direct callers must not see tablet=true at ≥1024px.
+const TABLET_QUERY = '(min-width: 768px) and (max-width: 1023px)'
 const MOBILE_QUERY = '(max-width: 767px)'
 
 interface MediaStore {
