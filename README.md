@@ -95,7 +95,7 @@ src/
 │   ├── ui/           # Toast, TriggerButton, ExplanationPanel, FileTabs
 │   └── visualization/# ComponentBox, LivePreview
 ├── data/             # Example definitions, live previews, trigger configs
-├── hooks/            # useRenderTracker (core), useReRenderToasts, etc.
+├── hooks/            # useRenderTracker (core), useMediaQuery, useSuppressToasts, etc.
 ├── store/            # Redux slices (renderTracker, toast)
 ├── types/            # TypeScript type definitions
 └── views/            # ExamplePage, LandingPage

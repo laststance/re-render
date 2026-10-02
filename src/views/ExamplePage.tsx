@@ -181,6 +181,9 @@ export function ExamplePage() {
           {LivePreviewComponent && (
             <div
               className={cn(
+                // h-full lets the live preview fill the pane; h-0 collapses it
+                // when hidden (tailwind-merge keeps the last h-* class).
+                'h-full',
                 viewMode !== 'live' && 'h-0 overflow-hidden pointer-events-none'
               )}
               aria-hidden={viewMode !== 'live'}

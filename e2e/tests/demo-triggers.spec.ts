@@ -3,7 +3,7 @@ import { sel } from '../helpers/selectors.js'
 import { examples } from '../helpers/examples.js'
 
 /**
- * Comprehensive trigger tests for ALL 20 demo examples.
+ * Comprehensive trigger tests for ALL 17 demo examples.
  * Verifies that each trigger button:
  * 1. Increments render counts on the root component
  * 2. Produces a toast notification
@@ -95,8 +95,8 @@ for (const ex of examples) {
     }
 
     // Test reset button clears toasts for this example.
-    // Note: Reset clears Redux renderCounts but component-level useRef
-    // counts persist, so render count badges briefly show 0 then re-populate.
+    // Under the generation model, clearRenderHistory re-baselines every
+    // tracker — badges stay at 0 until a new render commits.
     // We verify the observable behavior: toasts are cleared.
     // Skip for async examples (Suspense/React.lazy) where deferred loading
     // can produce new toasts after reset outside the suppression window.

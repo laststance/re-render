@@ -34,9 +34,9 @@ export function useSuppressToasts() {
         // A recordRender dispatched while suppression is active is dropped by
         // the listener middleware outright, so this window only needs to cover
         // useRenderTracker's per-commit effect — three macrotasks is ample.
-        // It deliberately does NOT span the middleware's 300ms batch debounce:
-        // events buffered before suppression began are dropped by the
-        // listener's own flush-time recheck instead.
+        // It deliberately does NOT span the middleware's 300ms batch debounce;
+        // events already buffered when suppression begins are instead dropped
+        // by the buffer purge that fires on clearRenderHistory/clearAllToasts.
         setTimeout(() => {
           setTimeout(() => {
             setTimeout(() => {

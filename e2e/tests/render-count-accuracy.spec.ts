@@ -159,6 +159,27 @@ test.describe('Render count accuracy', () => {
       await expectBadges(page, 'child', expected)
       await expectBadges(page, 'memoized', expected)
     })
+
+    // Crossing the 1024px breakpoint swaps SplitPaneLayout's structure and
+    // remounts the whole preview subtree — the memoized tree must re-baseline
+    // too, not keep the pre-remount genuine count (child tree already shows 0).
+    test('breakpoint remount re-baselines the memoized tree as well', async ({
+      app,
+      page,
+    }) => {
+      // Arrange — a genuine render on the memoized tree
+      await app.clickTrigger('Trigger Props Change')
+      const expected = { App: [1], Heading: [1], Counter: [1], Text: [1], Button: [1] }
+      await expectBadges(page, 'memoized', expected)
+
+      // Act — resize across the desktop/tablet boundary to force the remount
+      await page.setViewportSize({ width: 800, height: 800 })
+
+      // Assert — both trees restart at 0 on the fresh mounts
+      const zeros = zeroMap(['App', 'Heading', 'Counter', 'Text', 'Button'])
+      await expectBadges(page, 'child', zeros)
+      await expectBadges(page, 'memoized', zeros)
+    })
   })
 
   test.describe('parent-rerender', () => {

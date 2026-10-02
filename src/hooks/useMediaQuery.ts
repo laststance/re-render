@@ -7,8 +7,10 @@ import { useSyncExternalStore } from 'react'
 const DESKTOP_QUERY = '(min-width: 1024px)'
 // Bounded so useIsTablet() is false on desktop — useDeviceType short-circuits
 // on desktop first, but direct callers must not see tablet=true at ≥1024px.
-const TABLET_QUERY = '(min-width: 768px) and (max-width: 1023px)'
-const MOBILE_QUERY = '(max-width: 767px)'
+// Fractional max-widths catch sub-integer viewports (browser zoom can produce
+// e.g. 1023.5px, which integer bounds would drop to 'mobile').
+const TABLET_QUERY = '(min-width: 768px) and (max-width: 1023.98px)'
+const MOBILE_QUERY = '(max-width: 767.98px)'
 
 interface MediaStore {
   subscribe: (onChange: () => void) => () => void

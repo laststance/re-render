@@ -274,7 +274,10 @@ export function useRenderTracker(
         renderInfo.reason !== 'initial' &&
         renderInfo.reason !== 'parent-rerender'
       if (carriedRealChange) {
-        dispatch(recordRender({ ...renderInfo, renderCount: 1 }))
+        // The same commit is both the new baseline AND a real render — count
+        // it as 2 so child (count-1) and memoized (genuine count) trees agree.
+        committedCountRef.current = 2
+        dispatch(recordRender({ ...renderInfo, renderCount: 2 }))
       }
     } else {
       committedCountRef.current += 1

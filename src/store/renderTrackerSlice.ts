@@ -65,6 +65,14 @@ export const renderTrackerSlice = createSlice({
       // Update render count
       state.renderCounts[componentName] = action.payload.renderCount
 
+      // A fresh mount ('initial' at count 1) means a remount happened
+      // (key change, layout swap) — reset the per-reason accumulation or the
+      // memoized tree would keep the pre-remount count while the child tree
+      // correctly re-baselines to 0.
+      if (reason === 'initial' && action.payload.renderCount === 1) {
+        state.renderCountsByReason[componentName] = {}
+      }
+
       // Track per-reason counts for memoized tree simulation
       if (!state.renderCountsByReason[componentName]) {
         state.renderCountsByReason[componentName] = {}
