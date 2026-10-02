@@ -40,10 +40,12 @@ const triggersSkipToastCheck: Record<string, string[]> = {
 }
 
 /**
- * Examples with async loading (Suspense/React.lazy) that may produce
- * toasts after reset due to deferred component mounting.
+ * Examples with deferred commits (Suspense/React.lazy mounting, or
+ * startTransition in the concurrent example) that may legitimately produce
+ * a new toast after reset — the deferred commit lands after the reset's
+ * suppression window, so "no toasts" is not assertable.
  */
-const asyncExamples = new Set(['suspense', 'react-lazy'])
+const asyncExamples = new Set(['suspense', 'react-lazy', 'concurrent'])
 
 for (const ex of examples) {
   test.describe(`${ex.categoryId}/${ex.exampleId}`, () => {
@@ -119,8 +121,12 @@ for (const ex of examples) {
       })
     }
 
-    // Test multiple triggers accumulate renders
-    if (ex.triggers.length > 0) {
+    // Test multiple triggers accumulate renders.
+    // react-lazy is excluded: clicks during its 800ms load window are no-ops
+    // (isLoading already true), so the count would reflect deferred resolve
+    // commits rather than clicks. Exact-count coverage lives in
+    // render-count-accuracy.spec.ts.
+    if (ex.triggers.length > 0 && ex.exampleId !== 'react-lazy') {
       // Only test accumulation with triggers that actually cause re-renders
       const validTrigger =
         ex.triggers.find(

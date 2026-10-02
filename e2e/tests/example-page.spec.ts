@@ -55,7 +55,7 @@ test.describe('Example Page', () => {
     await expect(page.locator(sel.componentBox('App')).first()).toBeVisible()
   })
 
-  test('all 20 examples load without error', async ({ page }) => {
+  test('every example loads without error', async ({ page }) => {
     const errors: string[] = []
     page.on('pageerror', (err) => errors.push(err.message))
 
