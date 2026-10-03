@@ -24,7 +24,6 @@ export type AppDispatch = typeof store.dispatch
 export {
   recordRender,
   clearRenderHistory,
-  clearComponentHistory,
 } from './renderTrackerSlice'
 
 export {

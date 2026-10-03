@@ -91,6 +91,35 @@ test.describe('Render Tracking', () => {
     expect(toasts).toBe(0)
   })
 
+  test('reset drops render events still inside the toast debounce window', async ({ app, page }) => {
+    // Act — click the trigger directly (no fixture settle wait) so the
+    // recordRender event is still sitting in the listener middleware's
+    // 300ms batch buffer when reset fires. Without the buffer-clear
+    // listener, the stale flush creates a ghost toast after reset.
+    await page.getByRole('button', { name: 'Trigger State Change' }).click()
+    await app.reset()
+
+    // Assert — wait beyond the 300ms flush window; nothing may surface
+    await page.waitForTimeout(700)
+    expect(await app.toastCount()).toBe(0)
+  })
+
+  test('navigating home inside the debounce window drops the pending toast', async ({
+    app,
+    page,
+  }) => {
+    // Act — click the trigger directly so its recordRender sits in the
+    // listener's 300ms buffer, then leave the page before the flush. Without
+    // the unmount-time clearAllToasts, the stale flush renders a ghost toast
+    // on the landing page via the global ToastContainer.
+    await page.getByRole('button', { name: 'Trigger State Change' }).click()
+    await page.locator(sel.homeLink).click()
+
+    // Assert — wait beyond the 300ms flush window on the landing page
+    await page.waitForTimeout(700)
+    expect(await app.toastCount()).toBe(0)
+  })
+
   test('multiple triggers accumulate renders', async ({ app, page }) => {
     const baseline = Number(await app.getRenderCount('App'))
     // Dismiss toasts between triggers to prevent overlay blocking

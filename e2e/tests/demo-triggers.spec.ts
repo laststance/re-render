@@ -3,7 +3,7 @@ import { sel } from '../helpers/selectors.js'
 import { examples } from '../helpers/examples.js'
 
 /**
- * Comprehensive trigger tests for ALL 20 demo examples.
+ * Comprehensive trigger tests for ALL 17 demo examples.
  * Verifies that each trigger button:
  * 1. Increments render counts on the root component
  * 2. Produces a toast notification
@@ -40,10 +40,12 @@ const triggersSkipToastCheck: Record<string, string[]> = {
 }
 
 /**
- * Examples with async loading (Suspense/React.lazy) that may produce
- * toasts after reset due to deferred component mounting.
+ * Examples with deferred commits (Suspense/React.lazy mounting, or
+ * startTransition in the concurrent example) that may legitimately produce
+ * a new toast after reset — the deferred commit lands after the reset's
+ * suppression window, so "no toasts" is not assertable.
  */
-const asyncExamples = new Set(['suspense', 'react-lazy'])
+const asyncExamples = new Set(['suspense', 'react-lazy', 'concurrent'])
 
 for (const ex of examples) {
   test.describe(`${ex.categoryId}/${ex.exampleId}`, () => {
@@ -93,8 +95,8 @@ for (const ex of examples) {
     }
 
     // Test reset button clears toasts for this example.
-    // Note: Reset clears Redux renderCounts but component-level useRef
-    // counts persist, so render count badges briefly show 0 then re-populate.
+    // Under the generation model, clearRenderHistory re-baselines every
+    // tracker — badges stay at 0 until a new render commits.
     // We verify the observable behavior: toasts are cleared.
     // Skip for async examples (Suspense/React.lazy) where deferred loading
     // can produce new toasts after reset outside the suppression window.
@@ -119,8 +121,12 @@ for (const ex of examples) {
       })
     }
 
-    // Test multiple triggers accumulate renders
-    if (ex.triggers.length > 0) {
+    // Test multiple triggers accumulate renders.
+    // react-lazy is excluded: clicks during its 800ms load window are no-ops
+    // (isLoading already true), so the count would reflect deferred resolve
+    // commits rather than clicks. Exact-count coverage lives in
+    // render-count-accuracy.spec.ts.
+    if (ex.triggers.length > 0 && ex.exampleId !== 'react-lazy') {
       // Only test accumulation with triggers that actually cause re-renders
       const validTrigger =
         ex.triggers.find(

@@ -403,14 +403,17 @@ export const ReactLazyPreview = forwardRef<LivePreviewHandle>(
             <LivePreviewWrapper componentName="Suspense">
               <div className="rounded border border-border bg-muted/30 p-4">
                 {isLoading ? (
-                  <LivePreviewWrapper componentName="Fallback">
+                  // Distinct keys: same wrapper type at the same position would
+                  // otherwise reuse the fiber, leaking Fallback's render count
+                  // into HeavyChart.
+                  <LivePreviewWrapper key="fallback" componentName="Fallback">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                       Loading chart...
                     </div>
                   </LivePreviewWrapper>
                 ) : (
-                  <LivePreviewWrapper componentName="HeavyChart">
+                  <LivePreviewWrapper key="chart" componentName="HeavyChart">
                     <div className="space-y-2">
                       <h2 className="font-medium">Heavy Chart Component</h2>
                       <p className="text-sm text-muted-foreground">
@@ -461,9 +464,12 @@ export const ChildrenPatternPreview = forwardRef<LivePreviewHandle>(
     }
 
     return (
-      <LivePreviewWrapper componentName="App">
+      <LivePreviewWrapper
+        componentName="App"
+        deps={{ state: { color, pickerRenderCount } }}
+      >
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
-          <LivePreviewWrapper componentName="ColorPicker">
+          <LivePreviewWrapper componentName="ColorPicker" deps={{ props: { color } }}>
             <div
               className="space-y-3 rounded border border-border p-3 transition-colors"
               style={{ borderColor: color }}
@@ -543,7 +549,7 @@ export const UseReducerPreview = forwardRef<LivePreviewHandle>(
     }))
 
     return (
-      <LivePreviewWrapper componentName="App">
+      <LivePreviewWrapper componentName="App" deps={{ state: { count, step } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <LivePreviewWrapper componentName="Heading">
             <h1 className="text-xl font-semibold">Count: {count}</h1>
@@ -616,7 +622,7 @@ export const UseSyncExternalStorePreview = forwardRef<LivePreviewHandle>(
     }))
 
     return (
-      <LivePreviewWrapper componentName="App">
+      <LivePreviewWrapper componentName="App" deps={{ state: { count } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <LivePreviewWrapper componentName="Heading">
             <h1 className="text-lg font-medium">External Store</h1>
@@ -699,7 +705,10 @@ export const SuspensePreview = forwardRef<LivePreviewHandle>(
     }
 
     return (
-      <LivePreviewWrapper componentName="App">
+      <LivePreviewWrapper
+        componentName="App"
+        deps={{ state: { userId, isLoading, userData } }}
+      >
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <LivePreviewWrapper componentName="Heading">
             <h1 className="text-lg font-medium">Suspense Data Fetching</h1>
@@ -735,14 +744,17 @@ export const SuspensePreview = forwardRef<LivePreviewHandle>(
           <LivePreviewWrapper componentName="Suspense">
             <div className="rounded border border-border bg-muted/30 p-4">
               {isLoading ? (
-                <LivePreviewWrapper componentName="Fallback">
+                // Distinct keys: same wrapper type at the same position would
+                // otherwise reuse the fiber, leaking Fallback's render count
+                // into UserProfile.
+                <LivePreviewWrapper key="fallback" componentName="Fallback">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                     Loading user...
                   </div>
                 </LivePreviewWrapper>
               ) : (
-                <LivePreviewWrapper componentName="UserProfile">
+                <LivePreviewWrapper key="profile" componentName="UserProfile">
                   <div className="space-y-1">
                     <h2 className="font-medium">{userData.name}</h2>
                     <p className="text-sm text-muted-foreground">
@@ -802,7 +814,10 @@ export const ConcurrentPreview = forwardRef<LivePreviewHandle>(
     }
 
     return (
-      <LivePreviewWrapper componentName="App">
+      <LivePreviewWrapper
+        componentName="App"
+        deps={{ state: { text, isPending, deferredText } }}
+      >
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <LivePreviewWrapper componentName="Heading">
             <h1 className="text-lg font-medium">Concurrent Rendering</h1>
@@ -879,7 +894,10 @@ export const UseEffectDepsPreview = forwardRef<LivePreviewHandle>(
     }
 
     return (
-      <LivePreviewWrapper componentName="App">
+      <LivePreviewWrapper
+        componentName="App"
+        deps={{ state: { count, text, effectLog } }}
+      >
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <LivePreviewWrapper componentName="Heading">
             <h1 className="text-lg font-medium">Effect Dependencies</h1>
@@ -973,7 +991,12 @@ export const RefVsStatePreview = forwardRef<LivePreviewHandle>(
     }
 
     return (
-      <LivePreviewWrapper componentName="App">
+      // refCountRef is deliberately excluded — ref mutations must not count
+      // as state changes (that is the demo's teaching point).
+      <LivePreviewWrapper
+        componentName="App"
+        deps={{ state: { stateCount, renderCount } }}
+      >
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <div className="flex items-center justify-between">
             <LivePreviewWrapper componentName="Heading">
@@ -1057,7 +1080,7 @@ export const CompoundComponentPreview = forwardRef<LivePreviewHandle>(
     }))
 
     return (
-      <LivePreviewWrapper componentName="App">
+      <LivePreviewWrapper componentName="App" deps={{ state: { selected, isOpen } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <LivePreviewWrapper componentName="Heading">
             <h1 className="text-lg font-medium">Compound Component</h1>
@@ -1124,7 +1147,7 @@ export const RenderPropsPreview = forwardRef<LivePreviewHandle>(
     }))
 
     return (
-      <LivePreviewWrapper componentName="App">
+      <LivePreviewWrapper componentName="App" deps={{ state: { position } }}>
         <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <LivePreviewWrapper componentName="Heading">
             <h1 className="text-lg font-medium">Render Props</h1>

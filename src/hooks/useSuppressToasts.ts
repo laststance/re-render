@@ -24,19 +24,27 @@ export function useSuppressToasts() {
   return useCallback(
     (action: () => void) => {
       dispatch(beginSuppressToasts())
-      action()
-      // End suppression after the cascade render cycle fully completes.
-      // useRenderTracker uses double-setTimeout(0) for dispatch + flag clear,
-      // so we need to wait beyond that window. A nested setTimeout(0) × 3
-      // ensures all cascade renders and their dispatches complete before
-      // re-enabling toasts.
-      setTimeout(() => {
+      try {
+        action()
+      } finally {
+        // Suppression is refcounted — a throwing action must still schedule
+        // its end dispatch or the leaked session silences all future toasts.
+        //
+        // End suppression once the action's commits + passive effects settle.
+        // A recordRender dispatched while suppression is active is dropped by
+        // the listener middleware outright, so this window only needs to cover
+        // useRenderTracker's per-commit effect — three macrotasks is ample.
+        // It deliberately does NOT span the middleware's 300ms batch debounce;
+        // events already buffered when suppression begins are instead dropped
+        // by the buffer purge that fires on clearRenderHistory/clearAllToasts.
         setTimeout(() => {
           setTimeout(() => {
-            dispatch(endSuppressToasts())
+            setTimeout(() => {
+              dispatch(endSuppressToasts())
+            }, 0)
           }, 0)
         }, 0)
-      }, 0)
+      }
     },
     [dispatch]
   )

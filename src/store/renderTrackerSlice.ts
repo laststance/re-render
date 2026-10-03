@@ -13,12 +13,16 @@ interface RenderTrackerState {
   /** Map of component name to per-reason render counts.
    * Used by useMemoizedTreeWithCounts to compute counts excluding parent-rerender. */
   renderCountsByReason: Record<string, Partial<Record<RenderReason, number>>>
+  /** Reset boundary marker — bumped by clearRenderHistory so tracked
+   * components can rebase their local committed counts. */
+  generation: number
 }
 
 const initialState: RenderTrackerState = {
   renderHistory: {},
   renderCounts: {},
   renderCountsByReason: {},
+  generation: 0,
 }
 
 /**
@@ -37,6 +41,16 @@ export const renderTrackerSlice = createSlice({
     recordRender: (state, action: PayloadAction<RenderInfo>) => {
       const { componentName, reason } = action.payload
 
+      // Drop events rendered under a stale generation: if clearRenderHistory
+      // ran between this render's commit and its passive-effect dispatch,
+      // recording it would resurrect cleared counts with a pre-reset value.
+      if (
+        action.payload.generation !== undefined &&
+        action.payload.generation !== state.generation
+      ) {
+        return
+      }
+
       // Initialize history array if needed
       if (!state.renderHistory[componentName]) {
         state.renderHistory[componentName] = []
@@ -51,6 +65,14 @@ export const renderTrackerSlice = createSlice({
       // Update render count
       state.renderCounts[componentName] = action.payload.renderCount
 
+      // A fresh mount ('initial' at count 1) means a remount happened
+      // (key change, layout swap) — reset the per-reason accumulation or the
+      // memoized tree would keep the pre-remount count while the child tree
+      // correctly re-baselines to 0.
+      if (reason === 'initial' && action.payload.renderCount === 1) {
+        state.renderCountsByReason[componentName] = {}
+      }
+
       // Track per-reason counts for memoized tree simulation
       if (!state.renderCountsByReason[componentName]) {
         state.renderCountsByReason[componentName] = {}
@@ -60,30 +82,24 @@ export const renderTrackerSlice = createSlice({
     },
 
     /**
-     * Clear all render tracking data
+     * Clear all render tracking data and bump the reset generation.
+     * Tracked components observe the bump and treat their next commit as a
+     * fresh baseline, which keeps the on-screen count in sync with the
+     * cleared store.
      */
     clearRenderHistory: (state) => {
       state.renderHistory = {}
       state.renderCounts = {}
       state.renderCountsByReason = {}
+      state.generation += 1
     },
 
-    /**
-     * Clear render history for a specific component
-     */
-    clearComponentHistory: (state, action: PayloadAction<string>) => {
-      const componentName = action.payload
-      delete state.renderHistory[componentName]
-      delete state.renderCounts[componentName]
-      delete state.renderCountsByReason[componentName]
-    },
   },
 })
 
 export const {
   recordRender,
   clearRenderHistory,
-  clearComponentHistory,
 } = renderTrackerSlice.actions
 
 export default renderTrackerSlice.reducer

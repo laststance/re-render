@@ -4,7 +4,7 @@ An interactive React re-render visualizer that helps developers understand when 
 
 ## Features
 
-- **20 interactive examples** across 2 categories (Without Memo / With Memo)
+- **17 interactive examples** across 2 categories (Re-render Conditions / Optimization)
 - **Live code editor** — Monaco Editor with syntax-highlighted, read-only example code
 - **Component tree visualization** — recursive tree with render count badges and flash-on-render animation
 - **Render tracking** — detects render reason (state change, props change, parent re-render, context, etc.)
@@ -22,7 +22,7 @@ An interactive React re-render visualizer that helps developers understand when 
 | Styling | Tailwind CSS 4 + shadcn/ui patterns |
 | Editor | Monaco Editor |
 | Layout | react-resizable-panels |
-| Testing | Playwright (202 E2E tests) |
+| Testing | Playwright (204 E2E tests) |
 
 ## Getting Started
 
@@ -53,7 +53,7 @@ Open [http://localhost:3219](http://localhost:3219) to start learning.
 
 ## Examples
 
-### Without Memo (14 examples)
+### Re-render Conditions (13 examples)
 
 Default rendering behavior — understand how React re-renders propagate.
 
@@ -64,28 +64,25 @@ Default rendering behavior — understand how React re-renders propagate.
 | Parent Re-render | Children re-render when parents do, even without prop changes |
 | Context Change | Context value updates re-render all consumers |
 | Force Update | Manually triggering re-renders with `useReducer` hack |
-| useReducer | Dispatch-driven state and re-render behavior |
-| useSyncExternalStore | Subscribing to external stores without tearing |
+| Reducer Dispatch | Dispatch-driven state and re-render behavior |
+| External Store | Subscribing to external stores without tearing |
 | Suspense | How Suspense boundaries affect render lifecycle |
-| Concurrent Features | `useTransition` and `useDeferredValue` in action |
+| Concurrent Update | `useTransition` and `useDeferredValue` in action |
 | Effect Dependencies | How `useEffect` deps relate to re-renders |
-| Refs vs State | Why `useRef` mutations don't trigger re-renders |
+| Ref Mutation | Why `useRef` mutations don't trigger re-renders |
 | Compound Component | Shared state via context in compound patterns |
 | Render Props | Re-render behavior with render prop callbacks |
 
-### With Memo (7 examples)
+### Optimization (4 examples)
 
 Optimization techniques — skip unnecessary re-renders.
 
 | Example | What You'll Learn |
 |---------|------------------|
-| React.memo | Memoize components to skip re-renders on same props |
 | useCallback | Stabilize function references for memoized children |
 | useMemo | Cache expensive computations between renders |
 | React.lazy | Code splitting and lazy-loaded component behavior |
 | Children Pattern | Composition as an alternative to `React.memo` |
-| useCallback Comparison | Before/after: with vs without `useCallback` |
-| useMemo Comparison | Before/after: with vs without `useMemo` |
 
 ## Project Structure
 
@@ -98,7 +95,7 @@ src/
 │   ├── ui/           # Toast, TriggerButton, ExplanationPanel, FileTabs
 │   └── visualization/# ComponentBox, LivePreview
 ├── data/             # Example definitions, live previews, trigger configs
-├── hooks/            # useRenderTracker (core), useReRenderToasts, etc.
+├── hooks/            # useRenderTracker (core), useMediaQuery, useSuppressToasts, etc.
 ├── store/            # Redux slices (renderTracker, toast)
 ├── types/            # TypeScript type definitions
 └── views/            # ExamplePage, LandingPage

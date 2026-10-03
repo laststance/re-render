@@ -6,7 +6,11 @@ import { sel } from '../helpers/selectors.js'
  * Encapsulates common navigation, interaction, and assertion patterns.
  */
 export class AppPage {
-  constructor(private page: Page) {}
+  private page: Page
+
+  constructor(page: Page) {
+    this.page = page
+  }
 
   /**
    * Navigate to a path and wait for the sidebar nav to be interactive.
@@ -21,8 +25,7 @@ export class AppPage {
 
   /**
    * Navigate to a specific example and wait for its title to appear.
-   * Waits for layout to settle (media query useEffect) and dismisses
-   * any toasts from the initial layout-switch re-renders.
+   * Dismisses the Next.js dev overlay so it can't intercept later clicks.
    * @param cat - Category ID (e.g. "conditions")
    * @param ex - Example ID (e.g. "state-change")
    */
@@ -94,19 +97,19 @@ export class AppPage {
   }
 
   /**
-   * Clear toast notifications by dispatching Redux action.
-   * Uses pointer-events to prevent toasts from blocking clicks while React
-   * reconciles the DOM removal (avoids removeChild errors from manual DOM removal).
+   * Hide the toast region via inline CSS so it cannot intercept clicks.
+   * Toasts stay mounted — toastCount() still counts them — until they
+   * unmount via clearAllToasts/auto-dismiss (a fresh region loses these
+   * inline styles). Nothing is dispatched; no DOM nodes are removed.
    */
   async dismissToastsViaJs() {
-    await this.page.evaluate(() => {
-      // Hide toasts via CSS first to unblock clicks immediately
-      const region = document.querySelector('div[aria-label="Notifications"]') as HTMLElement | null
+    await this.page.evaluate((toastRegion) => {
+      const region = document.querySelector(toastRegion) as HTMLElement | null
       if (region) {
         region.style.pointerEvents = 'none'
         region.style.opacity = '0'
       }
-    })
+    }, sel.toastRegion)
     await this.page.waitForTimeout(100)
   }
 
